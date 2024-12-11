@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:proyecto/src/models/settings_model.dart';
 import 'package:proyecto/src/views/home_screen.dart';
 
-
 class AppThemes {
   // Tema claro
   static final ThemeData lightTheme = ThemeData(
@@ -73,7 +72,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     
     return ChangeNotifierProvider(
       create: (_) => SettingsModel(),
       child: Builder(
@@ -83,9 +81,9 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Configuraciones App',
-            theme:
-                settingsModel.isDarkMode ? AppThemes.darkTheme : AppThemes.lightTheme,
-           
+            theme: settingsModel.isDarkMode
+                ? AppThemes.darkTheme
+                : AppThemes.lightTheme,
             home: const HomeScreen(),
           );
         },
