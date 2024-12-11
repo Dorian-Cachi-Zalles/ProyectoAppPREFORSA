@@ -196,7 +196,7 @@ class ScreenListDatosMPIPS extends StatelessWidget {
             if (datosmpips.isEmpty) {
               return const Center(
                 child: Text(
-                  'No hay registros todavia.',
+                  'No hay registros aun.',
                   style: TextStyle(fontSize: 18, color: Colors.grey),
                 ),
               );
