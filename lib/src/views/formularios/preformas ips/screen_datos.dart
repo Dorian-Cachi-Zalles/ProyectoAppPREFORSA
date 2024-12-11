@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:provider/provider.dart';
+import 'package:proyecto/src/providers/preformas_ips_provider/formulario_principal.dart';
 import 'package:proyecto/src/services/database_helper.dart';
 import 'package:proyecto/src/widgets/custom_dropdown.dart';
 import 'package:proyecto/src/widgets/custom_text_field.dart';
@@ -51,6 +53,8 @@ class _ScreenDatosState extends State<ScreenDatos> {
     WidgetsBinding.instance.addPostFrameCallback((_) => loadForm());
   }
 
+  String pesoPromedio = '0'; // Variable para almacenar el valor de peso
+  bool _navigating = false; // Para evitar múltiples navegaciones simultáneas
   @override
   Widget build(BuildContext context) {
     ThemeData;
@@ -63,10 +67,10 @@ class _ScreenDatosState extends State<ScreenDatos> {
         child: FormBuilder(
           key: _formKey,
           onChanged: autoSaveForm, // Auto guardar en cada cambio
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
+              const Row(
                 children: [
                   Expanded(
                       child: CustomFormBuilderDropdown<String>(
@@ -97,7 +101,7 @@ class _ScreenDatosState extends State<ScreenDatos> {
                       ])),
                 ],
               ),
-              Row(
+              const Row(
                 children: [
                   Expanded(
                     child: CustomFormBuilderTextField(
@@ -122,7 +126,7 @@ class _ScreenDatosState extends State<ScreenDatos> {
                       ])),
                 ],
               ),
-              Row(
+              const Row(
                 children: [
                   Expanded(
                     child: CustomFormBuilderTextField(
@@ -151,7 +155,7 @@ class _ScreenDatosState extends State<ScreenDatos> {
                       ])),
                 ],
               ),
-              Row(
+              const Row(
                 children: [
                   Expanded(
                     child: CustomFormBuilderTextField(
@@ -168,7 +172,7 @@ class _ScreenDatosState extends State<ScreenDatos> {
                   ),
                 ],
               ),
-              Row(
+              const Row(
                 children: [
                   Expanded(
                     child: CustomFormBuilderTextField(
@@ -189,11 +193,19 @@ class _ScreenDatosState extends State<ScreenDatos> {
                     child: CustomFormBuilderTextField(
                       name: 'peso_prom_en_cont_neto',
                       label: 'Peso Promedio en cont NETO',
+                      onChanged: (value) {
+                        // Convierte el valor a double y actualiza el Provider
+                        final double peso =
+                            double.tryParse(value ?? '0') ?? 0.0;
+                        Provider.of<ProviderPesoPromedio>(context,
+                                listen: false)
+                            .setPesoPromedio(peso);
+                      },
                     ),
                   ),
                 ],
               ),
-              Row(
+              const Row(
                 children: [
                   Expanded(
                     child: CustomFormBuilderTextField(
@@ -203,7 +215,7 @@ class _ScreenDatosState extends State<ScreenDatos> {
                   ),
                 ],
               ),
-              Row(
+              const Row(
                 children: [
                   Expanded(
                     child: CustomFormBuilderTextField(
@@ -220,7 +232,7 @@ class _ScreenDatosState extends State<ScreenDatos> {
                   ),
                 ],
               ),
-              Row(
+              const Row(
                 children: [
                   Expanded(
                     child: CustomFormBuilderTextField(
@@ -229,7 +241,7 @@ class _ScreenDatosState extends State<ScreenDatos> {
                   ),
                 ],
               ),
-              Row(
+              const Row(
                 children: [
                   Expanded(
                     child: CustomFormBuilderTextField(
@@ -239,10 +251,10 @@ class _ScreenDatosState extends State<ScreenDatos> {
                   ),
                 ],
               ),
-              CustomFormBuilderTextField(
+              const CustomFormBuilderTextField(
                   name: 'cant_prod_retenido',
                   label: 'Cantidad de producto retenido'),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
             ],
           ),
         ),
