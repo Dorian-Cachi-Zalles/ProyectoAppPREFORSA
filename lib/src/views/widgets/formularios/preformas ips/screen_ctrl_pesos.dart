@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:proyecto/src/widgets/gradient_expandable_card.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:swipeable_tile/swipeable_tile.dart';
+import 'package:intl/intl.dart';
 
-class DatosPESOSIPS {
+class DatosPesosIPS {
   final int? id;
   final bool hasErrors;
   final String Hora;
   final String PA;
-  final double PesoTara;
-  final double PesoNeto;
-  final double PesoTotal;
+  final int PesoTara;
+  final int PesoNeto;
+  final int PesoTotal;
 
   // Constructor de la clase
-  const DatosPESOSIPS({
+  const DatosPesosIPS({
     this.id,
     required this.hasErrors,
     required this.Hora,
@@ -29,15 +29,15 @@ class DatosPESOSIPS {
   });
 
   // Factory para crear una instancia desde un Map
-  factory DatosPESOSIPS.fromMap(Map<String, dynamic> map) {
-    return DatosPESOSIPS(
+  factory DatosPesosIPS.fromMap(Map<String, dynamic> map) {
+    return DatosPesosIPS(
       id: map['id'] as int?,
       hasErrors: map['hasErrors'] == 1,
       Hora: map['Hora'] as String,
       PA: map['PA'] as String,
-      PesoTara: map['PesoTara'] as double,
-      PesoNeto: map['PesoNeto'] as double,
-      PesoTotal: map['PesoTotal'] as double
+      PesoTara: map['PesoTara'] as int,
+      PesoNeto: map['PesoNeto'] as int,
+      PesoTotal: map['PesoTotal'] as int
     );
   }
 
@@ -55,12 +55,12 @@ class DatosPESOSIPS {
   }
 
   // Método copyWith
-  DatosPESOSIPS copyWith({
+  DatosPesosIPS copyWith({
     int? id,
     bool? hasErrors,
-    String? Hora, String? PA, double? PesoTara, double? PesoNeto, double? PesoTotal
+    String? Hora, String? PA, int? PesoTara, int? PesoNeto, int? PesoTotal
   }) {
-    return DatosPESOSIPS(
+    return DatosPesosIPS(
       id: id ?? this.id,
       hasErrors: hasErrors ?? this.hasErrors,
       Hora: Hora ?? this.Hora,
@@ -73,20 +73,20 @@ class DatosPESOSIPS {
 }
 
 
-class DatosPESOSIPSProvider with ChangeNotifier {
+class DatosPesosIPSProvider with ChangeNotifier {
   late Database _db;
-  final String tableDatosPESOSIPS = 'datosPESOSIPS';
-  List<DatosPESOSIPS> _datospesosipsList = [];
+  final String tableDatosPesosIPS = 'datosPesosIPS';
+  List<DatosPesosIPS> _datospesosipsList = [];
 
-  List<DatosPESOSIPS> get datospesosipsList => List.unmodifiable(_datospesosipsList);
+  List<DatosPesosIPS> get datospesosipsList => List.unmodifiable(_datospesosipsList);
 
-  DatosPESOSIPSProvider() {
+  DatosPesosIPSProvider() {
     _initDatabase();
   }
 
   Future<void> _initDatabase() async {
     _db = await openDatabase(
-      p.join(await getDatabasesPath(), 'datosPESOSIPS.db'),
+      p.join(await getDatabasesPath(), 'datosPesosIPS.db'),
       version: 1,
       onCreate: (db, version) => createTable(db),
     );
@@ -95,35 +95,35 @@ class DatosPESOSIPSProvider with ChangeNotifier {
 
   Future<void> createTable(Database db) async {
     await db.execute('''
-      CREATE TABLE $tableDatosPESOSIPS (
+      CREATE TABLE $tableDatosPesosIPS (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         hasErrors INTEGER NOT NULL,
         Hora TEXT NOT NULL,
         PA TEXT NOT NULL,
-        PesoTara REAL NOT NULL,
-        PesoNeto REAL NOT NULL,
-        PesoTotal REAL NOT NULL
+        PesoTara INTEGER NOT NULL,
+        PesoNeto INTEGER NOT NULL,
+        PesoTotal INTEGER NOT NULL
       )
     ''');
   }
 
   Future<void> _loadData() async {
-    final maps = await _db.query(tableDatosPESOSIPS);
-    _datospesosipsList = maps.map((map) => DatosPESOSIPS.fromMap(map)).toList();
+    final maps = await _db.query(tableDatosPesosIPS);
+    _datospesosipsList = maps.map((map) => DatosPesosIPS.fromMap(map)).toList();
     notifyListeners();
   }
 
-  Future<void> addDatito(DatosPESOSIPS nuevoDato) async {
-    final id = await _db.insert(tableDatosPESOSIPS, nuevoDato.toMap());
+  Future<void> addDatito(DatosPesosIPS nuevoDato) async {
+    final id = await _db.insert(tableDatosPesosIPS, nuevoDato.toMap());
     _datospesosipsList.add(nuevoDato.copyWith(id: id));
     notifyListeners();
   }
 
-  Future<void> updateDatito(int id, DatosPESOSIPS updatedDato) async {
+  Future<void> updateDatito(int id, DatosPesosIPS updatedDato) async {
     final index = _datospesosipsList.indexWhere((d) => d.id == id);
     if (index != -1) {
       await _db.update(
-        tableDatosPESOSIPS,
+        tableDatosPesosIPS,
         updatedDato.copyWith(id: id).toMap(),
         where: 'id = ?',
         whereArgs: [id],
@@ -138,7 +138,7 @@ class DatosPESOSIPSProvider with ChangeNotifier {
     if (index != -1) {
       final deletedData = _datospesosipsList[index];
       await _db.delete(
-        tableDatosPESOSIPS,
+        tableDatosPesosIPS,
         where: 'id = ?',
         whereArgs: [id],
       );
@@ -151,7 +151,7 @@ class DatosPESOSIPSProvider with ChangeNotifier {
           action: SnackBarAction(
             label: 'Deshacer',
             onPressed: () async {
-              final newId = await _db.insert(tableDatosPESOSIPS, deletedData.toMap());
+              final newId = await _db.insert(tableDatosPesosIPS, deletedData.toMap());
               _datospesosipsList.insert(index, deletedData.copyWith(id: newId));
               notifyListeners();
             },
@@ -163,12 +163,12 @@ class DatosPESOSIPSProvider with ChangeNotifier {
 }
 
 
-class ScreenListDatosPESOSIPS extends StatelessWidget {
+class ScreenListDatosPesosIPS extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<DatosPESOSIPSProvider>(context, listen: false);
-    return Scaffold(
-        body: Consumer<DatosPESOSIPSProvider>(
+    final provider = Provider.of<DatosPesosIPSProvider>(context, listen: false);
+    return Scaffold(      
+      body: Consumer<DatosPesosIPSProvider>(
         builder: (context, provider, _) {
           final datospesosips = provider.datospesosipsList;
 
@@ -214,9 +214,9 @@ class ScreenListDatosPESOSIPS extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => EditDatosPESOSIPSForm(
+                        builder: (context) => EditDatosPesosIPSForm(
                           id: dtdatospesosips.id!,
-                          datosPESOSIPS: dtdatospesosips,
+                          datosPesosIPS: dtdatospesosips,
                         ),
                       ),
                     );
@@ -236,9 +236,9 @@ class ScreenListDatosPESOSIPS extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => EditDatosPESOSIPSForm(
+                          builder: (context) => EditDatosPesosIPSForm(
                             id: dtdatospesosips.id!,
-                            datosPESOSIPS: dtdatospesosips,
+                            datosPesosIPS: dtdatospesosips,
                           ),
                         ),
                       );
@@ -267,7 +267,7 @@ class ScreenListDatosPESOSIPS extends StatelessWidget {
             ),
             onPressed: ()  {
           provider.addDatito(
-            DatosPESOSIPS(
+            DatosPesosIPS(
             hasErrors: true,
               Hora: DateFormat('HH:mm').format(DateTime.now()),
               PA: '',
@@ -292,28 +292,29 @@ class ScreenListDatosPESOSIPS extends StatelessWidget {
 }
 
 
-    class EditProviderDatosPESOSIPS with ChangeNotifier {
-  // Implementación del proveedor, puedes agregar lógica específica aquí
+    class EditProviderDatosPesosIPS with ChangeNotifier {
+  
 }
 
-class EditDatosPESOSIPSForm extends StatefulWidget {
+class EditDatosPesosIPSForm extends StatefulWidget {
   final int id;
-  final DatosPESOSIPS datosPESOSIPS;
+  final DatosPesosIPS datosPesosIPS;
 
-  const EditDatosPESOSIPSForm({required this.id, required this.datosPESOSIPS, Key? key})
+  const EditDatosPesosIPSForm({required this.id, required this.datosPesosIPS, Key? key})
       : super(key: key);
 
   @override
-  _EditDatosPESOSIPSFormState createState() => _EditDatosPESOSIPSFormState();
+  _EditDatosPesosIPSFormState createState() => _EditDatosPesosIPSFormState();
 }
 
-class _EditDatosPESOSIPSFormState extends State<EditDatosPESOSIPSForm> {
+class _EditDatosPesosIPSFormState extends State<EditDatosPesosIPSForm> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   // Mapa para las opciones de Dropdowns
-  final Map<String, List<dynamic>> dropOptionsDatosPESOSIPS = {
+  final Map<String, List<dynamic>> dropOptionsDatosPesosIPS = {
     'Opciones': ['Opción 1', 'Opción 2', 'Opción 3'],
   };
+  
 
   @override
   void initState() {
@@ -327,8 +328,8 @@ class _EditDatosPESOSIPSFormState extends State<EditDatosPESOSIPSForm> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => EditProviderDatosPESOSIPS(),
-      child: Consumer<EditProviderDatosPESOSIPS>(
+      create: (_) => EditProviderDatosPesosIPS(),
+      child: Consumer<EditProviderDatosPesosIPS>(
         builder: (context, provider, child) {
           return Scaffold(
           body: Column(
@@ -337,10 +338,10 @@ class _EditDatosPESOSIPSFormState extends State<EditDatosPESOSIPSForm> {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
-          child: FormularioGeneralDatosPESOSIPS(
+          child: FormularioGeneralDatosPesosIPS(
               formKey: _formKey,
               widget: widget,
-              dropOptions: dropOptionsDatosPESOSIPS,
+              dropOptions: dropOptionsDatosPesosIPS,
             ),),),),
           Padding(
       padding: EdgeInsets.only(
@@ -369,18 +370,21 @@ class _EditDatosPESOSIPSFormState extends State<EditDatosPESOSIPSForm> {
             onPressed: () {
                 _formKey.currentState?.save();
                 final values = _formKey.currentState!.value;
+                final pesoTara = (values['PesoTara']?.isEmpty ?? true) ? 0 : int.tryParse(values['PesoTara']) ?? 0;
+                final pesoNeto = (values['PesoNeto']?.isEmpty ?? true) ? 0 : int.tryParse(values['PesoNeto']) ?? 0;
+                final pesoTotal = (values['PesoTotal']?.isEmpty ?? true) ? 0 : int.tryParse(values['PesoTotal']) ?? pesoTara + pesoNeto;
 
-                final updatedDatito = widget.datosPESOSIPS.copyWith(
+                final updatedDatito = widget.datosPesosIPS.copyWith(
                 hasErrors:_formKey.currentState?.fields.values.any((field) => field.hasError) ?? false,
-                  Hora: values['Hora'] ?? widget.datosPESOSIPS.Hora,
-                  PA: values['PA'] ?? widget.datosPESOSIPS.PA,
-                  PesoTara:(values['PesoTara']?.isEmpty ?? true)? 0 : double.tryParse(values['PesoTara']),
-                  PesoNeto:(values['PesoNeto']?.isEmpty ?? true)? 0 : double.tryParse(values['PesoNeto']),
-                  PesoTotal:(values['PesoTotal']?.isEmpty ?? true)? 0 : double.tryParse(values['PesoTotal']),
+                  Hora: values['Hora'] ?? widget.datosPesosIPS.Hora,
+                  PA: values['PA'] ?? widget.datosPesosIPS.PA,
+                  PesoTara: pesoTara,
+                  PesoNeto:pesoNeto,
+                  PesoTotal:pesoTotal,
 
                 );
 
-                Provider.of<DatosPESOSIPSProvider>(context, listen: false)
+                Provider.of<DatosPesosIPSProvider>(context, listen: false)
                     .updateDatito(widget.id, updatedDatito);
 
                 Navigator.pop(context);
@@ -396,8 +400,8 @@ class _EditDatosPESOSIPSFormState extends State<EditDatosPESOSIPSForm> {
   }
 }
 
-class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
-  const FormularioGeneralDatosPESOSIPS({
+class FormularioGeneralDatosPesosIPS extends StatelessWidget {
+  const FormularioGeneralDatosPesosIPS({
     super.key,
     required GlobalKey<FormBuilderState> formKey,
     required this.widget,
@@ -407,19 +411,17 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
   final GlobalKey<FormBuilderState> _formKey;
   final  widget;
   final Map<String, List<dynamic>> dropOptions;
-
-void _updatePesoTotal() {
+  
+  void _updatePesoTotal() {
   final formState = _formKey.currentState;
 
   if (formState != null) {
-    // Obtén los valores actuales de PesoTara y PesoNeto
+    
     final pesoTara = double.tryParse(formState.fields['PesoTara']?.value ?? '0') ?? 0;
     final pesoNeto = double.tryParse(formState.fields['PesoNeto']?.value ?? '0') ?? 0;
-
-    // Calcula PesoTotal
     final pesoTotal = pesoTara + pesoNeto;
 
-    // Actualiza el campo PesoTotal
+   
     formState.fields['PesoTotal']?.didChange(pesoTotal.toStringAsFixed(2));
   }
 }
@@ -434,14 +436,14 @@ void _updatePesoTotal() {
           const SizedBox(height: 15,),
           FormBuilderTextField(
             name: 'Hora',
-            initialValue: widget.datosPESOSIPS.Hora,
+            initialValue: widget.datosPesosIPS.Hora,
             onChanged: (value) {
             final field = _formKey.currentState?.fields['Hora'];
             field?.validate(); // Valida solo este campo
             field?.save();
           },
             decoration: InputDecoration(labelText: 'Hora',
-            labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold),  
+            labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold), 
               filled: true,
               fillColor: Colors.grey[200], // Color de fondo de los campos
               errorStyle: TextStyle(
@@ -472,14 +474,14 @@ void _updatePesoTotal() {
           const SizedBox(height: 15,),
           FormBuilderTextField(
             name: 'PA',
-            initialValue: widget.datosPESOSIPS.PA,
+            initialValue: widget.datosPesosIPS.PA,
             onChanged: (value) {
             final field = _formKey.currentState?.fields['PA'];
             field?.validate(); // Valida solo este campo
             field?.save();
           },
             decoration: InputDecoration(labelText: 'Pa',
-            labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold),  
+            labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold), 
               filled: true,
               fillColor: Colors.grey[200], // Color de fondo de los campos
               errorStyle: TextStyle(
@@ -510,7 +512,7 @@ void _updatePesoTotal() {
           const SizedBox(height: 15,),
           FormBuilderTextField(
             name: 'PesoTara',
-            initialValue: widget.datosPESOSIPS.PesoTara.toString(),
+            initialValue: widget.datosPesosIPS.PesoTara.toString(),
             onChanged: (value) {
             final field = _formKey.currentState?.fields['PesoTara'];
             field?.validate(); // Valida solo este campo
@@ -518,7 +520,7 @@ void _updatePesoTotal() {
             _updatePesoTotal();
           },
             decoration: InputDecoration(labelText: 'Pesotara',
-            labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold),  
+            labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold), 
               filled: true,
               fillColor: Colors.grey[200], // Color de fondo de los campos
               errorStyle: TextStyle(
@@ -549,7 +551,7 @@ void _updatePesoTotal() {
           const SizedBox(height: 15,),
           FormBuilderTextField(
             name: 'PesoNeto',
-            initialValue: widget.datosPESOSIPS.PesoNeto.toString(),
+            initialValue: widget.datosPesosIPS.PesoNeto.toString(),
             onChanged: (value) {
             final field = _formKey.currentState?.fields['PesoNeto'];
             field?.validate(); // Valida solo este campo
@@ -557,7 +559,7 @@ void _updatePesoTotal() {
             _updatePesoTotal();
           },
             decoration: InputDecoration(labelText: 'Pesoneto',
-            labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold),  
+            labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold), 
               filled: true,
               fillColor: Colors.grey[200], // Color de fondo de los campos
               errorStyle: TextStyle(
@@ -588,14 +590,14 @@ void _updatePesoTotal() {
           const SizedBox(height: 15,),
           FormBuilderTextField(
             name: 'PesoTotal',
-            initialValue: widget.datosPESOSIPS.PesoTotal.toString(),
+            initialValue: widget.datosPesosIPS.PesoTotal.toString(),
             onChanged: (value) {
             final field = _formKey.currentState?.fields['PesoTotal'];
             field?.validate(); // Valida solo este campo
             field?.save();
           },
             decoration: InputDecoration(labelText: 'Pesototal',
-            labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold),  
+            labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold), 
               filled: true,
               fillColor: Colors.grey[200], // Color de fondo de los campos
               errorStyle: TextStyle(
