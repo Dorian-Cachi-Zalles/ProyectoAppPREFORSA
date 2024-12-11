@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:proyecto/src/models/settings_model.dart';
-import 'package:proyecto/src/views/home_screen.dart';
-import 'package:proyecto/src/views/settings_page.dart';
+import 'package:proyecto/src/widgets/home_screen.dart';
+import 'package:proyecto/src/widgets/settings_page.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_pesos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_datos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_defectos.dart';
@@ -88,7 +88,6 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
           ChangeNotifierProvider(create: (_) => DatosPESOSIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosPROCESIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosTEMPIPSProvider()),
-          
         ],
         child: Scaffold(
           appBar: AppBar(

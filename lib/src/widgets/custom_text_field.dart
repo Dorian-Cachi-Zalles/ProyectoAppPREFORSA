@@ -9,6 +9,7 @@ class CustomFormBuilderTextField extends StatelessWidget {
   final IconData? prefixIcon;
   final String? hintText;
   final bool readOnly;
+  final ValueChanged<String?>? onChanged; // Se agregó esta línea
 
   const CustomFormBuilderTextField({
     super.key,
@@ -19,6 +20,7 @@ class CustomFormBuilderTextField extends StatelessWidget {
     this.prefixIcon,
     this.hintText,
     this.readOnly = false,
+    this.onChanged, // Se agregó esta línea
   });
 
   @override
@@ -43,6 +45,7 @@ class CustomFormBuilderTextField extends StatelessWidget {
           readOnly: readOnly,
           obscureText: isPassword,
           keyboardType: keyboardType,
+          onChanged: onChanged, // Se agregó esta línea para manejar onChanged
           decoration: InputDecoration(
             labelText: label,
             hintText: hintText,
