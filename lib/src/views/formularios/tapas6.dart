@@ -4,8 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:proyecto/src/models/settings_model.dart';
 import 'package:proyecto/src/views/formularios/ccm.dart';
 import 'package:proyecto/src/views/formularios/coloracap.dart';
-import 'package:proyecto/src/views/formularios/soplado.dart';
-import 'package:proyecto/src/views/formularios/tapas6.dart';
+import 'package:proyecto/src/views/formularios/preformas_i5.dart';
 import 'package:proyecto/src/views/formularios/yutzumi.dart';
 import 'package:proyecto/src/widgets/home_screen.dart';
 import 'package:proyecto/src/widgets/settings_page.dart';
@@ -16,14 +15,14 @@ import 'package:proyecto/src/views/formularios/preformas%20ips/screen_mat_prima.
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_procesos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_temperatura.dart';
 
-class ScreenPreformasIPS extends StatefulWidget {
-  const ScreenPreformasIPS({super.key});
+class ScreenTapas6 extends StatefulWidget {
+  const ScreenTapas6({super.key});
 
   @override
-  State<ScreenPreformasIPS> createState() => _ScreenPreformasIPSState();
+  State<ScreenTapas6> createState() => _ScreenTapas6State();
 }
 
-class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
+class _ScreenTapas6State extends State<ScreenTapas6> {
   final PersistentTabController _controller =
       PersistentTabController(initialIndex: 0);
 
@@ -168,7 +167,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const ScreenPreformasIPS()),
+                            builder: (context) => const ScreenTapas6()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
@@ -179,7 +178,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const ScreenPreformasIPS()),
+                            builder: (context) => const ScreenPreformasI5()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
@@ -234,7 +233,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const ScreenSoplado()),
+                            builder: (context) => const ScreenTapas6()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),

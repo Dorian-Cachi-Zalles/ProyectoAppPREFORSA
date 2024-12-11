@@ -16,14 +16,14 @@ import 'package:proyecto/src/views/formularios/preformas%20ips/screen_mat_prima.
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_procesos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_temperatura.dart';
 
-class ScreenPreformasIPS extends StatefulWidget {
-  const ScreenPreformasIPS({super.key});
+class ScreenPreformasI5 extends StatefulWidget {
+  const ScreenPreformasI5({super.key});
 
   @override
-  State<ScreenPreformasIPS> createState() => _ScreenPreformasIPSState();
+  State<ScreenPreformasI5> createState() => _ScreenPreformasI5State();
 }
 
-class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
+class _ScreenPreformasI5State extends State<ScreenPreformasI5> {
   final PersistentTabController _controller =
       PersistentTabController(initialIndex: 0);
 
@@ -168,7 +168,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const ScreenPreformasIPS()),
+                            builder: (context) => const ScreenPreformasI5()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
@@ -179,7 +179,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const ScreenPreformasIPS()),
+                            builder: (context) => const ScreenPreformasI5()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),

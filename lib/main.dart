@@ -68,7 +68,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ProviderForm()),
+        ChangeNotifierProvider(create: (_) => ProviderPesoPromedio()),
       ],
       child: const MyApp(),
     ),
