@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:proyecto/src/models/settings_model.dart';
 import 'package:proyecto/src/views/home_screen.dart';
 import 'package:proyecto/src/views/settings_page.dart';
+import 'package:proyecto/src/views/widgets/formularios/preformas%20ips/datos_form.dart';
 import 'package:proyecto/src/views/widgets/formularios/preformas%20ips/screen_ctrl_pesos.dart';
 import 'package:proyecto/src/views/widgets/formularios/preformas%20ips/screen_datos.dart';
 import 'package:proyecto/src/views/widgets/formularios/preformas%20ips/screen_defectos.dart';
@@ -25,11 +26,11 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
   List<Widget> _buildScreens() {
     return [
       ScreenDatos(),
-      const ScreenMatPrima(),
-      const ScreenDefectos(),
-      const ScreenCtrlPesos(),
-      const ScreenProcesos(),
-      const ScreenTemperatura(),
+      ScreenListDatosMPIPS(),
+      ScreenListDatosDEFIPS(),
+      ScreenListDatosPesosIPS(),
+      ScreenListDatosPROCESIPS(),
+      ScreenListDatosTEMPIPS(),
     ];
   }
 
@@ -37,40 +38,40 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
     return [
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.insert_chart),
-        title: ("Datos"),
+        title: ("DATOS INICIALES"),
         activeColorPrimary:
             settingsModel.isDarkMode ? Colors.green : Colors.blue,
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.category),
-        title: ("MP y Aditivos"),
+        title: ("MP Y ADITIVOS"),
         activeColorPrimary:
             settingsModel.isDarkMode ? Colors.amber : Colors.orange,
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.bug_report),
-        title: ("Defectos"),
+        title: ("DEFECTOS"),
         activeColorPrimary:
             settingsModel.isDarkMode ? Colors.purple : Colors.red,
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
-        icon: const Icon(Icons.line_weight),
-        title: ("Pesos"),
+        icon: const Icon(Icons.monitor_weight_outlined),
+        title: ("PESOS"),
         activeColorPrimary: Colors.red,
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.build),
-        title: ("Procesos"),
+        title: ("PROCESO"),
         activeColorPrimary: Colors.blue,
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.thermostat),
-        title: ("Temperatura"),
+        title: ("TEMPERATURA"),
         activeColorPrimary:
             settingsModel.isDarkMode ? Colors.orange : Colors.red,
         inactiveColorPrimary: Colors.grey,
@@ -81,7 +82,16 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
   @override
   Widget build(BuildContext context) {
     final settingsModel = Provider.of<SettingsModel>(context);
-    return Scaffold(
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => DatosMPIPSProvider()),
+        ChangeNotifierProvider(create: (_) => DatosDEFIPSProvider()),
+        ChangeNotifierProvider(create: (_) => DatosPesosIPSProvider()),
+        ChangeNotifierProvider(create: (_) => DatosPROCESIPSProvider()),
+        ChangeNotifierProvider(create: (_) => DatosTEMPIPSProvider()),
+
+      ],
+      child: Scaffold(
       appBar: AppBar(
         backgroundColor: settingsModel.isDarkMode
             ? Colors.black
@@ -90,11 +100,17 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
           "Preformas IPS",
           style: TextStyle(
             color: settingsModel.isDarkMode ? Colors.white : Colors.black,
+            fontWeight: FontWeight.bold
           ),
         ),
         centerTitle: true,
         iconTheme: IconThemeData(
           color: settingsModel.isDarkMode ? Colors.white : Colors.black,
+        ),
+        flexibleSpace: const Image(
+          image: AssetImage('images/BannerPREFIPS.png'),
+          height: 100,
+          fit: BoxFit.cover,
         ),
         actions: [
           IconButton(
@@ -184,6 +200,6 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
         isVisible: true,
         navBarStyle: NavBarStyle.style9,
       ),
-    );
+    ));
   }
 }
