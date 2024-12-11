@@ -27,7 +27,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
       const ScreenDatos(),
       const ScreenListDatosMPIPS(),
       const ScreenListDatosDEFIPS(),
-      const ScreenListDatosPesosIPS(),
+      ScreenListDatosPESOSIPS(),
       const ScreenListDatosPROCESIPS(),
       const ScreenListDatosTEMPIPS(),
     ];
@@ -85,9 +85,10 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
         providers: [
           ChangeNotifierProvider(create: (_) => DatosMPIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosDEFIPSProvider()),
-          ChangeNotifierProvider(create: (_) => DatosPesosIPSProvider()),
+          ChangeNotifierProvider(create: (_) => DatosPESOSIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosPROCESIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosTEMPIPSProvider()),
+          
         ],
         child: Scaffold(
           appBar: AppBar(
