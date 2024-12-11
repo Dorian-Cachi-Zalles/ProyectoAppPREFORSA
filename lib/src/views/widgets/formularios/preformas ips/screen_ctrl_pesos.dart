@@ -293,7 +293,7 @@ class ScreenListDatosPesosIPS extends StatelessWidget {
 
 
     class EditProviderDatosPesosIPS with ChangeNotifier {
-  // Implementación del proveedor, puedes agregar lógica específica aquí
+  
 }
 
 class EditDatosPesosIPSForm extends StatefulWidget {
@@ -314,6 +314,7 @@ class _EditDatosPesosIPSFormState extends State<EditDatosPesosIPSForm> {
   final Map<String, List<dynamic>> dropOptionsDatosPesosIPS = {
     'Opciones': ['Opción 1', 'Opción 2', 'Opción 3'],
   };
+  
 
   @override
   void initState() {
@@ -369,14 +370,17 @@ class _EditDatosPesosIPSFormState extends State<EditDatosPesosIPSForm> {
             onPressed: () {
                 _formKey.currentState?.save();
                 final values = _formKey.currentState!.value;
+                final pesoTara = (values['PesoTara']?.isEmpty ?? true) ? 0 : int.tryParse(values['PesoTara']) ?? 0;
+                final pesoNeto = (values['PesoNeto']?.isEmpty ?? true) ? 0 : int.tryParse(values['PesoNeto']) ?? 0;
+                final pesoTotal = (values['PesoTotal']?.isEmpty ?? true) ? 0 : int.tryParse(values['PesoTotal']) ?? pesoTara + pesoNeto;
 
                 final updatedDatito = widget.datosPesosIPS.copyWith(
                 hasErrors:_formKey.currentState?.fields.values.any((field) => field.hasError) ?? false,
                   Hora: values['Hora'] ?? widget.datosPesosIPS.Hora,
                   PA: values['PA'] ?? widget.datosPesosIPS.PA,
-                  PesoTara:(values['PesoTara']?.isEmpty ?? true)? 0 : int.tryParse(values['PesoTara']),
-                  PesoNeto:(values['PesoNeto']?.isEmpty ?? true)? 0 : int.tryParse(values['PesoNeto']),
-                  PesoTotal:(values['PesoTotal']?.isEmpty ?? true)? 0 : int.tryParse(values['PesoTotal']),
+                  PesoTara: pesoTara,
+                  PesoNeto:pesoNeto,
+                  PesoTotal:pesoTotal,
 
                 );
 
@@ -407,6 +411,20 @@ class FormularioGeneralDatosPesosIPS extends StatelessWidget {
   final GlobalKey<FormBuilderState> _formKey;
   final  widget;
   final Map<String, List<dynamic>> dropOptions;
+  
+  void _updatePesoTotal() {
+  final formState = _formKey.currentState;
+
+  if (formState != null) {
+    
+    final pesoTara = double.tryParse(formState.fields['PesoTara']?.value ?? '0') ?? 0;
+    final pesoNeto = double.tryParse(formState.fields['PesoNeto']?.value ?? '0') ?? 0;
+    final pesoTotal = pesoTara + pesoNeto;
+
+   
+    formState.fields['PesoTotal']?.didChange(pesoTotal.toStringAsFixed(2));
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -499,6 +517,7 @@ class FormularioGeneralDatosPesosIPS extends StatelessWidget {
             final field = _formKey.currentState?.fields['PesoTara'];
             field?.validate(); // Valida solo este campo
             field?.save();
+            _updatePesoTotal();
           },
             decoration: InputDecoration(labelText: 'Pesotara',
             labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold), 
@@ -537,6 +556,7 @@ class FormularioGeneralDatosPesosIPS extends StatelessWidget {
             final field = _formKey.currentState?.fields['PesoNeto'];
             field?.validate(); // Valida solo este campo
             field?.save();
+            _updatePesoTotal();
           },
             decoration: InputDecoration(labelText: 'Pesoneto',
             labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold), 
