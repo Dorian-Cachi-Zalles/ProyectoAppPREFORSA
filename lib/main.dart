@@ -66,13 +66,9 @@ class AppThemes {
 
 void main() {
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ProviderForm()),
-      ],
-      child: const MyApp(),
-    ),
-  );
+    const MyApp(),
+    )
+  ;
 }
 
 class MyApp extends StatelessWidget {
