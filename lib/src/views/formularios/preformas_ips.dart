@@ -28,7 +28,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
       const ScreenListDatosMPIPS(),
       const ScreenListDatosDEFIPS(),
       ScreenListDatosPESOSIPS(),
-      const ScreenListDatosPROCESIPS(),
+      ScreenListDatosPROCEIPS(),
       const ScreenListDatosTEMPIPS(),
     ];
   }
@@ -86,7 +86,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
           ChangeNotifierProvider(create: (_) => DatosMPIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosDEFIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosPESOSIPSProvider()),
-          ChangeNotifierProvider(create: (_) => DatosPROCESIPSProvider()),
+          ChangeNotifierProvider(create: (_) => DatosPROCEIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosTEMPIPSProvider()),
           
         ],
