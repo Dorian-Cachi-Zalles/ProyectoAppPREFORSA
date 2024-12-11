@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:proyecto/src/models/settings_model.dart';
 import 'package:proyecto/src/views/settings_page.dart';
-import 'package:proyecto/src/views/widgets/formularios/preformas_ips.dart';
+import 'package:proyecto/src/views/formularios/preformas_ips.dart';
 import 'package:proyecto/src/widgets/custom_drawer.dart';
 import 'package:proyecto/src/widgets/custom_container_menu.dart';
 

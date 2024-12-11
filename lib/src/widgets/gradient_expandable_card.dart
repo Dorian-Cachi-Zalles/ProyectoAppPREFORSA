@@ -26,13 +26,13 @@ class GradientExpandableCard extends StatefulWidget {
   final bool hasErrors;
 
   const GradientExpandableCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.subtitle,
     required this.expandedContent,
     required this.onOpenModal,
     required this.hasErrors,
-  }) : super(key: key);
+  });
 
   @override
   State<GradientExpandableCard> createState() => _GradientExpandableCardState();
@@ -60,9 +60,9 @@ class _GradientExpandableCardState extends State<GradientExpandableCard>
         children: [
           // Encabezado fijo
           Container(
-            decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 243, 243, 243),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            decoration: const BoxDecoration(
+              color: Color.fromARGB(255, 243, 243, 243),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
             ),
             child: Row(
               children: [
@@ -87,73 +87,77 @@ class _GradientExpandableCardState extends State<GradientExpandableCard>
                 // Contenido de título y subtítulo
                 Expanded(
                   child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  children: [
-                    // Círculo con número
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        shape: BoxShape.circle,
-                      ),
-                      child:Center(
-                        child: Text(
-                          widget.title, // Número dentro del círculo
-                          style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 15),
-                    // Título y hora
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children:[
-                        Text(
-                          "Registro",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        children: [
+                          // Círculo con número
+                          Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade300,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text(
+                                widget.title, // Número dentro del círculo
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20),
+                              ),
+                            ),
                           ),
-                        ),
-                        Text(
-                          widget.subtitle,
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
+                          const SizedBox(width: 15),
+                          // Título y hora
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Registro",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                widget.subtitle,
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
                 // Botón expandir/colapsar
                 ElevatedButton.icon(
-              onPressed: _toggleExpand,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              ),
-              icon: Icon(
+                  onPressed: _toggleExpand,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  ),
+                  icon: Icon(
                     _isExpanded ? Icons.expand_less : Icons.expand_more,
                     color: Colors.white,
                     size: 30,
                   ),
-              label: const Text(
-                "Ver",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            SizedBox(width: 10,)                
+                  label: const Text(
+                    "Ver",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                )
               ],
             ),
           ),
