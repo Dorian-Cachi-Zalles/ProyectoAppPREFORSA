@@ -70,6 +70,24 @@ class _ScreenDatosState extends State<ScreenDatos> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(
+                height: 15,
+              ),
+              const Row(
+                children: [
+                  Text('Datos de encabezado'),
+                  SizedBox(
+                    width: 16, // Espaciado entre el texto y el Divider
+                  ),
+                  Expanded(
+                    child:
+                        Divider(), // Se expande para llenar el espacio disponible
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 15,
+              ),
               const Row(
                 children: [
                   Expanded(
