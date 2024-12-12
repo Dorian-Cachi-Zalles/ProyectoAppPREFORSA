@@ -100,7 +100,7 @@ class _ScreenCCMState extends State<ScreenCCM> {
                 ? Colors.black
                 : const Color.fromARGB(255, 255, 255, 255),
             title: Text(
-              "Preformas IPS",
+              "CCM",
               style: TextStyle(
                   color: settingsModel.isDarkMode ? Colors.white : Colors.black,
                   fontWeight: FontWeight.bold),

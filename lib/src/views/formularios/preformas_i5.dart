@@ -100,7 +100,7 @@ class _ScreenPreformasI5State extends State<ScreenPreformasI5> {
                 ? Colors.black
                 : const Color.fromARGB(255, 255, 255, 255),
             title: Text(
-              "Preformas IPS",
+              "Preformas I5",
               style: TextStyle(
                   color: settingsModel.isDarkMode ? Colors.white : Colors.black,
                   fontWeight: FontWeight.bold),

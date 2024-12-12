@@ -100,7 +100,7 @@ class _ScreenColoracapState extends State<ScreenColoracap> {
                 ? Colors.black
                 : const Color.fromARGB(255, 255, 255, 255),
             title: Text(
-              "Preformas IPS",
+              "Coloracap",
               style: TextStyle(
                   color: settingsModel.isDarkMode ? Colors.white : Colors.black,
                   fontWeight: FontWeight.bold),

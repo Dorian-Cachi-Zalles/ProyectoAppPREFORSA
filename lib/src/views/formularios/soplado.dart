@@ -100,7 +100,7 @@ class _ScreenSopladoState extends State<ScreenSoplado> {
                 ? Colors.black
                 : const Color.fromARGB(255, 255, 255, 255),
             title: Text(
-              "Preformas IPS",
+              "Soplado",
               style: TextStyle(
                   color: settingsModel.isDarkMode ? Colors.white : Colors.black,
                   fontWeight: FontWeight.bold),
