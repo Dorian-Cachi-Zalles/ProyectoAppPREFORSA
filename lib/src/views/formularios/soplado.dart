@@ -7,7 +7,7 @@ import 'package:proyecto/src/views/formularios/coloracap.dart';
 import 'package:proyecto/src/views/formularios/preformas_i5.dart';
 import 'package:proyecto/src/views/formularios/tapas6.dart';
 import 'package:proyecto/src/views/formularios/yutzumi.dart';
-import 'package:proyecto/src/widgets/home_screen.dart';
+import 'package:proyecto/src/views/formularios/home_screen.dart';
 import 'package:proyecto/src/widgets/settings_page.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_pesos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_datos.dart';

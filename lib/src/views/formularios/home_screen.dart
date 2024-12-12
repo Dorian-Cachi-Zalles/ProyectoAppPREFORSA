@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:proyecto/src/models/settings_model.dart';
+import 'package:proyecto/src/views/dashboard.dart';
 import 'package:proyecto/src/widgets/settings_page.dart';
 import 'package:proyecto/src/views/formularios/preformas_ips.dart';
 import 'package:proyecto/src/widgets/custom_drawer.dart';
@@ -118,7 +119,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         text: "Dashboard",
                         fontSize: settingsModel.fontSize,
                         onTap: () {
-                          // Agrega la navegación correspondiente
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ScreenDashboard(),
+                            ),
+                          );
                         },
                       ),
                     ],
