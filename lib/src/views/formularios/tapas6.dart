@@ -33,7 +33,7 @@ class _ScreenTapas6State extends State<ScreenTapas6> {
       const ScreenListDatosDEFIPS(),
       ScreenListDatosPESOSIPS(),
       ScreenListDatosPROCEIPS(),
-      const ScreenListDatosTEMPIPS(),
+      ScreenListDatosTEMPIPS(),
     ];
   }
 

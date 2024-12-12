@@ -34,7 +34,7 @@ class _ScreenColoracapState extends State<ScreenColoracap> {
       const ScreenListDatosDEFIPS(),
       ScreenListDatosPESOSIPS(),
       ScreenListDatosPROCEIPS(),
-      const ScreenListDatosTEMPIPS(),
+      ScreenListDatosTEMPIPS(),
     ];
   }
 

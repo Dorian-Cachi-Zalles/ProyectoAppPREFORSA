@@ -32,7 +32,7 @@ class _ScreenYutzumiState extends State<ScreenYutzumi> {
       const ScreenListDatosDEFIPS(),
       ScreenListDatosPESOSIPS(),
       ScreenListDatosPROCEIPS(),
-      const ScreenListDatosTEMPIPS(),
+      ScreenListDatosTEMPIPS(),
     ];
   }
 

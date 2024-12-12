@@ -280,15 +280,16 @@ class ScreenListDatosPESOSIPS extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
+                  final pesoNeto =
+                      context.read<ProviderPesoPromedio>().pesoPromedio;
                   provider.addDatito(
                     DatosPESOSIPS(
                       hasErrors: true,
                       Hora: DateFormat('HH:mm').format(DateTime.now()),
                       PA: '',
                       PesoTara: 0,
-                      PesoNeto: 0,
-                      PesoTotal: Provider.of<ProviderPesoPromedio>(context)
-                          .pesoPromedio,
+                      PesoNeto: pesoNeto,
+                      PesoTotal: 0,
                     ),
                   );
                 },
@@ -607,7 +608,7 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
           ),
           FormBuilderTextField(
             name: 'PesoNeto',
-            initialValue: widget.datosPESOSIPS.PesoNeto.toString(),
+            initialValue: ProviderPesoPromedio().pesoPromedio.toString(),
             onChanged: (value) {
               final field = _formKey.currentState?.fields['PesoNeto'];
               field?.validate(); // Valida solo este campo

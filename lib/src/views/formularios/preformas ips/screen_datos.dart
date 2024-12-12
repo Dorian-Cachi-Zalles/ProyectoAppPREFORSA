@@ -54,7 +54,7 @@ class _ScreenDatosState extends State<ScreenDatos> {
   }
 
   String pesoPromedio = '0'; // Variable para almacenar el valor de peso
-  bool _navigating = false; // Para evitar múltiples navegaciones simultáneas
+// Para evitar múltiples navegaciones simultáneas
   @override
   Widget build(BuildContext context) {
     ThemeData;

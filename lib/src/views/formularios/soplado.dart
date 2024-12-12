@@ -34,7 +34,7 @@ class _ScreenSopladoState extends State<ScreenSoplado> {
       const ScreenListDatosDEFIPS(),
       ScreenListDatosPESOSIPS(),
       ScreenListDatosPROCEIPS(),
-      const ScreenListDatosTEMPIPS(),
+      ScreenListDatosTEMPIPS(),
     ];
   }
 
