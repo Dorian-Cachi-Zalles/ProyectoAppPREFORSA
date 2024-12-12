@@ -131,6 +131,61 @@ class ScreenDashboard extends StatelessWidget {
                 ),
               );
             },
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+          DataTable(
+            columns: const [
+              DataColumn(
+                label: Text(
+                  'Producto',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'Cantidad',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'Estado',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+            rows: const [
+              DataRow(
+                cells: [
+                  DataCell(Text('Preformas')),
+                  DataCell(Text('10,000 unidades')),
+                  DataCell(Text('Aprobado')),
+                ],
+              ),
+              DataRow(
+                cells: [
+                  DataCell(Text('Tapas')),
+                  DataCell(Text('5,000 unidades')),
+                  DataCell(Text('Revisión')),
+                ],
+              ),
+              DataRow(
+                cells: [
+                  DataCell(Text('Botellas')),
+                  DataCell(Text('3,000 unidades')),
+                  DataCell(Text('Rechazado')),
+                ],
+              ),
+              DataRow(
+                cells: [
+                  DataCell(Text('Resina')),
+                  DataCell(Text('2,500 kg')),
+                  DataCell(Text('Disponible')),
+                ],
+              ),
+            ],
           )
         ],
       ),
