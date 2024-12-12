@@ -3,7 +3,6 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
-import 'package:path/path.dart';
 import 'package:proyecto/src/providers/preformas_ips_provider/formulario_principal.dart';
 import 'package:proyecto/src/widgets/gradient_expandable_card.dart';
 import 'package:provider/provider.dart';

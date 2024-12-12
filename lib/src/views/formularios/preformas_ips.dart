@@ -34,7 +34,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
       const ScreenListDatosDEFIPS(),
       ScreenListDatosPESOSIPS(),
       ScreenListDatosPROCEIPS(),
-      const ScreenListDatosTEMPIPS(),
+      ScreenListDatosTEMPIPS(),
     ];
   }
 
