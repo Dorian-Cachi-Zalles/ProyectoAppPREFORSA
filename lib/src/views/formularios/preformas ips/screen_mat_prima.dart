@@ -6,6 +6,7 @@ import 'package:proyecto/src/widgets/gradient_expandable_card.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:swipeable_tile/swipeable_tile.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
 class DatosMPIPS {
   final int? id;
@@ -182,9 +183,14 @@ class DatosMPIPSProvider with ChangeNotifier {
   }
 }
 
-class ScreenListDatosMPIPS extends StatelessWidget {
+class ScreenListDatosMPIPS extends StatefulWidget {
   const ScreenListDatosMPIPS({super.key});
 
+  @override
+  State<ScreenListDatosMPIPS> createState() => _ScreenListDatosMPIPSState();
+}
+
+class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<DatosMPIPSProvider>(context, listen: false);
@@ -201,6 +207,44 @@ class ScreenListDatosMPIPS extends StatelessWidget {
                 ),
               );
             }
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  '¿Se tiene una mezcla con colorante y aditivo?',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            );
+            const SizedBox(height: 20);
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ToggleSwitch(
+                  initialLabelIndex: 1,
+                  customWidths: const [90.0, 50.0],
+                  cornerRadius: 20.0,
+                  activeBgColors: const [
+                    [Colors.cyan],
+                    [Colors.redAccent]
+                  ],
+                  activeFgColor: Colors.white,
+                  inactiveBgColor: Colors.grey,
+                  inactiveFgColor: Colors.white,
+                  totalSwitches: 2,
+                  labels: const ['SI', ''],
+                  icons: const [null, Icons.close],
+                  onToggle: (index) {
+                    if (index == 0) {
+                      _showBottomSheet();
+                    }
+                  },
+                ),
+              ],
+            );
 
             return ListView.separated(
               itemCount: datosmpips.length,
@@ -336,6 +380,61 @@ class ScreenListDatosMPIPS extends StatelessWidget {
                 ),
               ),
             )));
+  }
+
+  void _showBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          height: 200, // Cambia la altura según necesites
+          decoration: const BoxDecoration(
+            color: Colors.blueAccent,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Contenedor deslizable',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Este contenedor se muestra y se oculta dependiendo del estado del switch.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Cerrar el BottomSheet
+                  },
+                  child: const Text('Cerrar'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ).then((_) {
+      setState(() {
+// Restablecer el estado de visibilidad del contenedor
+      });
+    });
   }
 }
 
