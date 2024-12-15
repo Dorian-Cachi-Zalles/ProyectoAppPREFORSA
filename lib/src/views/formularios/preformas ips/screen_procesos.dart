@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:proyecto/src/widgets/gradient_expandable_card.dart';
 import 'package:provider/provider.dart';
+import 'package:proyecto/src/widgets/titulospeq.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:swipeable_tile/swipeable_tile.dart';
 
@@ -173,89 +175,96 @@ class ScreenListDatosPROCEIPS extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = Provider.of<DatosPROCEIPSProvider>(context, listen: false);
     return Scaffold(
-        body: Consumer<DatosPROCEIPSProvider>(
-        builder: (context, provider, _) {
-          final datosproceips = provider.datosproceipsList;
-
-          if (datosproceips.isEmpty) {
-            return const Center(
-              child: Text(
-                'No hay registros aún.',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-            );
-          }
-
-          return ListView.separated(
-            itemCount: datosproceips.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
-            itemBuilder: (context, index) {
-              final dtdatosproceips = datosproceips[index];
-
-              return SwipeableTile.card(
-                horizontalPadding: 16,
-                verticalPadding: 10,
-                key: ValueKey(dtdatosproceips.id),
-                swipeThreshold: 0.5,
-                resizeDuration: const Duration(milliseconds: 300),
-                color: Colors.white,
-                shadow: const BoxShadow(
-                  color: Colors.transparent,
-                  blurRadius: 4,
-                  offset: Offset(2, 2),
-                ),
-                direction: SwipeDirection.endToStart,
-                onSwiped: (_) => provider.removeDatito(context, dtdatosproceips.id!),
-                backgroundBuilder: (context, direction, progress) {
-                  return Container(
-                    color: Colors.red,
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: const Icon(Icons.delete, color: Colors.white),
+        body: Column(
+          children: [
+            Titulospeq(titulo: 'REGISTRO DE PROCESOS',tipo: 1,),
+            Expanded(
+              child: Consumer<DatosPROCEIPSProvider>(
+              builder: (context, provider, _) {
+                final datosproceips = provider.datosproceipsList;
+              
+                if (datosproceips.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'No hay registros aún.',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
                   );
-                },
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EditDatosPROCEIPSForm(
-                          id: dtdatosproceips.id!,
-                          datosPROCEIPS: dtdatosproceips,
+                }
+              
+                return ListView.separated(
+                  itemCount: datosproceips.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  itemBuilder: (context, index) {
+                    final dtdatosproceips = datosproceips[index];
+              
+                    return SwipeableTile.card(
+                      horizontalPadding: 16,
+                      verticalPadding: 10,
+                      key: ValueKey(dtdatosproceips.id),
+                      swipeThreshold: 0.5,
+                      resizeDuration: const Duration(milliseconds: 300),
+                      color: Colors.white,
+                      shadow: const BoxShadow(
+                        color: Colors.transparent,
+                        blurRadius: 4,
+                        offset: Offset(2, 2),
+                      ),
+                      direction: SwipeDirection.endToStart,
+                      onSwiped: (_) => provider.removeDatito(context, dtdatosproceips.id!),
+                      backgroundBuilder: (context, direction, progress) {
+                        return Container(
+                          color: Colors.red,
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: const Icon(Icons.delete, color: Colors.white),
+                        );
+                      },
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditDatosPROCEIPSForm(
+                                id: dtdatosproceips.id!,
+                                datosPROCEIPS: dtdatosproceips,
+                              ),
+                            ),
+                          );
+                        },
+                        child: GradientExpandableCard(
+                          title: (index + 1).toString(),
+                          subtitle: 'Prueba',
+                          expandedContent: [
+                        ExpandableContent(label: 'Hora: ', stringValue: dtdatosproceips.Hora.toString()),
+                        ExpandableContent(label: 'PAProd: ', stringValue: dtdatosproceips.PAProd.toString()),
+                        ExpandableContent(label: 'TempTolvaSec: ', doubleListValue: dtdatosproceips.TempTolvaSec),
+                        ExpandableContent(label: 'TempProd: ', stringValue: dtdatosproceips.TempProd.toString()),
+                        ExpandableContent(label: 'Tciclo: ', stringValue: dtdatosproceips.Tciclo.toString()),
+                        ExpandableContent(label: 'Tenfri: ', stringValue: dtdatosproceips.Tenfri.toString()),
+                          ],
+                          hasErrors: dtdatosproceips.hasErrors,
+                          onOpenModal: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditDatosPROCEIPSForm(
+                                  id: dtdatosproceips.id!,
+                                  datosPROCEIPS: dtdatosproceips,
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     );
                   },
-                  child: GradientExpandableCard(
-                    title: (index + 1).toString(),
-                    subtitle: 'Prueba',
-                    expandedContent: [
-                  ExpandableContent(label: 'Hora: ', stringValue: dtdatosproceips.Hora.toString()),
-                  ExpandableContent(label: 'PAProd: ', stringValue: dtdatosproceips.PAProd.toString()),
-                  ExpandableContent(label: 'TempTolvaSec: ', doubleListValue: dtdatosproceips.TempTolvaSec),
-                  ExpandableContent(label: 'TempProd: ', stringValue: dtdatosproceips.TempProd.toString()),
-                  ExpandableContent(label: 'Tciclo: ', stringValue: dtdatosproceips.Tciclo.toString()),
-                  ExpandableContent(label: 'Tenfri: ', stringValue: dtdatosproceips.Tenfri.toString()),
-                    ],
-                    hasErrors: dtdatosproceips.hasErrors,
-                    onOpenModal: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditDatosPROCEIPSForm(
-                            id: dtdatosproceips.id!,
-                            datosPROCEIPS: dtdatosproceips,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
+                );
+              },
+                    ),
+            ),
+          ],
+        ),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -275,7 +284,7 @@ class ScreenListDatosPROCEIPS extends StatelessWidget {
           provider.addDatito(
             DatosPROCEIPS(
             hasErrors: true,
-              Hora: '',
+              Hora: DateFormat('HH:mm').format(DateTime.now()),
               PAProd: '',
               TempTolvaSec: [],
               TempProd: 0,

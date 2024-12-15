@@ -20,6 +20,7 @@ class ExpandableContent {
 
 class GradientExpandableCard extends StatefulWidget {
   final String title;
+  final String?title2;
   final String subtitle;
   final List<ExpandableContent> expandedContent;
   final VoidCallback onOpenModal;
@@ -28,6 +29,7 @@ class GradientExpandableCard extends StatefulWidget {
   const GradientExpandableCard({
     super.key,
     required this.title,
+    this.title2,
     required this.subtitle,
     required this.expandedContent,
     required this.onOpenModal,
@@ -113,13 +115,15 @@ class _GradientExpandableCardState extends State<GradientExpandableCard>
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                "Registro",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                              Text(
+                            (widget.title2 == null || widget.title2!.trim().isEmpty) ? 
+                            "Registro" : 
+                            widget.title2!,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                               Text(
                                 widget.subtitle,
                                 style: const TextStyle(

@@ -128,36 +128,39 @@ class _ScreenColoracapState extends State<ScreenColoracap> {
             ],
           ),
           drawer: SafeArea(
-            child: ListTileTheme(
-              textColor: Colors.white,
-              iconColor: Colors.white,
+  child: ListTileTheme(
+    textColor: Colors.white,
+    iconColor: Colors.white,
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Container(
+            width: 200,
+            height: 200,
+            margin: const EdgeInsets.only(
+              top: 24.0,
+              bottom: 64.0,
+            ),
+            clipBehavior: Clip.antiAlias,
+            decoration: const BoxDecoration(
+              color: Colors.black26,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.abc,
+              size: 80,
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
               child: Column(
-                mainAxisSize: MainAxisSize.max,
                 children: [
-                  Container(
-                    width: 200,
-                    height: 200,
-                    margin: const EdgeInsets.only(
-                      top: 24.0,
-                      bottom: 64.0,
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    decoration: const BoxDecoration(
-                      color: Colors.black26,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.abc,
-                      size: 80,
-                      weight: 80,
-                    ),
-                  ),
                   ListTile(
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomeScreen()),
+                        MaterialPageRoute(builder: (context) => const HomeScreen()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
@@ -167,8 +170,7 @@ class _ScreenColoracapState extends State<ScreenColoracap> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const ScreenColoracap()),
+                        MaterialPageRoute(builder: (context) => const ScreenColoracap()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
@@ -178,8 +180,7 @@ class _ScreenColoracapState extends State<ScreenColoracap> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const ScreenPreformasI5()),
+                        MaterialPageRoute(builder: (context) => const ScreenPreformasI5()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
@@ -189,8 +190,7 @@ class _ScreenColoracapState extends State<ScreenColoracap> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const ScreenCCM()),
+                        MaterialPageRoute(builder: (context) => const ScreenCCM()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
@@ -200,8 +200,7 @@ class _ScreenColoracapState extends State<ScreenColoracap> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const ScreenColoracap()),
+                        MaterialPageRoute(builder: (context) => const ScreenColoracap()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
@@ -211,8 +210,7 @@ class _ScreenColoracapState extends State<ScreenColoracap> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const ScreenYutzumi()),
+                        MaterialPageRoute(builder: (context) => const ScreenYutzumi()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
@@ -222,8 +220,7 @@ class _ScreenColoracapState extends State<ScreenColoracap> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const ScreenTapas6()),
+                        MaterialPageRoute(builder: (context) => const ScreenTapas6()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
@@ -233,30 +230,35 @@ class _ScreenColoracapState extends State<ScreenColoracap> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const ScreenSoplado()),
+                        MaterialPageRoute(builder: (context) => const ScreenSoplado()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
                     title: const Text('Soplado'),
                   ),
-                  const Spacer(),
-                  DefaultTextStyle(
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.white54,
-                    ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: const Text('Desarrollado por "  "'),
-                    ),
-                  ),
                 ],
               ),
             ),
           ),
+          const SizedBox(height: 16.0),
+          DefaultTextStyle(
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.white54,
+            ),
+            child: Container(
+              margin: const EdgeInsets.symmetric(
+                vertical: 16.0,
+              ),
+              child: const Text('Desarrollado por "  "'),
+            ),
+          ),
+        ],
+      ),
+    ),
+  ),
+),
+
           body: PersistentTabView(
             context,
             controller: _controller,

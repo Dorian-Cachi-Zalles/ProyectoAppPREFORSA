@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:proyecto/src/models/settings_model.dart';
 import 'package:proyecto/src/views/formularios/ccm.dart';
 import 'package:proyecto/src/views/formularios/coloracap.dart';
+import 'package:proyecto/src/views/formularios/preformas_i5.dart';
 import 'package:proyecto/src/views/formularios/soplado.dart';
 import 'package:proyecto/src/views/formularios/tapas6.dart';
 import 'package:proyecto/src/views/formularios/yutzumi.dart';
@@ -100,7 +101,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
                 ? Colors.black
                 : const Color.fromARGB(255, 255, 255, 255),
             title: Text(
-              "Preformas IPS",
+              "PREFORMAS IPS",
               style: TextStyle(
                   color: settingsModel.isDarkMode ? Colors.white : Colors.black,
                   fontWeight: FontWeight.bold),
@@ -128,69 +129,70 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
             ],
           ),
           drawer: SafeArea(
-            child: ListTileTheme(
-              textColor: Colors.white,
-              iconColor: Colors.white,
+  child: ListTileTheme(
+    textColor: Colors.white,
+    iconColor: Colors.white,
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Container(
+            width: 200,
+            height: 200,
+            margin: const EdgeInsets.only(
+              top: 24.0,
+              bottom: 64.0,
+            ),
+            clipBehavior: Clip.antiAlias,
+            decoration: const BoxDecoration(
+              color: Colors.black26,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.abc,
+              size: 80,
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
               child: Column(
-                mainAxisSize: MainAxisSize.max,
                 children: [
-                  Container(
-                    width: 200,
-                    height: 200,
-                    margin: const EdgeInsets.only(
-                      top: 24.0,
-                      bottom: 64.0,
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    decoration: const BoxDecoration(
-                      color: Colors.black26,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.abc,
-                      size: 80,
-                      weight: 80,
-                    ),
-                  ),
                   ListTile(
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomeScreen()),
+                        MaterialPageRoute(builder: (context) => const HomeScreen()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
-                    title: const Text('Inicio'),
+                    title: const Text('INICIO'),
                   ),
                   ListTile(
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const ScreenPreformasIPS()),
+                        MaterialPageRoute(builder: (context) => const ScreenColoracap()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
-                    title: const Text('Preformas IPS-400'),
+                    title: const Text('PREFORMAS IPS-400'),
+                    textColor: Colors.blueAccent,
                   ),
                   ListTile(
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const ScreenPreformasIPS()),
+                        MaterialPageRoute(builder: (context) => const ScreenPreformasI5()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
-                    title: const Text('Preformas I5'),
+                    title: const Text('PREFORMAS I5'),
                   ),
                   ListTile(
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const ScreenCCM()),
+                        MaterialPageRoute(builder: (context) => const ScreenCCM()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
@@ -200,63 +202,64 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const ScreenColoracap()),
+                        MaterialPageRoute(builder: (context) => const ScreenColoracap()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
-                    title: const Text('Coloracap'),
+                    title: const Text('COLORACAP'),
                   ),
                   ListTile(
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const ScreenYutzumi()),
+                        MaterialPageRoute(builder: (context) => const ScreenYutzumi()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
-                    title: const Text('Yutzumi'),
+                    title: const Text('YUTZUMI'),
                   ),
                   ListTile(
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const ScreenTapas6()),
+                        MaterialPageRoute(builder: (context) => const ScreenTapas6()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
-                    title: const Text('Tapas 6'),
+                    title: const Text('IT 2 HX-258'),
                   ),
                   ListTile(
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const ScreenSoplado()),
+                        MaterialPageRoute(builder: (context) => const ScreenSoplado()),
                       );
                     },
                     leading: const Icon(Icons.sports_handball),
-                    title: const Text('Soplado'),
-                  ),
-                  const Spacer(),
-                  DefaultTextStyle(
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.white54,
-                    ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: const Text('Desarrollado por "  "'),
-                    ),
+                    title: const Text('SOPLADO'),
                   ),
                 ],
               ),
             ),
           ),
+          const SizedBox(height: 16.0),
+          DefaultTextStyle(
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.white54,
+            ),
+            child: Container(
+              margin: const EdgeInsets.symmetric(
+                vertical: 16.0,
+              ),
+              child: const Text('Desarrollado por "  "'),
+            ),
+          ),
+        ],
+      ),
+    ),
+  ),
+),
           body: PersistentTabView(
             context,
             controller: _controller,
