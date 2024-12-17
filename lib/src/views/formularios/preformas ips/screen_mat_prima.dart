@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:proyecto/src/widgets/titulospeq.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:swipeable_tile/swipeable_tile.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
 class DatosMPIPS {
   final int? id;
@@ -183,121 +184,121 @@ class DatosMPIPSProvider with ChangeNotifier {
   }
 }
 
-class ScreenListDatosMPIPS extends StatelessWidget {
+class ScreenListDatosMPIPS extends StatefulWidget {
   const ScreenListDatosMPIPS({super.key});
 
+  @override
+  State<ScreenListDatosMPIPS> createState() => _ScreenListDatosMPIPSState();
+}
+
+class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<DatosMPIPSProvider>(context, listen: false);
     return Scaffold(
-        body: Column(
-          children: [
-           // AQUI BOTON 
-            const Titulospeq(titulo: 'REGISTRO MATERIA PRIMA',tipo: 1,),
-            Expanded(
-              child: Consumer<DatosMPIPSProvider>(
-                builder: (context, provider, _) {
-                  final datosmpips = provider.datosmpipsList;              
-                  if (datosmpips.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'No hay registros aun.',
-                        style: TextStyle(fontSize: 18, color: Colors.grey),
-                      ),
+        body: Consumer<DatosMPIPSProvider>(
+          builder: (context, provider, _) {
+            final datosmpips = provider.datosmpipsList;
+
+            if (datosmpips.isEmpty) {
+              return const Center(
+                child: Text(
+                  'No hay registros aun.',
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                ),
+              );
+            }
+
+            return ListView.separated(
+              itemCount: datosmpips.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              itemBuilder: (context, index) {
+                final dtdatosmpips = datosmpips[index];
+
+                return SwipeableTile.card(
+                  horizontalPadding: 16,
+                  verticalPadding: 10,
+                  key: ValueKey(dtdatosmpips.id),
+                  swipeThreshold: 0.5,
+                  resizeDuration: const Duration(milliseconds: 300),
+                  color: Colors.white,
+                  shadow: const BoxShadow(
+                    color: Colors.transparent,
+                    blurRadius: 4,
+                    offset: Offset(2, 2),
+                  ),
+                  direction: SwipeDirection.endToStart,
+                  onSwiped: (_) =>
+                      provider.removeDatito(context, dtdatosmpips.id!),
+                  backgroundBuilder: (context, direction, progress) {
+                    return Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: const Icon(Icons.delete, color: Colors.white),
                     );
-                  }
-              
-                  return ListView.separated(
-                    itemCount: datosmpips.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 8),
-                    itemBuilder: (context, index) {
-                      final dtdatosmpips = datosmpips[index];
-              
-                      return SwipeableTile.card(
-                        horizontalPadding: 16,
-                        verticalPadding: 10,
-                        key: ValueKey(dtdatosmpips.id),
-                        swipeThreshold: 0.5,
-                        resizeDuration: const Duration(milliseconds: 300),
-                        color: Colors.white,
-                        shadow: const BoxShadow(
-                          color: Colors.transparent,
-                          blurRadius: 4,
-                          offset: Offset(2, 2),
-                        ),
-                        direction: SwipeDirection.endToStart,
-                        onSwiped: (_) =>
-                            provider.removeDatito(context, dtdatosmpips.id!),
-                        backgroundBuilder: (context, direction, progress) {
-                          return Container(
-                            color: Colors.red,
-                            alignment: Alignment.centerRight,
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: const Icon(Icons.delete, color: Colors.white),
-                          );
-                        },
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EditDatosMPIPSForm(
-                                  id: dtdatosmpips.id!,
-                                  datosMPIPS: dtdatosmpips,
-                                ),
-                              ),
-                            );
-                          },
-                          child: GradientExpandableCard(
-                            title: (index + 1).toString(),
-                            title2: 'Materia Prima',
-                            subtitle: dtdatosmpips.MateriaPrima,
-                            expandedContent: [
-                              ExpandableContent(
-                                  label: 'INTF: ',
-                                  stringValue: dtdatosmpips.INTF.toString()),
-                              ExpandableContent(
-                                  label: 'CantidadEmpaque: ',
-                                  stringValue:
-                                      dtdatosmpips.CantidadEmpaque.toString()),
-                              ExpandableContent(
-                                  label: 'Identif: ',
-                                  stringValue: dtdatosmpips.Identif.toString()),
-                              ExpandableContent(
-                                  label: 'CantidadBolsones: ',
-                                  stringValue:
-                                      dtdatosmpips.CantidadBolsones.toString()),
-                              ExpandableContent(
-                                  label: 'Dosificacion: ',
-                                  stringValue: dtdatosmpips.Dosificacion.toString()),
-                              ExpandableContent(
-                                  label: 'Humedad: ',
-                                  stringValue: dtdatosmpips.Humedad.toString()),
-                              ExpandableContent(
-                                  label: 'Conformidad: ',
-                                  boolValue: dtdatosmpips.Conformidad),
-                            ],
-                            hasErrors: dtdatosmpips.hasErrors,
-                            onOpenModal: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditDatosMPIPSForm(
-                                    id: dtdatosmpips.id!,
-                                    datosMPIPS: dtdatosmpips,
-                                  ),
-                                ),
-                              );
-                            },
+                  },
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditDatosMPIPSForm(
+                            id: dtdatosmpips.id!,
+                            datosMPIPS: dtdatosmpips,
                           ),
                         ),
                       );
                     },
-                  );
-                },
-              ),
-            ),
-          ],
+                    child: GradientExpandableCard(
+                      title: (index + 1).toString(),
+                      subtitle: 'Prueba',
+                      expandedContent: [
+                        ExpandableContent(
+                            label: 'MateriaPrima: ',
+                            stringValue: dtdatosmpips.MateriaPrima.toString()),
+                        ExpandableContent(
+                            label: 'INTF: ',
+                            stringValue: dtdatosmpips.INTF.toString()),
+                        ExpandableContent(
+                            label: 'CantidadEmpaque: ',
+                            stringValue:
+                                dtdatosmpips.CantidadEmpaque.toString()),
+                        ExpandableContent(
+                            label: 'Identif: ',
+                            stringValue: dtdatosmpips.Identif.toString()),
+                        ExpandableContent(
+                            label: 'CantidadBolsones: ',
+                            stringValue:
+                                dtdatosmpips.CantidadBolsones.toString()),
+                        ExpandableContent(
+                            label: 'Dosificacion: ',
+                            stringValue: dtdatosmpips.Dosificacion.toString()),
+                        ExpandableContent(
+                            label: 'Humedad: ',
+                            stringValue: dtdatosmpips.Humedad.toString()),
+                        ExpandableContent(
+                            label: 'Conformidad: ',
+                            boolValue: dtdatosmpips.Conformidad),
+                      ],
+                      hasErrors: dtdatosmpips.hasErrors,
+                      onOpenModal: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditDatosMPIPSForm(
+                              id: dtdatosmpips.id!,
+                              datosMPIPS: dtdatosmpips,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+              },
+            );
+          },
         ),
         bottomNavigationBar: Padding(
             padding: EdgeInsets.only(
@@ -342,6 +343,61 @@ class ScreenListDatosMPIPS extends StatelessWidget {
                 ),
               ),
             )));
+  }
+
+  void _showBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          height: 200, // Cambia la altura según necesites
+          decoration: const BoxDecoration(
+            color: Colors.blueAccent,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Contenedor deslizable',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Este contenedor se muestra y se oculta dependiendo del estado del switch.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Cerrar el BottomSheet
+                  },
+                  child: const Text('Cerrar'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ).then((_) {
+      setState(() {
+// Restablecer el estado de visibilidad del contenedor
+      });
+    });
   }
 }
 

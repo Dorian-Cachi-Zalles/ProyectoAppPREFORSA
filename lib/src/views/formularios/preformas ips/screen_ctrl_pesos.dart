@@ -617,6 +617,7 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
             initialValue: ProviderPesoPromedio().pesoPromedio.toString(),
             onChanged: (value) {
               final field = _formKey.currentState?.fields['PesoNeto'];
+              ProviderPesoPromedio().pesoPromedio.toString();
               field?.validate(); // Valida solo este campo
               field?.save();
               _updatePesoTotal();
