@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:feature_discovery/feature_discovery.dart'; // Importar FeatureDiscovery
 import 'package:proyecto/src/models/settings_model.dart';
 import 'package:proyecto/src/providers/preformas_ips_provider/formulario_principal.dart';
 import 'package:proyecto/src/views/formularios/home_screen.dart';
@@ -24,9 +25,9 @@ class AppThemes {
       bodySmall: TextStyle(color: Colors.black),
     ),
     checkboxTheme: CheckboxThemeData(
-      checkColor: WidgetStateProperty.all(Colors.white),
-      fillColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) {
+      checkColor: MaterialStateProperty.all(Colors.white),
+      fillColor: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.selected)) {
           return Colors.blue;
         }
         return Colors.transparent;
@@ -53,9 +54,9 @@ class AppThemes {
       bodySmall: TextStyle(color: Colors.black),
     ),
     checkboxTheme: CheckboxThemeData(
-      checkColor: WidgetStateProperty.all(Colors.white),
-      fillColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) {
+      checkColor: MaterialStateProperty.all(Colors.white),
+      fillColor: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.selected)) {
           return Colors.blueGrey;
         }
         return Colors.transparent;
@@ -66,11 +67,14 @@ class AppThemes {
 
 void main() {
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ProviderPesoPromedio()),
-      ],
-      child: const MyApp(),
+    FeatureDiscovery(
+      // Asegurarse de que FeatureDiscovery envuelva toda la aplicación
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => ProviderPesoPromedio()),
+        ],
+        child: const MyApp(),
+      ),
     ),
   );
 }
