@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -163,6 +165,7 @@ class DatosMPIPSProvider with ChangeNotifier {
       _datosmpipsList.removeAt(index);
       notifyListeners();
 
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Registro eliminado'),
@@ -195,175 +198,187 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
         builder: (context, provider, _) {
           final datosmpips = provider.datosmpipsList;
 
-          if (datosmpips.isEmpty) {
-            return const Center(
-              child: Text(
-                'No hay registros aún.',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
+            if (datosmpips.isEmpty) {
+              return const Center(
+                child: Text(
+                  'No hay registros aun.',
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                ),
+              );
+            }
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  '¿Se tiene una mezcla con colorante y aditivo?',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             );
-          }
+            const SizedBox(height: 20);
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ToggleSwitch(
+                  initialLabelIndex: 1,
+                  customWidths: const [90.0, 50.0],
+                  cornerRadius: 20.0,
+                  activeBgColors: const [
+                    [Colors.cyan],
+                    [Colors.redAccent]
+                  ],
+                  activeFgColor: Colors.white,
+                  inactiveBgColor: Colors.grey,
+                  inactiveFgColor: Colors.white,
+                  totalSwitches: 2,
+                  labels: const ['SI', ''],
+                  icons: const [null, Icons.close],
+                  onToggle: (index) {
+                    if (index == 0) {
+                      _showBottomSheet();
+                    }
+                  },
+                ),
+              ],
+            );
 
-          return ListView.separated(
-            itemCount: datosmpips.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
-            itemBuilder: (context, index) {
-              final dtdatosmpips = datosmpips[index];
+            return ListView.separated(
+              itemCount: datosmpips.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              itemBuilder: (context, index) {
+                final dtdatosmpips = datosmpips[index];
 
-              return Column(
-                children: [
-                  Column(
-                  children: [
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          '¿Se tiene una mezcla con colorante y aditivo?',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                return SwipeableTile.card(
+                  horizontalPadding: 16,
+                  verticalPadding: 10,
+                  key: ValueKey(dtdatosmpips.id),
+                  swipeThreshold: 0.5,
+                  resizeDuration: const Duration(milliseconds: 300),
+                  color: Colors.white,
+                  shadow: const BoxShadow(
+                    color: Colors.transparent,
+                    blurRadius: 4,
+                    offset: Offset(2, 2),
+                  ),
+                  direction: SwipeDirection.endToStart,
+                  onSwiped: (_) =>
+                      provider.removeDatito(context, dtdatosmpips.id!),
+                  backgroundBuilder: (context, direction, progress) {
+                    return Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: const Icon(Icons.delete, color: Colors.white),
+                    );
+                  },
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditDatosMPIPSForm(
+                            id: dtdatosmpips.id!,
+                            datosMPIPS: dtdatosmpips,
                           ),
                         ),
+                      );
+                    },
+                    child: GradientExpandableCard(
+                      title: (index + 1).toString(),
+                      subtitle: 'Prueba',
+                      expandedContent: [
+                        ExpandableContent(
+                            label: 'MateriaPrima: ',
+                            stringValue: dtdatosmpips.MateriaPrima.toString()),
+                        ExpandableContent(
+                            label: 'INTF: ',
+                            stringValue: dtdatosmpips.INTF.toString()),
+                        ExpandableContent(
+                            label: 'CantidadEmpaque: ',
+                            stringValue:
+                                dtdatosmpips.CantidadEmpaque.toString()),
+                        ExpandableContent(
+                            label: 'Identif: ',
+                            stringValue: dtdatosmpips.Identif.toString()),
+                        ExpandableContent(
+                            label: 'CantidadBolsones: ',
+                            stringValue:
+                                dtdatosmpips.CantidadBolsones.toString()),
+                        ExpandableContent(
+                            label: 'Dosificacion: ',
+                            stringValue: dtdatosmpips.Dosificacion.toString()),
+                        ExpandableContent(
+                            label: 'Humedad: ',
+                            stringValue: dtdatosmpips.Humedad.toString()),
+                        ExpandableContent(
+                            label: 'Conformidad: ',
+                            boolValue: dtdatosmpips.Conformidad),
                       ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ToggleSwitch(
-                          initialLabelIndex: 1,
-                          customWidths: const [90.0, 50.0],
-                          cornerRadius: 20.0,
-                          activeBgColors: const [
-                            [Colors.cyan],
-                            [Colors.redAccent]
-                          ],
-                          activeFgColor: Colors.white,
-                          inactiveBgColor: Colors.grey,
-                          inactiveFgColor: Colors.white,
-                          totalSwitches: 2,
-                          labels: const ['SI', ''],
-                          icons: const [null, Icons.close],
-                          onToggle: (index) {
-                            if (index == 0) {
-                              _showBottomSheet();
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  ],),
-                  Expanded(
-                    child: SwipeableTile.card(
-                      horizontalPadding: 16,
-                      verticalPadding: 10,
-                      key: ValueKey(dtdatosmpips.id),
-                      swipeThreshold: 0.5,
-                      resizeDuration: const Duration(milliseconds: 300),
-                      color: Colors.white,
-                      shadow: const BoxShadow(
-                        color: Colors.transparent,
-                        blurRadius: 4,
-                        offset: Offset(2, 2),
-                      ),
-                      direction: SwipeDirection.endToStart,
-                      onSwiped: (_) => provider.removeDatito(context, dtdatosmpips.id!),
-                      backgroundBuilder: (context, direction, progress) {
-                        return Container(
-                          color: Colors.red,
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: const Icon(Icons.delete, color: Colors.white),
+                      hasErrors: dtdatosmpips.hasErrors,
+                      onOpenModal: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditDatosMPIPSForm(
+                              id: dtdatosmpips.id!,
+                              datosMPIPS: dtdatosmpips,
+                            ),
+                          ),
                         );
                       },
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => EditDatosMPIPSForm(
-                                id: dtdatosmpips.id!,
-                                datosMPIPS: dtdatosmpips,
-                              ),
-                            ),
-                          );
-                        },
-                        child: GradientExpandableCard(
-                          title: (index + 1).toString(),
-                          subtitle: 'Prueba',
-                          expandedContent: [
-                        ExpandableContent(label: 'MateriPrima: ', stringValue: dtdatosmpips.MateriPrima.toString()),
-                        ExpandableContent(label: 'INTF: ', stringValue: dtdatosmpips.INTF.toString()),
-                        ExpandableContent(label: 'CantidadEmpaque: ', stringValue: dtdatosmpips.CantidadEmpaque.toString()),
-                        ExpandableContent(label: 'Identif: ', stringValue: dtdatosmpips.Identif.toString()),
-                        ExpandableContent(label: 'CantidadBolsones: ', stringValue: dtdatosmpips.CantidadBolsones.toString()),
-                        ExpandableContent(label: 'Dosificacion: ', stringValue: dtdatosmpips.Dosificacion.toString()),
-                        ExpandableContent(label: 'Humedad: ', stringValue: dtdatosmpips.Humedad.toString()),
-                        ExpandableContent(label: 'Conformidad: ', boolValue: dtdatosmpips.Conformidad),
-                          ],
-                          hasErrors: dtdatosmpips.hasErrors,
-                          onOpenModal: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EditDatosMPIPSForm(
-                                  id: dtdatosmpips.id!,
-                                  datosMPIPS: dtdatosmpips,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
                     ),
                   ),
-                ],
-              );
-            },
-          );
-        },
-      ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
+                );
+              },
+            );
+          },
         ),
-        child: SizedBox(
-          height: 53,
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blueAccent.withOpacity(0.8),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(8),topRight: Radius.circular(8)),
+        bottomNavigationBar: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: SizedBox(
+              height: 53,
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent.withOpacity(0.8),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(8),
+                        topRight: Radius.circular(8)),
+                  ),
+                ),
+                onPressed: () {
+                  provider.addDatito(
+                    const DatosMPIPS(
+                      hasErrors: true,
+                      MateriaPrima: '',
+                      INTF: '',
+                      CantidadEmpaque: '',
+                      Identif: '',
+                      CantidadBolsones: 1,
+                      Dosificacion: 0,
+                      Humedad: 0,
+                      Conformidad: true,
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.add, color: Colors.black),
+                label: const Text(
+                  'AGREGAR UN REGISTRO',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
               ),
-            ),
-            onPressed: ()  {
-          provider.addDatito(
-            DatosMPIPS(
-            hasErrors: true,
-              MateriPrima: '',
-              INTF: '',
-              CantidadEmpaque: '',
-              Identif: '',
-              CantidadBolsones: 0,
-              Dosificacion: 0,
-              Humedad: 0,
-              Conformidad: true,
-            ),
-          );
-        },
-        icon: const Icon(Icons.add, color: Colors.black),
-            label: const Text(
-              'AGREGAR UN REGISTRO',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-      ),
-    )));
+            )));
   }
 
   void _showBottomSheet() {
@@ -434,7 +449,7 @@ class EditDatosMPIPSForm extends StatefulWidget {
       : super(key: key);
 
   @override
-  _EditDatosMPIPSFormState createState() => _EditDatosMPIPSFormState();
+  createState() => _EditDatosMPIPSFormState();
 }
 
 class _EditDatosMPIPSFormState extends State<EditDatosMPIPSForm> {
@@ -538,7 +553,7 @@ class FormularioGeneralDatosMPIPS extends StatelessWidget {
   }) : _formKey = formKey;
 
   final GlobalKey<FormBuilderState> _formKey;
-  final  widget;
+  final widget;
   final Map<String, List<dynamic>> dropOptions;
 
   @override
