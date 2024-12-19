@@ -31,7 +31,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
   List<Widget> _buildScreens() {
     return [
       const ScreenDatos(),
-      const ScreenListDatosMPIPS(),
+      ScreenListDatosMPIPS(),
       const ScreenListDatosDEFIPS(),
       ScreenListDatosPESOSIPS(),
       ScreenListDatosPROCEIPS(),

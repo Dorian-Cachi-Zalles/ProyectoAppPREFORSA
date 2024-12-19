@@ -30,7 +30,7 @@ class _ScreenColoracapState extends State<ScreenColoracap> {
   List<Widget> _buildScreens() {
     return [
       const ScreenDatos(),
-      const ScreenListDatosMPIPS(),
+      
       const ScreenListDatosDEFIPS(),
       ScreenListDatosPESOSIPS(),
       ScreenListDatosPROCEIPS(),

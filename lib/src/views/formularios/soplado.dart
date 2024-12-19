@@ -30,7 +30,7 @@ class _ScreenSopladoState extends State<ScreenSoplado> {
   List<Widget> _buildScreens() {
     return [
       const ScreenDatos(),
-      const ScreenListDatosMPIPS(),
+      ScreenListDatosMPIPS(),
       const ScreenListDatosDEFIPS(),
       ScreenListDatosPESOSIPS(),
       ScreenListDatosPROCEIPS(),

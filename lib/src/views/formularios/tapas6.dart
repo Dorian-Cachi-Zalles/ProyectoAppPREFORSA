@@ -29,7 +29,7 @@ class _ScreenTapas6State extends State<ScreenTapas6> {
   List<Widget> _buildScreens() {
     return [
       const ScreenDatos(),
-      const ScreenListDatosMPIPS(),
+      ScreenListDatosMPIPS(),
       const ScreenListDatosDEFIPS(),
       ScreenListDatosPESOSIPS(),
       ScreenListDatosPROCEIPS(),
