@@ -194,147 +194,155 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
   Widget build(BuildContext context) {
     final provider = Provider.of<DatosMPIPSProvider>(context, listen: false);
     return Scaffold(
-        body: Consumer<DatosMPIPSProvider>(
-        builder: (context, provider, _) {
-          final datosmpips = provider.datosmpipsList;
-
-            if (datosmpips.isEmpty) {
-              return const Center(
-                child: Text(
-                  'No hay registros aun.',
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
-                ),
-              );
-            }
+        body: Column(
+          children: [
             const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  '¿Se tiene una mezcla con colorante y aditivo?',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            );
-            const SizedBox(height: 20);
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ToggleSwitch(
-                  initialLabelIndex: 1,
-                  customWidths: const [90.0, 50.0],
-                  cornerRadius: 20.0,
-                  activeBgColors: const [
-                    [Colors.cyan],
-                    [Colors.redAccent]
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      '¿Se tiene una mezcla con colorante y aditivo?',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
-                  activeFgColor: Colors.white,
-                  inactiveBgColor: Colors.grey,
-                  inactiveFgColor: Colors.white,
-                  totalSwitches: 2,
-                  labels: const ['SI', ''],
-                  icons: const [null, Icons.close],
-                  onToggle: (index) {
-                    if (index == 0) {
-                      _showBottomSheet();
-                    }
-                  },
                 ),
-              ],
-            );
-
-            return ListView.separated(
-              itemCount: datosmpips.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
-              itemBuilder: (context, index) {
-                final dtdatosmpips = datosmpips[index];
-
-                return SwipeableTile.card(
-                  horizontalPadding: 16,
-                  verticalPadding: 10,
-                  key: ValueKey(dtdatosmpips.id),
-                  swipeThreshold: 0.5,
-                  resizeDuration: const Duration(milliseconds: 300),
-                  color: Colors.white,
-                  shadow: const BoxShadow(
-                    color: Colors.transparent,
-                    blurRadius: 4,
-                    offset: Offset(2, 2),
-                  ),
-                  direction: SwipeDirection.endToStart,
-                  onSwiped: (_) =>
-                      provider.removeDatito(context, dtdatosmpips.id!),
-                  backgroundBuilder: (context, direction, progress) {
-                    return Container(
-                      color: Colors.red,
-                      alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: const Icon(Icons.delete, color: Colors.white),
-                    );
-                  },
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditDatosMPIPSForm(
-                            id: dtdatosmpips.id!,
-                            datosMPIPS: dtdatosmpips,
-                          ),
-                        ),
-                      );
-                    },
-                    child: GradientExpandableCard(
-                      title: (index + 1).toString(),
-                      subtitle: 'Prueba',
-                      expandedContent: [
-                        ExpandableContent(
-                            label: 'MateriaPrima: ',
-                            stringValue: dtdatosmpips.MateriaPrima.toString()),
-                        ExpandableContent(
-                            label: 'INTF: ',
-                            stringValue: dtdatosmpips.INTF.toString()),
-                        ExpandableContent(
-                            label: 'CantidadEmpaque: ',
-                            stringValue:
-                                dtdatosmpips.CantidadEmpaque.toString()),
-                        ExpandableContent(
-                            label: 'Identif: ',
-                            stringValue: dtdatosmpips.Identif.toString()),
-                        ExpandableContent(
-                            label: 'CantidadBolsones: ',
-                            stringValue:
-                                dtdatosmpips.CantidadBolsones.toString()),
-                        ExpandableContent(
-                            label: 'Dosificacion: ',
-                            stringValue: dtdatosmpips.Dosificacion.toString()),
-                        ExpandableContent(
-                            label: 'Humedad: ',
-                            stringValue: dtdatosmpips.Humedad.toString()),
-                        ExpandableContent(
-                            label: 'Conformidad: ',
-                            boolValue: dtdatosmpips.Conformidad),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ToggleSwitch(
+                      initialLabelIndex: 1,
+                      customWidths: const [90.0, 50.0],
+                      cornerRadius: 20.0,
+                      activeBgColors: const [
+                        [Colors.cyan],
+                        [Colors.redAccent]
                       ],
-                      hasErrors: dtdatosmpips.hasErrors,
-                      onOpenModal: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EditDatosMPIPSForm(
-                              id: dtdatosmpips.id!,
-                              datosMPIPS: dtdatosmpips,
+                      activeFgColor: Colors.white,
+                      inactiveBgColor: Colors.grey,
+                      inactiveFgColor: Colors.white,
+                      totalSwitches: 2,
+                      labels: const ['SI', ''],
+                      icons: const [null, Icons.close],
+                      onToggle: (index) {
+                        if (index == 0) {
+                          _showBottomSheet();
+                        }
+                      },
+                    ),
+                  ],
+                ),
+            Expanded(
+              child: Consumer<DatosMPIPSProvider>(
+              builder: (context, provider, _) {
+                final datosmpips = provider.datosmpipsList;
+              
+                  if (datosmpips.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'No hay registros aun.',
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                      ),
+                    );
+                  }               
+              
+                  return Expanded(
+                    child: ListView.separated(
+                      itemCount: datosmpips.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 8),
+                      itemBuilder: (context, index) {
+                        final dtdatosmpips = datosmpips[index];
+                    
+                        return SwipeableTile.card(
+                          horizontalPadding: 16,
+                          verticalPadding: 10,
+                          key: ValueKey(dtdatosmpips.id),
+                          swipeThreshold: 0.5,
+                          resizeDuration: const Duration(milliseconds: 300),
+                          color: Colors.white,
+                          shadow: const BoxShadow(
+                            color: Colors.transparent,
+                            blurRadius: 4,
+                            offset: Offset(2, 2),
+                          ),
+                          direction: SwipeDirection.endToStart,
+                          onSwiped: (_) =>
+                              provider.removeDatito(context, dtdatosmpips.id!),
+                          backgroundBuilder: (context, direction, progress) {
+                            return Container(
+                              color: Colors.red,
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              child: const Icon(Icons.delete, color: Colors.white),
+                            );
+                          },
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditDatosMPIPSForm(
+                                    id: dtdatosmpips.id!,
+                                    datosMPIPS: dtdatosmpips,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: GradientExpandableCard(
+                              title: (index + 1).toString(),
+                              subtitle: 'Prueba',
+                              expandedContent: [
+                                ExpandableContent(
+                                    label: 'MateriaPrima: ',
+                                    stringValue: dtdatosmpips.MateriPrima.toString()),
+                                ExpandableContent(
+                                    label: 'INTF: ',
+                                    stringValue: dtdatosmpips.INTF.toString()),
+                                ExpandableContent(
+                                    label: 'CantidadEmpaque: ',
+                                    stringValue:
+                                        dtdatosmpips.CantidadEmpaque.toString()),
+                                ExpandableContent(
+                                    label: 'Identif: ',
+                                    stringValue: dtdatosmpips.Identif.toString()),
+                                ExpandableContent(
+                                    label: 'CantidadBolsones: ',
+                                    stringValue:
+                                        dtdatosmpips.CantidadBolsones.toString()),
+                                ExpandableContent(
+                                    label: 'Dosificacion: ',
+                                    stringValue: dtdatosmpips.Dosificacion.toString()),
+                                ExpandableContent(
+                                    label: 'Humedad: ',
+                                    stringValue: dtdatosmpips.Humedad.toString()),
+                                ExpandableContent(
+                                    label: 'Conformidad: ',
+                                    boolValue: dtdatosmpips.Conformidad),
+                              ],
+                              hasErrors: dtdatosmpips.hasErrors,
+                              onOpenModal: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditDatosMPIPSForm(
+                                      id: dtdatosmpips.id!,
+                                      datosMPIPS: dtdatosmpips,
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         );
                       },
                     ),
-                  ),
-                );
-              },
-            );
-          },
+                  );
+                },
+              ),
+            ),
+          ],
         ),
         bottomNavigationBar: Padding(
             padding: EdgeInsets.only(
@@ -357,7 +365,7 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
                   provider.addDatito(
                     const DatosMPIPS(
                       hasErrors: true,
-                      MateriaPrima: '',
+                      MateriPrima: '',
                       INTF: '',
                       CantidadEmpaque: '',
                       Identif: '',
