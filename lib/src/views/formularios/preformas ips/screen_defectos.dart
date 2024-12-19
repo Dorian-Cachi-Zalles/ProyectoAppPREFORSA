@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -16,7 +15,8 @@ class DatosDEFIPS {
   final int? id;
   final bool hasErrors;
   final String Hora;
-  final Map<String,String> Defectos;
+  final List<String> Defectos;
+  final List<String> Criticidad;
   final String SeccionDefecto;
   final int DefectosEncontrados;
   final String Fase;
@@ -35,6 +35,7 @@ class DatosDEFIPS {
       required this.hasErrors,
       required this.Hora,
       required this.Defectos,
+      required this.Criticidad,
       required this.SeccionDefecto,
       required this.DefectosEncontrados,
       required this.Fase,
@@ -47,13 +48,14 @@ class DatosDEFIPS {
       required this.CanidadProductoCorregido,
       this.Observaciones});
 
-  // Factory para crear una instancia desde un Map
+       // Factory para crear una instancia desde un Map
   factory DatosDEFIPS.fromMap(Map<String, dynamic> map) {
     return DatosDEFIPS(
         id: map['id'] as int?,
         hasErrors: map['hasErrors'] == 1,
-        Hora: map['Hora'] as String,
-        Defectos: Map<String, String>.from(jsonDecode(map['Defectos'])),
+        Hora: map['Hora'] as String,        
+        Defectos: (map['Defectos'] as String?)?.split(',').where((item) => item.isNotEmpty).toList() ?? [],
+        Criticidad: (map['Criticidad'] as String?)?.split(',').where((item) => item.isNotEmpty).toList() ?? [],
         SeccionDefecto: map['SeccionDefecto'] as String,
         DefectosEncontrados: map['DefectosEncontrados'] as int,
         Fase: map['Fase'] as String,
@@ -73,7 +75,8 @@ class DatosDEFIPS {
       if (id != null) 'id': id,
       'hasErrors': hasErrors ? 1 : 0,
       'Hora': Hora,
-      'Defectos': jsonEncode(Defectos),
+      'Defectos': Defectos.join(','),
+      'Criticidad': Criticidad.join(','),
       'SeccionDefecto': SeccionDefecto,
       'DefectosEncontrados': DefectosEncontrados,
       'Fase': Fase,
@@ -93,7 +96,8 @@ class DatosDEFIPS {
       {int? id,
       bool? hasErrors,
       String? Hora,
-      Map<String,String>?Defectos,
+      List<String>?Defectos,
+      List<String>?Criticidad,
       String? SeccionDefecto,
       int? DefectosEncontrados,
       String? Fase,
@@ -110,6 +114,7 @@ class DatosDEFIPS {
         hasErrors: hasErrors ?? this.hasErrors,
         Hora: Hora ?? this.Hora,
         Defectos: Defectos ?? this.Defectos,
+        Criticidad: Criticidad?? this.Criticidad,
         SeccionDefecto: SeccionDefecto ?? this.SeccionDefecto,
         DefectosEncontrados: DefectosEncontrados ?? this.DefectosEncontrados,
         Fase: Fase ?? this.Fase,
@@ -153,6 +158,7 @@ class DatosDEFIPSProvider with ChangeNotifier {
         hasErrors INTEGER NOT NULL,
         Hora TEXT NOT NULL,
         Defectos TEXT NOT NULL,
+        Criticidad TEXT NOT NULL,
         SeccionDefecto TEXT NOT NULL,
         DefectosEncontrados INTEGER NOT NULL,
         Fase TEXT NOT NULL,
@@ -291,7 +297,8 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
                           },
                           child: GradientExpandableCard(
                             title: (index + 1).toString(),
-                            subtitle: 'Prueba',
+                            subtitle: List.generate(dtdatosdefips.Defectos.length, (index) {
+    return '${dtdatosdefips.Defectos[index]}';}).join(", "),
                             expandedContent: [
                               ExpandableContent(
                                   label: 'Hora: ',
@@ -378,7 +385,8 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
                     DatosDEFIPS(
                       hasErrors: true,
                       Hora: DateFormat('HH:mm').format(DateTime.now()),
-                      Defectos:{},
+                      Defectos:[],
+                      Criticidad: [],
                       SeccionDefecto: '',
                       DefectosEncontrados: 0,
                       Fase: '',
@@ -456,6 +464,7 @@ class _EditDatosDEFIPSFormState extends State<EditDatosDEFIPSForm> {
                     formKey: _formKey,
                     widget: widget,
                     dropOptions: dropOptionsDatosDEFIPS,
+                    id: widget.id,
                   ),
                 ),
               ),
@@ -489,13 +498,12 @@ class _EditDatosDEFIPSFormState extends State<EditDatosDEFIPSForm> {
                     ),
                     onPressed: () {
                       _formKey.currentState?.save();
-                      final values = _formKey.currentState!.value;
-
+                      final values = _formKey.currentState!.value;                      
                       final updatedDatito = widget.datosDEFIPS.copyWith(
                         hasErrors: _formKey.currentState?.fields.values
                                 .any((field) => field.hasError) ??
                             false,
-                        Hora: values['Hora'] ?? widget.datosDEFIPS.Hora,
+                        Hora: values['Hora'] ?? widget.datosDEFIPS.Hora,                       
                         SeccionDefecto: values['SeccionDefecto'] ??
                             widget.datosDEFIPS.SeccionDefecto,
                         DefectosEncontrados:
@@ -535,7 +543,8 @@ class _EditDatosDEFIPSFormState extends State<EditDatosDEFIPSForm> {
                     },
                   ),
                 ))
-          ]));
+          ])
+          );
         },
       ),
     );
@@ -547,21 +556,21 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
     super.key,
     required GlobalKey<FormBuilderState> formKey,
     required this.widget,
-    required this.dropOptions,
+    required this.dropOptions, required this.id,
   }) : _formKey = formKey;
 
   final GlobalKey<FormBuilderState> _formKey;
   final widget;
   final Map<String, List<dynamic>> dropOptions;
+  final int id;
 
   @override
   Widget build(BuildContext context) {
     return FormBuilder(
         key: _formKey,
-        child: Column(children: [
-          const SizedBox(
-            height: 15,
-          ),
+        child: Column(children: [          
+          DefectosScreenWidget(id: id,),
+          
             FormBuilderTextField(
             name: 'Hora',
             initialValue: widget.datosDEFIPS.Hora,
@@ -569,59 +578,6 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
               final field = _formKey.currentState?.fields['Hora'];
               field?.validate(); // Valida solo este campo
               field?.save();
-            },
-            decoration: InputDecoration(
-              labelText: 'Hora',
-              labelStyle: const TextStyle(
-                  fontSize: 20,
-                  color: Color.fromARGB(255, 20, 100, 96),
-                  fontWeight: FontWeight.bold),
-              filled: true,
-              fillColor: Colors.grey[200], // Color de fondo de los campos
-              errorStyle: const TextStyle(
-                fontSize: 13, // Tamaño de fuente del mensaje de error
-                height: 1, // Altura de línea (mayor para permitir dos líneas)
-                color: Colors
-                    .red, // Color del mensaje de error (puedes personalizarlo)
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                    color: Color.fromARGB(255, 29, 57, 80), width: 1.5),
-              ),
-              suffixIcon: Builder(
-                builder: (context) {
-                  final isValid =
-                      _formKey.currentState?.fields['Hora']?.isValid ?? false;
-                  return Icon(
-                    isValid ? Icons.check_circle : Icons.error,
-                    color: isValid ? Colors.green : Colors.red,
-                  );
-                },
-              ),
-            ),
-            keyboardType: TextInputType.text,
-            validator: FormBuilderValidators.required(
-                errorText: 'El campo no puede 7f estar vacío'),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          FormBuilderTextField(
-            name: 'Defectos',
-            initialValue: widget.datosDEFIPS.Defectos,
-            readOnly: true, 
-            onTap: () {
-              // Navegar al screen de los países
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DefectsScreen(),
-                ),
-              );
             },
             decoration: InputDecoration(
               labelText: 'Hora',

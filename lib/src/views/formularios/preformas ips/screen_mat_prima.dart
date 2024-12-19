@@ -4,10 +4,8 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:path/path.dart' as p;
 import 'package:proyecto/src/widgets/gradient_expandable_card.dart';
 import 'package:provider/provider.dart';
-import 'package:proyecto/src/widgets/titulospeq.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:swipeable_tile/swipeable_tile.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 
 class DatosMPIPS {
   final int? id;

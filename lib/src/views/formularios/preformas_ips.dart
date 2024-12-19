@@ -94,6 +94,13 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
           ChangeNotifierProvider(create: (_) => DatosPESOSIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosPROCEIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosTEMPIPSProvider()),
+          //ChangeNotifierProvider(create: (_) => EditProviderDatosDEFIPSprueba()),
+
+           
+                   
+
+          
+          
         ],
         child: Scaffold(
           appBar: AppBar(

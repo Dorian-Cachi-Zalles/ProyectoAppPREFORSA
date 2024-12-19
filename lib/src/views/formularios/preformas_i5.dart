@@ -33,7 +33,7 @@ class _ScreenPreformasI5State extends State<ScreenPreformasI5> {
     return [
       const ScreenDatos(),
       const ScreenListDatosMPIPS(),
-      DefectsScreen(),
+     
       ScreenListDatosPESOSIPS(),
       ScreenListDatosPROCEIPS(),
       ScreenListDatosTEMPIPS(),
