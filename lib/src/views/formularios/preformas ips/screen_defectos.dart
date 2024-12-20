@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -297,7 +296,9 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
                           },
                           child: GradientExpandableCard(
                             title: (index + 1).toString(),
+                            title2: 'Defectos - Criticidad',
                             subtitle: List.generate(dtdatosdefips.Defectos.length, (index) {
+    return '${dtdatosdefips.Defectos[index]}';}).join(", ") + List.generate(dtdatosdefips.Defectos.length, (index) {
     return '${dtdatosdefips.Defectos[index]}';}).join(", "),
                             expandedContent: [
                               ExpandableContent(
@@ -614,7 +615,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
             ),
             keyboardType: TextInputType.text,
             validator: FormBuilderValidators.required(
-                errorText: 'El campo no puede 7f estar vacío'),
+                errorText: 'El campo no puede estar vacío'),
           ),
           const SizedBox(
             height: 15,
@@ -628,7 +629,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
             },
             initialValue: widget.datosDEFIPS.SeccionDefecto,
             decoration: InputDecoration(
-              labelText: 'Secciondefecto',
+              labelText: 'Seccion Donde Se Encontro El Defecto',
               labelStyle: const TextStyle(
                   fontSize: 20,
                   color: Color.fromARGB(255, 20, 100, 96),
@@ -666,7 +667,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
               field?.save();
             },
             decoration: InputDecoration(
-              labelText: 'Defectosencontrados',
+              labelText: 'Defectos Encontrados',
               labelStyle: const TextStyle(
                   fontSize: 20,
                   color: Color.fromARGB(255, 20, 100, 96),
@@ -701,7 +702,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
             ),
             keyboardType: TextInputType.text,
             validator: FormBuilderValidators.required(
-                errorText: 'El campo no puede 7f estar vacío'),
+                errorText: 'El campo no puede estar vacío'),
           ),
           const SizedBox(
             height: 15,
@@ -739,144 +740,59 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
                 .toList(),
             validator: FormBuilderValidators.required(
                 errorText: 'Seleccione una opción'),
-          ),
+          ), 
           const SizedBox(
             height: 15,
           ),
-          FormBuilderCheckbox(
-            name: 'Palet',
-            onChanged: (value) {
-              final field = _formKey.currentState?.fields['Palet'];
-              field?.validate(); // Valida solo este campo
-              field?.save();
-            },
-            decoration: InputDecoration(
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
-              filled: true,
-              fillColor: Colors.grey[200], // Color de fondo de los campos
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+          SingleChildScrollView(
+  scrollDirection: Axis.horizontal,
+  child: Row(
+    children: [
+      for (var item in [
+        {'label': 'Palet', 'name': 'Palet', 'value': widget.datosDEFIPS.Palet},
+        {'label': 'Empaque', 'name': 'Empaque', 'value': widget.datosDEFIPS.Empaque},
+        {'label': 'Embalado', 'name': 'Embalado', 'value': widget.datosDEFIPS.Embalado},
+        {'label': 'Etiquetado', 'name': 'Etiquetado', 'value': widget.datosDEFIPS.Etiquetado},
+        {'label': 'Inocuidad', 'name': 'Inocuidad', 'value': widget.datosDEFIPS.Inocuidad},
+      ])
+        Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: Container(
+            width: 150,
+            height: 60,
+            padding: const EdgeInsets.all(0),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              border: Border.all(
+                color: const Color.fromARGB(255, 29, 57, 80),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                    color: Color.fromARGB(255, 29, 57, 80), width: 1.5),
-              ),
+              borderRadius: BorderRadius.circular(8.0),
             ),
-            initialValue: widget.datosDEFIPS.Palet,
-            title: const Text('Palet'),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          FormBuilderCheckbox(
-            name: 'Empaque',
-            onChanged: (value) {
-              final field = _formKey.currentState?.fields['Empaque'];
-              field?.validate(); // Valida solo este campo
-              field?.save();
-            },
-            decoration: InputDecoration(
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
-              filled: true,
-              fillColor: Colors.grey[200], // Color de fondo de los campos
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+            child: FormBuilderCheckbox(
+              name: item['name']!,
+              initialValue: item['value']!,
+              onChanged: (value) {
+                final field = _formKey.currentState?.fields[item['name']];
+                field?.validate(); // Valida solo este campo
+                field?.save();
+              },
+              title: Text(
+              item['label']!,              
+              style: const TextStyle(
+                fontSize: 16,
+                color: Color.fromARGB(255, 20, 100, 96),
+                fontWeight: FontWeight.bold,
               ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                    color: Color.fromARGB(255, 29, 57, 80), width: 1.5),
-              ),
+            ), // Espacio vacío para evitar errores
             ),
-            initialValue: widget.datosDEFIPS.Empaque,
-            title: const Text('Empaque'),
           ),
+        ),
+    ],
+  ),
+),
+
           const SizedBox(
-            height: 15,
-          ),
-          FormBuilderCheckbox(
-            name: 'Embalado',
-            onChanged: (value) {
-              final field = _formKey.currentState?.fields['Embalado'];
-              field?.validate(); // Valida solo este campo
-              field?.save();
-            },
-            decoration: InputDecoration(
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
-              filled: true,
-              fillColor: Colors.grey[200], // Color de fondo de los campos
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                    color: Color.fromARGB(255, 29, 57, 80), width: 1.5),
-              ),
-            ),
-            initialValue: widget.datosDEFIPS.Embalado,
-            title: const Text('Embalado'),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          FormBuilderCheckbox(
-            name: 'Etiquetado',
-            onChanged: (value) {
-              final field = _formKey.currentState?.fields['Etiquetado'];
-              field?.validate(); // Valida solo este campo
-              field?.save();
-            },
-            decoration: InputDecoration(
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
-              filled: true,
-              fillColor: Colors.grey[200], // Color de fondo de los campos
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                    color: Color.fromARGB(255, 29, 57, 80), width: 1.5),
-              ),
-            ),
-            initialValue: widget.datosDEFIPS.Etiquetado,
-            title: const Text('Etiquetado'),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          FormBuilderCheckbox(
-            name: 'Inocuidad',
-            onChanged: (value) {
-              final field = _formKey.currentState?.fields['Inocuidad'];
-              field?.validate(); // Valida solo este campo
-              field?.save();
-            },
-            decoration: InputDecoration(
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
-              filled: true,
-              fillColor: Colors.grey[200], // Color de fondo de los campos
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                    color: Color.fromARGB(255, 29, 57, 80), width: 1.5),
-              ),
-            ),
-            initialValue: widget.datosDEFIPS.Inocuidad,
-            title: const Text('Inocuidad'),
-          ),
-          const SizedBox(
-            height: 15,
+            height: 20,
           ),
           FormBuilderTextField(
             name: 'CantidadProductoRetenido',
@@ -889,7 +805,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
               field?.save();
             },
             decoration: InputDecoration(
-              labelText: 'Cantidadproductoretenido',
+              labelText: 'Cantidad de Producto Retenido',
               labelStyle: const TextStyle(
                   fontSize: 20,
                   color: Color.fromARGB(255, 20, 100, 96),
@@ -924,7 +840,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
             ),
             keyboardType: TextInputType.text,
             validator: FormBuilderValidators.required(
-                errorText: 'El campo no puede 7f estar vacío'),
+                errorText: 'El campo no puede estar vacío'),
           ),
           const SizedBox(
             height: 15,
@@ -940,7 +856,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
               field?.save();
             },
             decoration: InputDecoration(
-              labelText: 'Canidadproductocorregido',
+              labelText: 'Canidad de Producto Corregido',
               labelStyle: const TextStyle(
                   fontSize: 20,
                   color: Color.fromARGB(255, 20, 100, 96),
@@ -975,7 +891,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
             ),
             keyboardType: TextInputType.text,
             validator: FormBuilderValidators.required(
-                errorText: 'El campo no puede 7f estar vacío'),
+                errorText: 'El campo no puede estar vacío'),
           ),
           const SizedBox(
             height: 15,
@@ -1009,22 +925,9 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 borderSide: const BorderSide(
                     color: Color.fromARGB(255, 29, 57, 80), width: 1.5),
-              ),
-              suffixIcon: Builder(
-                builder: (context) {
-                  final isValid =
-                      _formKey.currentState?.fields['Observaciones']?.isValid ??
-                          false;
-                  return Icon(
-                    isValid ? Icons.check_circle : Icons.error,
-                    color: isValid ? Colors.green : Colors.red,
-                  );
-                },
-              ),
+              ),              
             ),
-            keyboardType: TextInputType.text,
-            validator: FormBuilderValidators.required(
-                errorText: 'El campo no puede 7f estar vacío'),
+            keyboardType: TextInputType.text,            
           ),
         ]));
   }
