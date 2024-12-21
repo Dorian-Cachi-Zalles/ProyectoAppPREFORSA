@@ -9,26 +9,6 @@ import 'package:proyecto/src/views/formularios/preformas_ips.dart';
 import 'package:proyecto/src/widgets/custom_drawer.dart';
 import 'package:proyecto/src/widgets/custom_container_menu.dart';
 
-void main() {
-  runApp(
-    FeatureDiscovery(
-      child: MyApp(),
-    ),
-  );
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: ChangeNotifierProvider(
-        create: (_) => SettingsModel(),
-        child: const HomeScreen(),
-      ),
-    );
-  }
-}
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -111,15 +91,15 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      drawer: DescribedFeatureOverlay(
+      drawer: const DescribedFeatureOverlay(
         featureId: 'feature_drawer',
-        tapTarget: const Icon(Icons.menu),
-        title: const Text('Menú de navegación'),
-        description: const Text('Accede al menú para ver más opciones'),
+        tapTarget: Icon(Icons.menu),
+        title: Text('Menú de navegación'),
+        description: Text('Accede al menú para ver más opciones'),
         backgroundColor: Colors.blueAccent,
         targetColor: Colors.white,
         textColor: Colors.white,
-        child: const CustomDrawer(),
+        child: CustomDrawer(),
       ),
       body: SingleChildScrollView(
         child: Padding(
