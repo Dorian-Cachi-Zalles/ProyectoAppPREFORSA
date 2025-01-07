@@ -3,7 +3,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
-import 'package:proyecto/src/views/formularios/preformas%20ips/defectosips.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/widget_defectosips.dart';
 import 'package:proyecto/src/widgets/gradient_expandable_card.dart';
 import 'package:provider/provider.dart';
 import 'package:proyecto/src/widgets/titulospeq.dart';
@@ -296,20 +296,22 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
                           },
                           child: GradientExpandableCard(
                             title: (index + 1).toString(),
-                            title2: 'Defectos - Criticidad',
-                            subtitle: List.generate(dtdatosdefips.Defectos.length, (index) {
-    return '${dtdatosdefips.Defectos[index]}';}).join(", ") + List.generate(dtdatosdefips.Defectos.length, (index) {
-    return '${dtdatosdefips.Defectos[index]}';}).join(", "),
-                            expandedContent: [
+                            subtitletitulo: 'Hora: ',                                                      
+                            subtitle:dtdatosdefips.Hora,
+                            subtitle2titulo: 'Defectos: ',
+                            subtitle2:List.generate(dtdatosdefips.Defectos.length, (index) {
+                            return '${dtdatosdefips.Defectos[index]}';}).join(", "),
+                                  expandedContent: [
                               ExpandableContent(
-                                  label: 'Hora: ',
-                                  stringValue: dtdatosdefips.Hora.toString()),
+                                  label: 'Criticidad: ',
+                                  stringListValue:
+                                      dtdatosdefips.Criticidad),
                               ExpandableContent(
-                                  label: 'SeccionDefecto: ',
+                                  label: 'Seccion Defecto: ',
                                   stringValue:
                                       dtdatosdefips.SeccionDefecto.toString()),
                               ExpandableContent(
-                                  label: 'DefectosEncontrados: ',
+                                  label: 'Defectos Encontrados: ',
                                   stringValue:
                                       dtdatosdefips.DefectosEncontrados.toString()),
                               ExpandableContent(
@@ -330,11 +332,11 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
                                   label: 'Inocuidad: ',
                                   boolValue: dtdatosdefips.Inocuidad),
                               ExpandableContent(
-                                  label: 'CantidadProductoRetenido: ',
+                                  label: 'Cantidad Producto Retenido: ',
                                   stringValue: dtdatosdefips.CantidadProductoRetenido
                                       .toString()),
                               ExpandableContent(
-                                  label: 'CanidadProductoCorregido: ',
+                                  label: 'Canidad Producto Corregido: ',
                                   stringValue: dtdatosdefips.CanidadProductoCorregido
                                       .toString()),
                               ExpandableContent(

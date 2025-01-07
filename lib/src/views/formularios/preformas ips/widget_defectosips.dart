@@ -12,14 +12,23 @@ class DefectosScreenWidget extends StatefulWidget {
 
 class _DefectosScreenState extends State<DefectosScreenWidget> {
   final TextEditingController _searchController = TextEditingController();
-  List<String> defectosOptions = ['CN', 'B', 'NN',];
+  List<String> defectosOptions = ['B', 'CN', 'PC',];
   List<String> criticidadOptions = ['Alta', 'Media', 'Baja'];
   String? selectedCriticidad;
 
-  Map<String, String> defectosImages = {
-  'CN': 'images/d1.jpg',
-  'B': 'images/d2.jpg',
-  'NN': 'images/d3.png',  
+  Map<String, Map<String, String>> defectosImages = {
+  'B': {
+    'name': 'Burbuja',
+    'image': 'images/d1.jpg',
+  },
+  'CN': {
+    'name': 'Cascara de naranja',
+    'image': 'images/d2.jpg',
+  },
+  'PC': {
+    'name': 'Punto Contaminante',
+    'image': 'images/d3.png',
+  },
 };
 
 
@@ -60,14 +69,15 @@ class _DefectosScreenState extends State<DefectosScreenWidget> {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: filteredDefectos.map((defecto) {
-              final imagePath = defectosImages[defecto];
+              final imagePath = defectosImages[defecto]?['image'];
+              final defectoName = defectosImages[defecto]?['name'] ?? defecto;              
               return GestureDetector(
                 onTap: () {
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text('Seleccionar criticidad para $defecto'),
+                        title: Text('Seleccionar criticidad para $defectoName'),
                         content: DropdownButtonFormField<String>(
                           value: selectedCriticidad,
                           hint: const Text("Selecciona criticidad"),
@@ -85,7 +95,7 @@ class _DefectosScreenState extends State<DefectosScreenWidget> {
                           }).toList(),
                         ),
                         actions: [
-                          TextButton(
+                          TextButton(                            
                             onPressed: () {
                               Navigator.pop(context);
                             },
@@ -133,8 +143,8 @@ class _DefectosScreenState extends State<DefectosScreenWidget> {
                   );
                 },
                 child: Container(
-                  width: 200,
-                  height: 200,
+                  width: 300,
+                  height: 300,
                   margin: const EdgeInsets.symmetric(horizontal: 5.0),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -171,7 +181,7 @@ class _DefectosScreenState extends State<DefectosScreenWidget> {
                             borderRadius: BorderRadius.circular(5.0),
                           ),
                           child: Text(
-                            defecto,
+                            defectoName,
                             style: const TextStyle(
                               fontSize: 14,
                               color: Colors.white,
@@ -195,7 +205,9 @@ class _DefectosScreenState extends State<DefectosScreenWidget> {
           spacing: 8.0,
           children: List.generate(dato.Defectos.length, (index) {
             return Chip(
+              backgroundColor: Colors.blueAccent.withOpacity(0.6),
               label: Text(
+                style: TextStyle(fontSize: 14),
                   '${dato.Defectos[index]} - ${dato.Criticidad[index]}'),
               onDeleted: () {
                 setState(() {

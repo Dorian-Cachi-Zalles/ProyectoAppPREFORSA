@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:path/path.dart' as p;
-import 'package:proyecto/src/views/formularios/preformas%20ips/form_mp.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/form_coloranteips.dart';
 import 'package:proyecto/src/widgets/gradient_expandable_card.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -303,20 +303,21 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
                               title: (index + 1).toString(),
                               title2: 'Materia Prima',
                               subtitle: dtdatosmpips.MateriPrima.toString(),
+                              subtitletitulo: '',
                               expandedContent: [
                                 ExpandableContent(
                                     label: 'INTF: ',
                                     stringValue: dtdatosmpips.INTF.toString()),
                                 ExpandableContent(
-                                    label: 'CantidadEmpaque: ',
+                                    label: 'Cantidad de Empaque: ',
                                     stringValue: dtdatosmpips.CantidadEmpaque
                                         .toString()),
                                 ExpandableContent(
-                                    label: 'Identif: ',
+                                    label: 'Identificacion: ',
                                     stringValue:
                                         dtdatosmpips.Identif.toString()),
                                 ExpandableContent(
-                                    label: 'CantidadBolsones: ',
+                                    label: 'Cantidad de Bolsones: ',
                                     stringValue: dtdatosmpips.CantidadBolsones
                                         .toString()),
                                 ExpandableContent(
@@ -406,12 +407,14 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-          height: 300, // Cambia la altura según necesites
+          padding: EdgeInsets.only(top: 5,left: 16,right: 16),          
+          height: 300,
           decoration: const BoxDecoration(
             color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(25))
             
           ),
-          child: FormMp(),
+          child: FormColorante(),
         );
       },
     );

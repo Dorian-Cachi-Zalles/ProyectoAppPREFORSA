@@ -23,6 +23,8 @@ class _HomeScreenState extends State<HomeScreen> {
     "Comunicado 3: Mantenimiento programado"
   ];
 
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     super.initState();
@@ -45,52 +47,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final settingsModel = Provider.of<SettingsModel>(context);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("PREFORSA"),
-        centerTitle: true,
-        actions: [
-          DescribedFeatureOverlay(
-            featureId: 'feature_settings',
-            tapTarget: const Icon(Icons.settings),
-            title: const Text('Ajustes'),
-            description:
-                const Text('Accede a la configuración de la aplicación'),
-            backgroundColor: Colors.blueAccent,
-            targetColor: Colors.white,
-            textColor: Colors.white,
-            child: IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SettingsPage(),
-                  ),
-                );
-              },
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            onPressed: () {
-              FeatureDiscovery.discoverFeatures(
-                context,
-                const [
-                  'feature_settings',
-                  'feature_drawer',
-                  'feature_maquinas',
-                  'feature_parametros',
-                  'feature_defectos',
-                  'feature_dashboard',
-                  'feature_comunicados'
-                ],
-              );
-            },
-          ),
-        ],
-      ),
+     return Scaffold(
+      key: _scaffoldKey,
       drawer: const DescribedFeatureOverlay(
         featureId: 'feature_drawer',
         tapTarget: Icon(Icons.menu),
@@ -102,24 +60,169 @@ class _HomeScreenState extends State<HomeScreen> {
         child: CustomDrawer(),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 40),
-              Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [           
+            Container(
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image:
+                      AssetImage('images/LABO.jpg'), // Imagen de fondo
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Column(                
                 children: [
-                  const SizedBox(width: 30),
-                  Text(
-                    'Control de calidad',
-                    style: TextStyle(
-                      fontSize: settingsModel.fontSize + 3,
-                      fontWeight: FontWeight.bold,
+                  SizedBox(height: 35,),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: IconButton(
+                              color: Colors.black,
+                              icon: Icon(Icons.menu, size: 32.0),
+                              onPressed: () {
+                               _scaffoldKey.currentState?.openDrawer();                            
+                              },
+                            ),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: IconButton(
+                              color: Colors.black,
+                              icon: Icon(Icons.settings, size: 32.0),
+                              onPressed: () {
+                                Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SettingsPage(),
+                              ),
+                            );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding:
+                        const EdgeInsets.only(left: 16, right:16,top:  16),
+                    height: 120,
+                    width: double.infinity,
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Bienvenido al',
+                          style: TextStyle(
+                            fontSize: 40.0,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF0F3558), // Color azul oscuro
+                          ),
+                        ),
+                        Text(
+                          'Sistema de Control de Calidad',
+                          style: TextStyle(
+                            fontSize: 24.0,
+                            color: Color(0xFF486581), // Color gris azulado
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Placeholder para el logo
+                  Container(
+                    height: 50,
+                    width: double.infinity,
+                    padding:
+                         const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .start, // Alinear contenido al inicio
+                      children: [
+                        Container(
+                          width: 200,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(
+                                  'images/logopre.png'), // Logo PREFORSA
+                              fit: BoxFit.scaleDown,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.only(
+                        left: 16.0, right: 16, bottom: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .start, // Alinear contenido al inicio
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            // Acción al presionar el botón
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 24.0, vertical: 12.0),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color.fromARGB(255, 86, 162, 228),
+                                  Color.fromARGB(255, 134, 173, 177)
+                                ], // Colores del degradado
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                  30.0), // Bordes redondeados
+                            ),
+                            child: Text(
+                              'Inicie el tutorial',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+            ),
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Opciones',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),])),
+                  SizedBox(height: 16),
               Center(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -137,7 +240,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         targetColor: Colors.white,
                         textColor: Colors.white,
                         child: CustomContainer(
-                          color: Colors.orangeAccent,
+                          color1: Color(0xFFFFD700),
+                          color2: Color(0xFFFFA500),
                           icon: Icons.build,
                           text: "Maquinas",
                           fontSize: settingsModel.fontSize,
@@ -163,7 +267,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         targetColor: Colors.white,
                         textColor: Colors.white,
                         child: CustomContainer(
-                          color: Colors.blueAccent,
+                          color1: const Color(0xFF1E90FF),
+                          color2: const Color.fromARGB(255, 50, 98, 117),
                           icon: Icons.settings_suggest,
                           text: "Gestion de\nParametros",
                           fontSize: settingsModel.fontSize,
@@ -191,9 +296,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         targetColor: Colors.white,
                         textColor: Colors.white,
                         child: CustomContainer(
-                          color: const Color.fromARGB(255, 29, 163, 58),
+                          color1:  const Color.fromARGB(255, 29, 163, 58),
+                           color2: const Color.fromARGB(255, 18, 95, 34),
                           icon: Icons.bug_report,
-                          text: "Descripcion de\n     Defectos",
+                          text: "Descripcion de\nDefectos",
                           fontSize: settingsModel.fontSize,
                           onTap: () {
                             Navigator.push(
@@ -217,7 +323,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         targetColor: Colors.white,
                         textColor: Colors.white,
                         child: CustomContainer(
-                          color: Colors.redAccent,
+                          color1: Colors.redAccent,
+                           color2: const Color.fromARGB(255, 158, 51, 51),
                           icon: Icons.dashboard,
                           text: "Dashboard",
                           fontSize: settingsModel.fontSize,
@@ -235,20 +342,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              Row(
+              const SizedBox(height: 10),             
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(width: 30),
                   Text(
                     'Comunicados',
                     style: TextStyle(
-                      fontSize: settingsModel.fontSize + 3,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 10),
+             
               DescribedFeatureOverlay(
                 featureId: 'feature_comunicados',
                 tapTarget: const Icon(Icons.notifications),
@@ -285,7 +392,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-      ),
-    );
+        SizedBox(height: 25),
+      ])
+      )
+      );
+    
   }
 }

@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:proyecto/src/models/settings_model.dart';
 import 'package:proyecto/src/views/formularios/ccm.dart';
 import 'package:proyecto/src/views/formularios/coloracap.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/defectosips.dart';
 import 'package:proyecto/src/views/formularios/preformas_ips.dart';
 import 'package:proyecto/src/views/formularios/soplado.dart';
 import 'package:proyecto/src/views/formularios/tapas6.dart';

@@ -21,7 +21,10 @@ class ExpandableContent {
 class GradientExpandableCard extends StatefulWidget {
   final String title;
   final String?title2;
+  final String subtitletitulo;
   final String subtitle;
+  final String ?subtitle2titulo;
+  final String ?subtitle2;
   final List<ExpandableContent> expandedContent;
   final VoidCallback onOpenModal;
   final bool hasErrors;
@@ -33,7 +36,7 @@ class GradientExpandableCard extends StatefulWidget {
     required this.subtitle,
     required this.expandedContent,
     required this.onOpenModal,
-    required this.hasErrors,
+    required this.hasErrors, this.subtitle2,required this.subtitletitulo, this.subtitle2titulo,
   });
 
   @override
@@ -62,15 +65,22 @@ class _GradientExpandableCardState extends State<GradientExpandableCard>
         children: [
           // Encabezado fijo
           Container(
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 243, 243, 243),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-            ),
+            decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
             child: Row(
               children: [
                 // Indicador de errores
                 Container(
-                  width: 40,
+                  width: 35,
                   height: 100,
                   decoration: BoxDecoration(
                     color: widget.hasErrors
@@ -96,8 +106,8 @@ class _GradientExpandableCardState extends State<GradientExpandableCard>
                         children: [
                           // Círculo con número
                           Container(
-                            width: 50,
-                            height: 50,
+                            width: 40,
+                            height: 40,
                             decoration: BoxDecoration(
                               color: Colors.grey.shade300,
                               shape: BoxShape.circle,
@@ -121,16 +131,58 @@ class _GradientExpandableCardState extends State<GradientExpandableCard>
                             widget.title2!,
                             style: const TextStyle(
                               fontSize: 18,
+                              color: Colors.black,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                              Text(
-                                widget.subtitle,
-                                style: const TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 14,
+                          SizedBox(height: 3,),
+                             RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: widget.subtitletitulo, // Parte en bold
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: widget.subtitle, // Parte normal
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.normal,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
+                              const SizedBox(height: 3),
+                             widget.subtitle2 != null && widget.subtitle2!.trim().isNotEmpty
+                            ? RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: widget.subtitle2titulo, // Parte en bold
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: widget.subtitle2, // Parte normal
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                            : SizedBox.shrink(),
                             ],
                           ),
                         ],
@@ -147,12 +199,12 @@ class _GradientExpandableCardState extends State<GradientExpandableCard>
                       borderRadius: BorderRadius.circular(8),
                     ),
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
                   ),
                   icon: Icon(
                     _isExpanded ? Icons.expand_less : Icons.expand_more,
                     color: Colors.white,
-                    size: 30,
+                    size: 20,
                   ),
                   label: const Text(
                     "Ver",

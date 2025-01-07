@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 class ProviderPesoPromedio with ChangeNotifier {
-  double _pesoPromedio = 0.0;
+   double _pesoNeto = 0.0;
 
-  double get pesoPromedio => _pesoPromedio;
+  double get pesoNeto => _pesoNeto;
 
-  void setPesoPromedio(double value) {
-    _pesoPromedio = value;
+  set pesoNeto(double value) {
+    _pesoNeto = value;
     notifyListeners();
   }
 }
+

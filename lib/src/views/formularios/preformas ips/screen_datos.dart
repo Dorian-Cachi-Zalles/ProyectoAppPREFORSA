@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
 import 'package:proyecto/src/providers/preformas_ips_provider/formulario_principal.dart';
-import 'package:proyecto/src/services/database_helper.dart';
+import 'package:proyecto/src/services/database_formdatos.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_pesos.dart';
 import 'package:proyecto/src/widgets/custom_dropdown.dart';
 import 'package:proyecto/src/widgets/custom_text_field.dart';
 
@@ -75,7 +76,9 @@ class _ScreenDatosState extends State<ScreenDatos> {
               ),
               const Row(
                 children: [
-                  Text('Datos de encabezado'),
+                  Text('Datos Principales',
+                      style: TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold)),
                   SizedBox(
                     width: 16, // Espaciado entre el texto y el Divider
                   ),
@@ -147,11 +150,17 @@ class _ScreenDatosState extends State<ScreenDatos> {
               const Row(
                 children: [
                   Expanded(
-                    child: CustomFormBuilderTextField(
-                      name: 'gramaje',
-                      label: 'Gramaje',
-                    ),
-                  ),
+                      child: CustomFormBuilderDropdown(
+                          name: 'gramaje',
+                          label: 'Gramaje',
+                          items: [
+                        DropdownMenuItem(
+                          value: 'Normal',
+                          child: Text('Normal'),
+                        ),
+                        DropdownMenuItem(
+                            value: 'Prueba', child: Text('Prueba')),
+                      ])),
                   SizedBox(
                     width: 15,
                   ),
@@ -212,13 +221,16 @@ class _ScreenDatosState extends State<ScreenDatos> {
                       name: 'peso_prom_en_cont_neto',
                       label: 'Peso Promedio en cont NETO',
                       onChanged: (value) {
-                        // Convierte el valor a double y actualiza el Provider
-                        final double peso =
-                            double.tryParse(value ?? '0') ?? 0.0;
-                        Provider.of<ProviderPesoPromedio>(context,
-                                listen: false)
-                            .setPesoPromedio(peso);
-                      },
+  final field = _formKey.currentState?.fields['PesoNeto'];
+  field?.validate(); // Valida solo este campo
+  field?.save();
+
+  // Actualiza el valor en el Provider
+  double? newValue = double.tryParse(value ?? '');
+  if (newValue != null) {
+    context.read<EditProviderDatosPESOSIPS>().pesoNeto = newValue;
+  }
+},    
                     ),
                   ),
                 ],

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:proyecto/src/services/database_helper.dart';
+import 'package:proyecto/src/services/database_formdatos.dart';
 import 'package:proyecto/src/widgets/custom_dropdown.dart';
 import 'package:proyecto/src/widgets/custom_text_field.dart';
 import 'package:proyecto/src/widgets/titulospeq.dart';
 
-class FormMp extends StatefulWidget {
-  const FormMp({super.key});
+class FormColorante extends StatefulWidget {
+  const FormColorante({super.key});
 
   @override
-  createState() => _FormMpState();
+  createState() => _FormColoranteState();
 }
 
-class _FormMpState extends State<FormMp> {
+class _FormColoranteState extends State<FormColorante> {
   final _formKey = GlobalKey<FormBuilderState>();
 
   @override
@@ -24,12 +24,12 @@ class _FormMpState extends State<FormMp> {
   // Guardar automáticamente valores del formulario en SQLite
   void autoSaveForm() async {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
-      Map<String, dynamic> formData = _formKey.currentState!.value;
+      Map<String, dynamic> formDatacoloranteIPS = _formKey.currentState!.value;
 
       // Guardar los datos en SQLite
-      await DatabaseHelper.instance.insertData(formData);
+      await DatabaseHelper.instance.insertData(formDatacoloranteIPS);
 
-      print('Datos guardados automáticamente: $formData');
+      print('Datos guardados automáticamente: $formDatacoloranteIPS');
     } else {
       print('Formulario no válido para guardar automáticamente.');
     }
@@ -37,11 +37,11 @@ class _FormMpState extends State<FormMp> {
 
   // Cargar valores al formulario desde SQLite
   void loadForm() async {
-    Map<String, dynamic>? savedData = await DatabaseHelper.instance.getData();
+    Map<String, dynamic>? savedDatacoloranteIPS = await DatabaseHelper.instance.getData();
 
-    if (savedData != null) {
-      _formKey.currentState?.patchValue(savedData);
-      print('Datos cargados: $savedData');
+    if (savedDatacoloranteIPS != null) {
+      _formKey.currentState?.patchValue(savedDatacoloranteIPS);
+      print('Datos cargados: $savedDatacoloranteIPS');
     } else {
       print('No hay datos guardados.');
     }
@@ -124,7 +124,7 @@ class _FormMpState extends State<FormMp> {
                   ),
                   Expanded(
                       child: CustomFormBuilderDropdown(
-                          name: 'Cantidad de Bolsones',
+                          name: 'CantidaddeBolsones',
                           label: 'Cantidad de Bolsones',
                           items: [
                         DropdownMenuItem(

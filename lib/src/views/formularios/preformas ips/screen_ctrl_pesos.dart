@@ -134,6 +134,7 @@ class DatosPESOSIPSProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+  
 
   Future<void> removeDatito(BuildContext context, int id) async {
     final index = _datospesosipsList.indexWhere((d) => d.id == id);
@@ -166,7 +167,9 @@ class DatosPESOSIPSProvider with ChangeNotifier {
 }
 
 class ScreenListDatosPESOSIPS extends StatelessWidget {
+  
   @override
+  
   Widget build(BuildContext context) {
     final provider = Provider.of<DatosPESOSIPSProvider>(context, listen: false);
     return Scaffold(
@@ -228,23 +231,20 @@ class ScreenListDatosPESOSIPS extends StatelessWidget {
                           },
                           child: GradientExpandableCard(
                             title: (index + 1).toString(),
-                            subtitle: 'Prueba',
-                            expandedContent: [
+                            subtitletitulo: 'Hora: ',
+                            subtitle: dtdatospesosips.Hora,
+                            subtitle2titulo: 'PA: ',
+                            subtitle2:dtdatospesosips.PA ,
+                            expandedContent: [                        
                               ExpandableContent(
-                                  label: 'Hora: ',
-                                  stringValue: dtdatospesosips.Hora.toString()),
+                                  label: 'Peso Tara: ',
+                                  stringValue: '${dtdatospesosips.PesoTara} Kg'),
                               ExpandableContent(
-                                  label: 'PA: ',
-                                  stringValue: dtdatospesosips.PA.toString()),
+                                  label: 'Peso Neto: ',
+                                  stringValue:  '${dtdatospesosips.PesoNeto} Kg'),
                               ExpandableContent(
-                                  label: 'PesoTara: ',
-                                  stringValue: dtdatospesosips.PesoTara.toString()),
-                              ExpandableContent(
-                                  label: 'PesoNeto: ',
-                                  stringValue: dtdatospesosips.PesoNeto.toString()),
-                              ExpandableContent(
-                                  label: 'PesoTotal: ',
-                                  stringValue: dtdatospesosips.PesoTotal.toString()),
+                                  label: 'Peso Total: ',
+                                  stringValue:  '${dtdatospesosips.PesoTotal} Kg'),
                             ],
                             hasErrors: dtdatospesosips.hasErrors,
                             onOpenModal: () {
@@ -287,7 +287,7 @@ class ScreenListDatosPESOSIPS extends StatelessWidget {
                 ),
                 onPressed: () {
                   final pesoNeto =
-                      context.read<ProviderPesoPromedio>().pesoPromedio;
+                      context.read<ProviderPesoPromedio>().pesoNeto;
                   provider.addDatito(
                     DatosPESOSIPS(
                       hasErrors: true,
@@ -313,9 +313,16 @@ class ScreenListDatosPESOSIPS extends StatelessWidget {
   }
 }
 
-class EditProviderDatosPESOSIPS with ChangeNotifier {
-  // Implementación del proveedor, puedes agregar lógica específica aquí
-}
+class EditProviderDatosPESOSIPS with ChangeNotifier { 
+double _pesoNeto = 0.0;
+
+  double get pesoNeto => _pesoNeto;
+
+  set pesoNeto(double value) {
+    _pesoNeto = value;
+    notifyListeners();
+  
+}}
 
 class EditDatosPESOSIPSForm extends StatefulWidget {
   final int id;
@@ -336,6 +343,7 @@ class _EditDatosPESOSIPSFormState extends State<EditDatosPESOSIPSForm> {
   final Map<String, List<dynamic>> dropOptionsDatosPESOSIPS = {
     'Opciones': ['Opción 1', 'Opción 2', 'Opción 3'],
   };
+  
 
   @override
   void initState() {
@@ -345,85 +353,82 @@ class _EditDatosPESOSIPSFormState extends State<EditDatosPESOSIPSForm> {
       _formKey.currentState?.saveAndValidate();
     });
   }
-
+      
   @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => EditProviderDatosPESOSIPS(),
-      child: Consumer<EditProviderDatosPESOSIPS>(
-        builder: (context, provider, child) {
-          return Scaffold(
-              body: Column(children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SingleChildScrollView(
-                  child: FormularioGeneralDatosPESOSIPS(
-                    formKey: _formKey,
-                    widget: widget,
-                    dropOptions: dropOptionsDatosPESOSIPS,
-                  ),
+  Widget build(BuildContext context) {    
+    return Consumer<EditProviderDatosPESOSIPS>(
+      builder: (context, provider, child) {
+        return Scaffold(
+            body: Column(children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SingleChildScrollView(
+                child: FormularioGeneralDatosPESOSIPS(
+                  formKey: _formKey,
+                  widget: widget,
+                  dropOptions: dropOptionsDatosPESOSIPS,
                 ),
               ),
             ),
-            Padding(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context)
-                      .viewInsets
-                      .bottom, // Ajuste para teclado
-                ),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.save, color: Colors.black),
-                    label: const Text(
-                      'GUARDAR',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+          ),
+          Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context)
+                    .viewInsets
+                    .bottom, // Ajuste para teclado
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.save, color: Colors.black),
+                  label: const Text(
+                    'GUARDAR',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueAccent.withOpacity(0.8),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(8),
-                            topRight: Radius.circular(8)),
-                      ),
-                    ),
-                    onPressed: () {
-                      _formKey.currentState?.save();
-                      final values = _formKey.currentState!.value;
-
-                      final updatedDatito = widget.datosPESOSIPS.copyWith(
-                        hasErrors: _formKey.currentState?.fields.values
-                                .any((field) => field.hasError) ??
-                            false,
-                        Hora: values['Hora'] ?? widget.datosPESOSIPS.Hora,
-                        PA: values['PA'] ?? widget.datosPESOSIPS.PA,
-                        PesoTara: (values['PesoTara']?.isEmpty ?? true)
-                            ? 0
-                            : double.tryParse(values['PesoTara']),
-                        PesoNeto: (values['PesoNeto']?.isEmpty ?? true)
-                            ? 0
-                            : double.tryParse(values['PesoNeto']),
-                        PesoTotal: (values['PesoTotal']?.isEmpty ?? true)
-                            ? 0
-                            : double.tryParse(values['PesoTotal']),
-                      );
-
-                      Provider.of<DatosPESOSIPSProvider>(context, listen: false)
-                          .updateDatito(widget.id, updatedDatito);
-
-                      Navigator.pop(context);
-                    },
                   ),
-                ))
-          ]));
-        },
-      ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent.withOpacity(0.8),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8)),
+                    ),
+                  ),
+                  onPressed: () {
+                    _formKey.currentState?.save();
+                    final values = _formKey.currentState!.value;
+    
+                    final updatedDatito = widget.datosPESOSIPS.copyWith(
+                      hasErrors: _formKey.currentState?.fields.values
+                              .any((field) => field.hasError) ??
+                          false,
+                      Hora: values['Hora'] ?? widget.datosPESOSIPS.Hora,
+                      PA: values['PA'] ?? widget.datosPESOSIPS.PA,
+                      PesoTara: (values['PesoTara']?.isEmpty ?? true)
+                          ? 0
+                          : double.tryParse(values['PesoTara']),
+                      PesoNeto: (values['PesoNeto']?.isEmpty ?? true)
+                          ? 0
+                          : double.tryParse(values['PesoNeto']),
+                      PesoTotal: (values['PesoTotal']?.isEmpty ?? true)
+                          ? 0
+                          : double.tryParse(values['PesoTotal']),
+                    );
+    
+                    Provider.of<DatosPESOSIPSProvider>(context, listen: false)
+                        .updateDatito(widget.id, updatedDatito);
+    
+                    Navigator.pop(context);
+                  },
+                ),
+              ))
+        ]));
+      },
     );
   }
 }
@@ -438,19 +443,18 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
 
   final GlobalKey<FormBuilderState> _formKey;
   final widget;
-  final Map<String, List<dynamic>> dropOptions;
-
-  void _updatePesoTotal() {
+  final Map<String, List<dynamic>> dropOptions; 
+   void _updatePesoTotal(BuildContext context) {
     final formState = _formKey.currentState;
 
     if (formState != null) {
       // Obtén los valores actuales de PesoTara y PesoNeto
       final pesoTara =
-          double.tryParse(formState.fields['PesoTara']?.value ?? '0') ?? 0;
+          double.tryParse(formState.fields['PesoTara']?.value ?? '0') ?? 0.0;
       final pesoNeto =
-          double.tryParse(formState.fields['PesoNeto']?.value ?? '0') ?? 0;
+          double.tryParse(formState.fields['PesoNeto']?.value ?? '0') ?? 0.0;
 
-      // Calcula PesoTotal
+      // Calcula el PesoTotal
       final pesoTotal = pesoTara + pesoNeto;
 
       // Actualiza el campo PesoTotal
@@ -459,7 +463,7 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {    
     return FormBuilder(
         key: _formKey,
         child: Column(children: [
@@ -523,7 +527,7 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
               field?.save();
             },
             decoration: InputDecoration(
-              labelText: 'Pa',
+              labelText: 'PA',
               labelStyle: TextStyle(
                   fontSize: 20,
                   color: const Color.fromARGB(255, 20, 100, 96),
@@ -569,10 +573,10 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
               final field = _formKey.currentState?.fields['PesoTara'];
               field?.validate(); // Valida solo este campo
               field?.save();
-              _updatePesoTotal();
+              _updatePesoTotal(context);
             },
             decoration: InputDecoration(
-              labelText: 'Pesotara',
+              labelText: 'Peso Tara',
               labelStyle: TextStyle(
                   fontSize: 20,
                   color: const Color.fromARGB(255, 20, 100, 96),
@@ -613,17 +617,18 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
             height: 15,
           ),
           FormBuilderTextField(
-            name: 'PesoNeto',
-            initialValue: ProviderPesoPromedio().pesoPromedio.toString(),
-            onChanged: (value) {
-              final field = _formKey.currentState?.fields['PesoNeto'];
-              ProviderPesoPromedio().pesoPromedio.toString();
+            name: 'PesoNeto',            
+            initialValue:  context.watch<EditProviderDatosPESOSIPS>().pesoNeto.toString(),
+            onChanged: (value) {   
+              final provider = context.read<ProviderPesoPromedio>();
+              provider.pesoNeto = double.tryParse(value?.trim() ?? '0') ?? 0.0;           
+              final field = _formKey.currentState?.fields['PesoNeto'];                
               field?.validate(); // Valida solo este campo
               field?.save();
-              _updatePesoTotal();
+              _updatePesoTotal(context);             
             },
             decoration: InputDecoration(
-              labelText: 'Pesoneto',
+              labelText: 'Peso Neto',
               labelStyle: TextStyle(
                   fontSize: 20,
                   color: const Color.fromARGB(255, 20, 100, 96),
@@ -672,7 +677,7 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
               field?.save();
             },
             decoration: InputDecoration(
-              labelText: 'Pesototal',
+              labelText: 'Peso Total',
               labelStyle: TextStyle(
                   fontSize: 20,
                   color: const Color.fromARGB(255, 20, 100, 96),

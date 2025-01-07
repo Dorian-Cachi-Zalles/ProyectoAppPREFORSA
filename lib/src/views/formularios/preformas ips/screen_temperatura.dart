@@ -228,9 +228,9 @@ class ScreenListDatosTEMPIPS extends StatelessWidget {
                         },
                         child: GradientExpandableCard(
                           title: (index + 1).toString(),
-                          subtitle: 'Prueba',
-                          expandedContent: [
-                        ExpandableContent(label: 'Hora: ', stringValue: dtdatostempips.Hora.toString()),
+                          subtitletitulo: 'Hora:',
+                          subtitle: dtdatostempips.Hora,
+                          expandedContent: [                       
                         ExpandableContent(label: 'Fase: ', stringValue: dtdatostempips.Fase.toString()),
                         ExpandableContent(label: 'Cavidades: ', intListValue: dtdatostempips.Cavidades),
                         ExpandableContent(label: 'Tcuerpo: ', doubleListValue: dtdatostempips.Tcuerpo),

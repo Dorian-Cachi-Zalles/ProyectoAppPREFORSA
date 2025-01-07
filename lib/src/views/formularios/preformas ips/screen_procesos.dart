@@ -234,14 +234,16 @@ class ScreenListDatosPROCEIPS extends StatelessWidget {
                         },
                         child: GradientExpandableCard(
                           title: (index + 1).toString(),
-                          subtitle: 'Prueba',
+                          subtitletitulo: 'Hora:',
+                          subtitle:dtdatosproceips.Hora,
+                          subtitle2titulo: 'PA Producida:',
+                          subtitle2:dtdatosproceips.PAProd ,
                           expandedContent: [
-                        ExpandableContent(label: 'Hora: ', stringValue: dtdatosproceips.Hora.toString()),
-                        ExpandableContent(label: 'PAProd: ', stringValue: dtdatosproceips.PAProd.toString()),
-                        ExpandableContent(label: 'TempTolvaSec: ', doubleListValue: dtdatosproceips.TempTolvaSec),
-                        ExpandableContent(label: 'TempProd: ', stringValue: dtdatosproceips.TempProd.toString()),
-                        ExpandableContent(label: 'Tciclo: ', stringValue: dtdatosproceips.Tciclo.toString()),
-                        ExpandableContent(label: 'Tenfri: ', stringValue: dtdatosproceips.Tenfri.toString()),
+                        
+                        ExpandableContent(label: 'Temperatura Tolva Seccionada: ', doubleListValue: dtdatosproceips.TempTolvaSec),
+                        ExpandableContent(label: 'Temperatura de Produccion: ', stringValue: dtdatosproceips.TempProd.toString()),
+                        ExpandableContent(label: 'T ciclo: ', stringValue: dtdatosproceips.Tciclo.toString()),
+                        ExpandableContent(label: 'T enfri: ', stringValue: dtdatosproceips.Tenfri.toString()),
                           ],
                           hasErrors: dtdatosproceips.hasErrors,
                           onOpenModal: () {
@@ -286,7 +288,7 @@ class ScreenListDatosPROCEIPS extends StatelessWidget {
             hasErrors: true,
               Hora: DateFormat('HH:mm').format(DateTime.now()),
               PAProd: '',
-              TempTolvaSec: [],
+              TempTolvaSec: [0,0,0],
               TempProd: 0,
               Tciclo: 0,
               Tenfri: 0,
@@ -479,7 +481,7 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
             field?.validate(); // Valida solo este campo
             field?.save();
           },
-            decoration: InputDecoration(labelText: 'Paprod',
+            decoration: InputDecoration(labelText: 'PA Producido',
             labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold),  
               filled: true,
               fillColor: Colors.grey[200], // Color de fondo de los campos
@@ -523,7 +525,7 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
           },
               autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: InputDecoration(
-              labelText: 'TempTolvaSec ' + (index + 1).toString(),
+              labelText: 'Temp Tolva Sec ' + (index + 1).toString(),
               labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold),
               filled: true,
               fillColor: Colors.grey[200], // Color de fondo de los campos
@@ -569,7 +571,7 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
             field?.validate(); // Valida solo este campo
             field?.save();
           },
-            decoration: InputDecoration(labelText: 'Tempprod',
+            decoration: InputDecoration(labelText: 'Temp Prod',
             labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold),  
               filled: true,
               fillColor: Colors.grey[200], // Color de fondo de los campos
@@ -607,7 +609,7 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
             field?.validate(); // Valida solo este campo
             field?.save();
           },
-            decoration: InputDecoration(labelText: 'Tciclo',
+            decoration: InputDecoration(labelText: 'T ciclo',
             labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold),  
               filled: true,
               fillColor: Colors.grey[200], // Color de fondo de los campos
@@ -645,7 +647,7 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
             field?.validate(); // Valida solo este campo
             field?.save();
           },
-            decoration: InputDecoration(labelText: 'Tenfri',
+            decoration: InputDecoration(labelText: 'T enfriamiento',
             labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold),  
               filled: true,
               fillColor: Colors.grey[200], // Color de fondo de los campos
