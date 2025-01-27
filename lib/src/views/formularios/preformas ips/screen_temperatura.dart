@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:proyecto/src/widgets/gradient_expandable_card.dart';
 import 'package:provider/provider.dart';
+import 'package:proyecto/src/widgets/titulos.dart';
 import 'package:proyecto/src/widgets/titulospeq.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:swipeable_tile/swipeable_tile.dart';
@@ -171,7 +172,7 @@ class ScreenListDatosTEMPIPS extends StatelessWidget {
     return Scaffold(
         body: Column(
           children: [
-            Titulospeq(titulo:'REGISTRO DE TEMPERATURA',tipo: 1,),
+            Titulos(titulo:'REGISTRO DE TEMPERATURA',tipo: 1,),
             Expanded(
               child: Consumer<DatosTEMPIPSProvider>(
               builder: (context, provider, _) {
@@ -192,64 +193,38 @@ class ScreenListDatosTEMPIPS extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final dtdatostempips = datostempips[index];
               
-                    return SwipeableTile.card(
-                      horizontalPadding: 16,
-                      verticalPadding: 10,
-                      key: ValueKey(dtdatostempips.id),
-                      swipeThreshold: 0.5,
-                      resizeDuration: const Duration(milliseconds: 300),
-                      color: Colors.white,
-                      shadow: const BoxShadow(
-                        color: Colors.transparent,
-                        blurRadius: 4,
-                        offset: Offset(2, 2),
-                      ),
-                      direction: SwipeDirection.endToStart,
-                      onSwiped: (_) => provider.removeDatito(context, dtdatostempips.id!),
-                      backgroundBuilder: (context, direction, progress) {
-                        return Container(
-                          color: Colors.red,
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: const Icon(Icons.delete, color: Colors.white),
+                    return GradientExpandableCard(
+                      subtitulos: {
+                        'Hora': dtdatostempips.Hora,
+                      },
+                      numeroindex: (index + 1).toString(),
+                      idlista: dtdatostempips.id,
+                      variableCambiarVentana: EditDatosTEMPIPSForm(
+                    id: dtdatostempips.id!,
+                    datosTEMPIPS: dtdatostempips,
+                    
+                                          ) ,
+                      onSwipedAction:() async {
+                    await provider.removeDatito(context, dtdatostempips.id!);
+                                          }, 
+                      expandedContent: [                       
+                    ExpandableContent(label: 'Fase: ', stringValue: dtdatostempips.Fase.toString()),
+                    ExpandableContent(label: 'Cavidades: ', intListValue: dtdatostempips.Cavidades),
+                    ExpandableContent(label: 'Tcuerpo: ', doubleListValue: dtdatostempips.Tcuerpo),
+                    ExpandableContent(label: 'Tcuello: ', doubleListValue: dtdatostempips.Tcuello),
+                      ],
+                      hasErrors: dtdatostempips.hasErrors,
+                      onOpenModal: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditDatosTEMPIPSForm(
+                              id: dtdatostempips.id!,
+                              datosTEMPIPS: dtdatostempips,
+                            ),
+                          ),
                         );
                       },
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => EditDatosTEMPIPSForm(
-                                id: dtdatostempips.id!,
-                                datosTEMPIPS: dtdatostempips,
-                              ),
-                            ),
-                          );
-                        },
-                        child: GradientExpandableCard(
-                          title: (index + 1).toString(),
-                          subtitletitulo: 'Hora:',
-                          subtitle: dtdatostempips.Hora,
-                          expandedContent: [                       
-                        ExpandableContent(label: 'Fase: ', stringValue: dtdatostempips.Fase.toString()),
-                        ExpandableContent(label: 'Cavidades: ', intListValue: dtdatostempips.Cavidades),
-                        ExpandableContent(label: 'Tcuerpo: ', doubleListValue: dtdatostempips.Tcuerpo),
-                        ExpandableContent(label: 'Tcuello: ', doubleListValue: dtdatostempips.Tcuello),
-                          ],
-                          hasErrors: dtdatostempips.hasErrors,
-                          onOpenModal: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EditDatosTEMPIPSForm(
-                                  id: dtdatostempips.id!,
-                                  datosTEMPIPS: dtdatostempips,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
                     );
                   },
                 );
@@ -504,7 +479,7 @@ class FormularioGeneralDatosTEMPIPS extends StatelessWidget {
             validator: FormBuilderValidators.required(errorText: 'Seleccione una opción'),
           ),
           const SizedBox(height: 15,),
-            const Titulospeq(titulo: 'Cavidades',tipo: 0,),
+            const Titulospeq(titulo: 'Cavidades',),
             const SizedBox(height: 15,),
           GridView.builder(
               padding: const EdgeInsets.all(8.0),
@@ -573,7 +548,7 @@ class FormularioGeneralDatosTEMPIPS extends StatelessWidget {
               shrinkWrap: true,              
             ),    
             const SizedBox(height: 15,),
-            const Titulospeq(titulo: 'Temperatura del cuerpo',tipo: 0,),
+            const Titulospeq(titulo: 'Temperatura del cuerpo'),
             const SizedBox(height: 15,),
 
           GridView.builder(
@@ -643,7 +618,7 @@ class FormularioGeneralDatosTEMPIPS extends StatelessWidget {
               shrinkWrap: true,              
             ),
             const SizedBox(height: 15,),
-            const Titulospeq(titulo: 'Temperatura del cuello',tipo: 0,),
+            const Titulospeq(titulo: 'Temperatura del cuello',),
             const SizedBox(height: 15,),
           GridView.builder(
               padding: const EdgeInsets.all(8.0),

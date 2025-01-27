@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:proyecto/src/models/settings_model.dart';
 import 'package:proyecto/src/views/formularios/ccm.dart';
 import 'package:proyecto/src/views/formularios/coloracap.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_MP.dart';
 import 'package:proyecto/src/views/formularios/preformas_ips.dart';
 import 'package:proyecto/src/views/formularios/soplado.dart';
 import 'package:proyecto/src/views/formularios/tapas6.dart';
@@ -13,7 +14,6 @@ import 'package:proyecto/src/widgets/settings_page.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_pesos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_datos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_defectos.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/screen_mat_prima.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_procesos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_temperatura.dart';
 
@@ -31,8 +31,8 @@ class _ScreenPreformasI5State extends State<ScreenPreformasI5> {
   List<Widget> _buildScreens() {
     return [
       const ScreenDatos(),
-     
-     
+      ScreenListDatosMPIPS(),     
+      const ScreenListDatosDEFIPS(),
       ScreenListDatosPESOSIPS(),
       ScreenListDatosPROCEIPS(),
       ScreenListDatosTEMPIPS(),

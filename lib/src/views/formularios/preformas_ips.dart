@@ -3,13 +3,13 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:proyecto/src/models/settings_model.dart';
 import 'package:proyecto/src/views/formularios/home_screen.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_MP.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/screen_defectos.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/screen_procesos.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/screen_temperatura.dart';
 import 'package:proyecto/src/widgets/settings_page.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_pesos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_datos.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/screen_defectos.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/screen_mat_prima.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/screen_procesos.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/screen_temperatura.dart';
 
 class ScreenPreformasIPS extends StatefulWidget {
   const ScreenPreformasIPS({super.key});
@@ -25,7 +25,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
   List<Widget> _buildScreens() {
     return [
       const ScreenDatos(),
-      ScreenListDatosMPIPS(),
+      ScreenListDatosMPIPS(),     
       const ScreenListDatosDEFIPS(),
       ScreenListDatosPESOSIPS(),
       ScreenListDatosPROCEIPS(),
@@ -87,7 +87,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
           ChangeNotifierProvider(create: (_) => DatosDEFIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosPESOSIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosPROCEIPSProvider()),
-          ChangeNotifierProvider(create: (_) => DatosTEMPIPSProvider()),
+         ChangeNotifierProvider(create: (_) => DatosTEMPIPSProvider()),
           ChangeNotifierProvider(create: (_) => EditProviderDatosPESOSIPS()),
           
 
@@ -98,38 +98,64 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
           
         ],
         child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: settingsModel.isDarkMode
-                ? Colors.black
-                : const Color.fromARGB(255, 255, 255, 255),
-            title: Text(
-              "PREFORMAS IPS",
-              style: TextStyle(
+         appBar: PreferredSize(
+  preferredSize: const Size.fromHeight(85), // Altura personalizada
+  child: AppBar(
+    backgroundColor: settingsModel.isDarkMode
+        ? Colors.black
+        : const Color.fromARGB(255, 255, 255, 255),
+    flexibleSpace: Stack(
+      children: [
+        const Image(
+          image: AssetImage('images/PREFIPS.png'),
+          height: 150,
+          width: double.infinity,
+          fit: BoxFit.cover,
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Column(            
+            children: [
+              SizedBox(height: 30),
+              Text(
+                "Inyección de",
+                style: TextStyle(
                   color: settingsModel.isDarkMode ? Colors.white : Colors.black,
-                  fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
-            iconTheme: IconThemeData(
-              color: settingsModel.isDarkMode ? Colors.white : Colors.black,
-            ),
-            flexibleSpace: const Image(
-              image: AssetImage('images/BannerPREFIPS.png'),
-              height: 100,
-              fit: BoxFit.cover,
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.settings),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SettingsPage()),
-                  );
-                },
+                  fontWeight: FontWeight.w600,
+                  fontSize: 25,
+                ),
+              ),
+              SizedBox(height: 5),
+              Text(
+                "Preformas IPS-400",
+                style: TextStyle(
+                  color: settingsModel.isDarkMode ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 25,
+                ),
               ),
             ],
           ),
+        ),
+      ],
+    ),
+    centerTitle: true,
+    iconTheme: IconThemeData(
+      color: settingsModel.isDarkMode ? Colors.white : Colors.black,
+    ),
+    actions: [
+      IconButton(
+        icon: const Icon(Icons.settings),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SettingsPage()),
+          );
+        },
+      ),
+    ],
+  ),
+),
           drawer: Container(
             color: Colors.black54,
             child: SafeArea(
@@ -242,7 +268,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
             hideNavigationBarWhenKeyboardAppears: true,
             backgroundColor:
                 settingsModel.isDarkMode ? Colors.black : Colors.white,
-            isVisible: true,
+            isVisible: true,            
             navBarStyle: NavBarStyle.style9,
           ),
         ));

@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:proyecto/src/widgets/gradient_expandable_card.dart';
 import 'package:provider/provider.dart';
-import 'package:proyecto/src/widgets/titulospeq.dart';
+import 'package:proyecto/src/widgets/titulos.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:swipeable_tile/swipeable_tile.dart';
 
@@ -177,7 +177,7 @@ class ScreenListDatosPROCEIPS extends StatelessWidget {
     return Scaffold(
         body: Column(
           children: [
-            Titulospeq(titulo: 'REGISTRO DE PROCESOS',tipo: 1,),
+            Titulos(titulo: 'REGISTRO DE PROCESOS',tipo: 1,),
             Expanded(
               child: Consumer<DatosPROCEIPSProvider>(
               builder: (context, provider, _) {
@@ -198,67 +198,39 @@ class ScreenListDatosPROCEIPS extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final dtdatosproceips = datosproceips[index];
               
-                    return SwipeableTile.card(
-                      horizontalPadding: 16,
-                      verticalPadding: 10,
-                      key: ValueKey(dtdatosproceips.id),
-                      swipeThreshold: 0.5,
-                      resizeDuration: const Duration(milliseconds: 300),
-                      color: Colors.white,
-                      shadow: const BoxShadow(
-                        color: Colors.transparent,
-                        blurRadius: 4,
-                        offset: Offset(2, 2),
-                      ),
-                      direction: SwipeDirection.endToStart,
-                      onSwiped: (_) => provider.removeDatito(context, dtdatosproceips.id!),
-                      backgroundBuilder: (context, direction, progress) {
-                        return Container(
-                          color: Colors.red,
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: const Icon(Icons.delete, color: Colors.white),
+                    return GradientExpandableCard(
+                      numeroindex: (index + 1).toString(),
+                      idlista: dtdatosproceips.id,
+                      variableCambiarVentana: EditDatosPROCEIPSForm(
+                    id: dtdatosproceips.id!,
+                    datosPROCEIPS: dtdatosproceips,
+                    
+                                          ) ,
+                      onSwipedAction:() async {
+                    await provider.removeDatito(context, dtdatosproceips.id!);
+                                          },
+                                          subtitulos:{'Hora': dtdatosproceips.Hora, 'PAProd': dtdatosproceips.PAProd},                     
+                    
+                      
+                      expandedContent:generateExpandableContent([
+                    ['Temperatura Tolva Seccionada ', 4, dtdatosproceips.TempTolvaSec],
+                    ['Temperatura de Produccion ', 1,dtdatosproceips.TempProd.toString() + ' °C'],
+                    ['T ciclo ', 1, dtdatosproceips.Tciclo.toString()],
+                    ['T enfri ', 1, dtdatosproceips.Tenfri.toString()],
+                  ]),                 
+                   
+                      hasErrors: dtdatosproceips.hasErrors,
+                      onOpenModal: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditDatosPROCEIPSForm(
+                              id: dtdatosproceips.id!,
+                              datosPROCEIPS: dtdatosproceips,
+                            ),
+                          ),
                         );
                       },
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => EditDatosPROCEIPSForm(
-                                id: dtdatosproceips.id!,
-                                datosPROCEIPS: dtdatosproceips,
-                              ),
-                            ),
-                          );
-                        },
-                        child: GradientExpandableCard(
-                          title: (index + 1).toString(),
-                          subtitletitulo: 'Hora:',
-                          subtitle:dtdatosproceips.Hora,
-                          subtitle2titulo: 'PA Producida:',
-                          subtitle2:dtdatosproceips.PAProd ,
-                          expandedContent: [
-                        
-                        ExpandableContent(label: 'Temperatura Tolva Seccionada: ', doubleListValue: dtdatosproceips.TempTolvaSec),
-                        ExpandableContent(label: 'Temperatura de Produccion: ', stringValue: dtdatosproceips.TempProd.toString()),
-                        ExpandableContent(label: 'T ciclo: ', stringValue: dtdatosproceips.Tciclo.toString()),
-                        ExpandableContent(label: 'T enfri: ', stringValue: dtdatosproceips.Tenfri.toString()),
-                          ],
-                          hasErrors: dtdatosproceips.hasErrors,
-                          onOpenModal: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EditDatosPROCEIPSForm(
-                                  id: dtdatosproceips.id!,
-                                  datosPROCEIPS: dtdatosproceips,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
                     );
                   },
                 );
@@ -392,17 +364,22 @@ class _EditDatosPROCEIPSFormState extends State<EditDatosPROCEIPSForm> {
                 hasErrors:_formKey.currentState?.fields.values.any((field) => field.hasError) ?? false,
                   Hora: values['Hora'] ?? widget.datosPROCEIPS.Hora,
                   PAProd: values['PAProd'] ?? widget.datosPROCEIPS.PAProd,
-                  TempTolvaSec: values['TempTolvaSec'] ?? widget.datosPROCEIPS.TempTolvaSec,
+                  TempTolvaSec: List.generate(
+                  widget.datosPROCEIPS.TempTolvaSec.length,
+                  (index) => double.tryParse(values['TempTolvaSec_$index'] ?? '0') ?? 0,
+                ),
                   TempProd:(values['TempProd']?.isEmpty ?? true)? 0 : double.tryParse(values['TempProd']),
                   Tciclo:(values['Tciclo']?.isEmpty ?? true)? 0 : double.tryParse(values['Tciclo']),
                   Tenfri:(values['Tenfri']?.isEmpty ?? true)? 0 : double.tryParse(values['Tenfri']),
 
                 );
+                 
 
                 Provider.of<DatosPROCEIPSProvider>(context, listen: false)
                     .updateDatito(widget.id, updatedDatito);
 
                 Navigator.pop(context);
+               
             },
             ),)
              )]

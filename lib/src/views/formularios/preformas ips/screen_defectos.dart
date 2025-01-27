@@ -4,9 +4,10 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:proyecto/src/views/formularios/preformas%20ips/widget_defectosips.dart';
+import 'package:proyecto/src/widgets/boton_agregar.dart';
 import 'package:proyecto/src/widgets/gradient_expandable_card.dart';
 import 'package:provider/provider.dart';
-import 'package:proyecto/src/widgets/titulospeq.dart';
+import 'package:proyecto/src/widgets/titulos.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:swipeable_tile/swipeable_tile.dart';
 
@@ -26,7 +27,7 @@ class DatosDEFIPS {
   final bool Inocuidad;
   final double CantidadProductoRetenido;
   final double CanidadProductoCorregido;
-  final String?Observaciones;
+  final String? Observaciones;
 
   // Constructor de la clase
   const DatosDEFIPS(
@@ -47,14 +48,22 @@ class DatosDEFIPS {
       required this.CanidadProductoCorregido,
       this.Observaciones});
 
-       // Factory para crear una instancia desde un Map
+  // Factory para crear una instancia desde un Map
   factory DatosDEFIPS.fromMap(Map<String, dynamic> map) {
     return DatosDEFIPS(
         id: map['id'] as int?,
         hasErrors: map['hasErrors'] == 1,
-        Hora: map['Hora'] as String,        
-        Defectos: (map['Defectos'] as String?)?.split(',').where((item) => item.isNotEmpty).toList() ?? [],
-        Criticidad: (map['Criticidad'] as String?)?.split(',').where((item) => item.isNotEmpty).toList() ?? [],
+        Hora: map['Hora'] as String,
+        Defectos: (map['Defectos'] as String?)
+                ?.split(',')
+                .where((item) => item.isNotEmpty)
+                .toList() ??
+            [],
+        Criticidad: (map['Criticidad'] as String?)
+                ?.split(',')
+                .where((item) => item.isNotEmpty)
+                .toList() ??
+            [],
         SeccionDefecto: map['SeccionDefecto'] as String,
         DefectosEncontrados: map['DefectosEncontrados'] as int,
         Fase: map['Fase'] as String,
@@ -95,8 +104,8 @@ class DatosDEFIPS {
       {int? id,
       bool? hasErrors,
       String? Hora,
-      List<String>?Defectos,
-      List<String>?Criticidad,
+      List<String>? Defectos,
+      List<String>? Criticidad,
       String? SeccionDefecto,
       int? DefectosEncontrados,
       String? Fase,
@@ -113,7 +122,7 @@ class DatosDEFIPS {
         hasErrors: hasErrors ?? this.hasErrors,
         Hora: Hora ?? this.Hora,
         Defectos: Defectos ?? this.Defectos,
-        Criticidad: Criticidad?? this.Criticidad,
+        Criticidad: Criticidad ?? this.Criticidad,
         SeccionDefecto: SeccionDefecto ?? this.SeccionDefecto,
         DefectosEncontrados: DefectosEncontrados ?? this.DefectosEncontrados,
         Fase: Fase ?? this.Fase,
@@ -238,12 +247,15 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
     return Scaffold(
         body: Column(
           children: [
-            const Titulospeq(titulo: 'REGISTRO DE DEFECTOS',tipo: 1,),
+            const Titulos(
+              titulo: 'REGISTRO DE DEFECTOS',
+              tipo: 1,
+            ),
             Expanded(
               child: Consumer<DatosDEFIPSProvider>(
                 builder: (context, provider, _) {
                   final datosdefips = provider.datosdefipsList;
-              
+
                   if (datosdefips.isEmpty) {
                     return const Center(
                       child: Text(
@@ -252,112 +264,82 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
                       ),
                     );
                   }
-              
+
                   return ListView.separated(
                     itemCount: datosdefips.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 8),
                     itemBuilder: (context, index) {
                       final dtdatosdefips = datosdefips[index];
-              
-                      return SwipeableTile.card(
-                        horizontalPadding: 16,
-                        verticalPadding: 10,
-                        key: ValueKey(dtdatosdefips.id),
-                        swipeThreshold: 0.5,
-                        resizeDuration: const Duration(milliseconds: 300),
-                        color: Colors.white,
-                        shadow: const BoxShadow(
-                          color: Colors.transparent,
-                          blurRadius: 4,
-                          offset: Offset(2, 2),
-                        ),
-                        direction: SwipeDirection.endToStart,
-                        onSwiped: (_) =>
-                            provider.removeDatito(context, dtdatosdefips.id!),
-                        backgroundBuilder: (context, direction, progress) {
-                          return Container(
-                            color: Colors.red,
-                            alignment: Alignment.centerRight,
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: const Icon(Icons.delete, color: Colors.white),
+
+                      return GradientExpandableCard(
+                        numeroindex:(index + 1).toString() ,
+                        idlista: dtdatosdefips.id,
+                        onSwipedAction: () async {
+                                              await provider.removeDatito(context, dtdatosdefips.id!);
+                                            },
+                                            variableCambiarVentana: EditDatosDEFIPSForm(
+                                              id: dtdatosdefips.id!,
+                                              datosDEFIPS: dtdatosdefips,
+                                              
+                                            ),
+                        subtitulos: {'Hora': dtdatosdefips.Hora,
+                        'Defectos': dtdatosdefips.Defectos.join(", ")},
+                       
+                        expandedContent: [
+                          ExpandableContent(
+                              label: 'Criticidad: ',
+                              stringListValue: dtdatosdefips.Criticidad),
+                          ExpandableContent(
+                              label: 'Seccion Defecto: ',
+                              stringValue:
+                                  dtdatosdefips.SeccionDefecto.toString()),
+                          ExpandableContent(
+                              label: 'Defectos Encontrados: ',
+                              stringValue: dtdatosdefips.DefectosEncontrados
+                                  .toString()),
+                          ExpandableContent(
+                              label: 'Fase: ',
+                              stringValue: dtdatosdefips.Fase.toString()),
+                          ExpandableContent(
+                              label: 'Palet: ',
+                              boolValue: dtdatosdefips.Palet),
+                          ExpandableContent(
+                              label: 'Empaque: ',
+                              boolValue: dtdatosdefips.Empaque),
+                          ExpandableContent(
+                              label: 'Embalado: ',
+                              boolValue: dtdatosdefips.Embalado),
+                          ExpandableContent(
+                              label: 'Etiquetado: ',
+                              boolValue: dtdatosdefips.Etiquetado),
+                          ExpandableContent(
+                              label: 'Inocuidad: ',
+                              boolValue: dtdatosdefips.Inocuidad),
+                          ExpandableContent(
+                              label: 'Cantidad Producto Retenido: ',
+                              stringValue: dtdatosdefips
+                                  .CantidadProductoRetenido.toString()),
+                          ExpandableContent(
+                              label: 'Canidad Producto Corregido: ',
+                              stringValue: dtdatosdefips
+                                  .CanidadProductoCorregido.toString()),
+                          ExpandableContent(
+                              label: 'Observaciones: ',
+                              stringValue:
+                                  dtdatosdefips.Observaciones.toString()),
+                        ],
+                        hasErrors: dtdatosdefips.hasErrors,
+                        onOpenModal: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditDatosDEFIPSForm(
+                                id: dtdatosdefips.id!,
+                                datosDEFIPS: dtdatosdefips,
+                              ),
+                            ),
                           );
                         },
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EditDatosDEFIPSForm(
-                                  id: dtdatosdefips.id!,
-                                  datosDEFIPS: dtdatosdefips,
-                                ),
-                              ),
-                            );
-                          },
-                          child: GradientExpandableCard(
-                            title: (index + 1).toString(),
-                            subtitletitulo: 'Hora: ',                                                      
-                            subtitle:dtdatosdefips.Hora,
-                            subtitle2titulo: 'Defectos: ',
-                            subtitle2:List.generate(dtdatosdefips.Defectos.length, (index) {
-                            return '${dtdatosdefips.Defectos[index]}';}).join(", "),
-                                  expandedContent: [
-                              ExpandableContent(
-                                  label: 'Criticidad: ',
-                                  stringListValue:
-                                      dtdatosdefips.Criticidad),
-                              ExpandableContent(
-                                  label: 'Seccion Defecto: ',
-                                  stringValue:
-                                      dtdatosdefips.SeccionDefecto.toString()),
-                              ExpandableContent(
-                                  label: 'Defectos Encontrados: ',
-                                  stringValue:
-                                      dtdatosdefips.DefectosEncontrados.toString()),
-                              ExpandableContent(
-                                  label: 'Fase: ',
-                                  stringValue: dtdatosdefips.Fase.toString()),
-                              ExpandableContent(
-                                  label: 'Palet: ', boolValue: dtdatosdefips.Palet),
-                              ExpandableContent(
-                                  label: 'Empaque: ',
-                                  boolValue: dtdatosdefips.Empaque),
-                              ExpandableContent(
-                                  label: 'Embalado: ',
-                                  boolValue: dtdatosdefips.Embalado),
-                              ExpandableContent(
-                                  label: 'Etiquetado: ',
-                                  boolValue: dtdatosdefips.Etiquetado),
-                              ExpandableContent(
-                                  label: 'Inocuidad: ',
-                                  boolValue: dtdatosdefips.Inocuidad),
-                              ExpandableContent(
-                                  label: 'Cantidad Producto Retenido: ',
-                                  stringValue: dtdatosdefips.CantidadProductoRetenido
-                                      .toString()),
-                              ExpandableContent(
-                                  label: 'Canidad Producto Corregido: ',
-                                  stringValue: dtdatosdefips.CanidadProductoCorregido
-                                      .toString()),
-                              ExpandableContent(
-                                  label: 'Observaciones: ',
-                                  stringValue:
-                                      dtdatosdefips.Observaciones.toString()),
-                            ],
-                            hasErrors: dtdatosdefips.hasErrors,
-                            onOpenModal: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditDatosDEFIPSForm(
-                                    id: dtdatosdefips.id!,
-                                    datosDEFIPS: dtdatosdefips,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
                       );
                     },
                   );
@@ -366,55 +348,26 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
             ),
           ],
         ),
-        bottomNavigationBar: Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            child: SizedBox(
-              height: 53,
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent.withOpacity(0.8),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(8),
-                        topRight: Radius.circular(8)),
-                  ),
-                ),
-                onPressed: () {
-                  provider.addDatito(
-                    DatosDEFIPS(
-                      hasErrors: true,
-                      Hora: DateFormat('HH:mm').format(DateTime.now()),
-                      Defectos:[],
-                      Criticidad: [],
-                      SeccionDefecto: '',
-                      DefectosEncontrados: 0,
-                      Fase: '',
-                      Palet: true,
-                      Empaque: true,
-                      Embalado: true,
-                      Etiquetado: true,
-                      Inocuidad: true,
-                      CantidadProductoRetenido: 0,
-                      CanidadProductoCorregido: 0,
-                      Observaciones: '',
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.add, color: Colors.black),
-                label: const Text(
-                  'AGREGAR UN REGISTRO',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            )));
+        bottomNavigationBar: BotonAgregar(
+          provider: provider,
+          datos: DatosDEFIPS(
+            hasErrors: true,
+            Hora: DateFormat('HH:mm').format(DateTime.now()),
+            Defectos: const [],
+            Criticidad: const [],
+            SeccionDefecto: '',
+            DefectosEncontrados: 0,
+            Fase: '',
+            Palet: true,
+            Empaque: true,
+            Embalado: true,
+            Etiquetado: true,
+            Inocuidad: true,
+            CantidadProductoRetenido: 0,
+            CanidadProductoCorregido: 0,
+            Observaciones: '',
+          ),
+        ));
   }
 }
 
@@ -501,12 +454,12 @@ class _EditDatosDEFIPSFormState extends State<EditDatosDEFIPSForm> {
                     ),
                     onPressed: () {
                       _formKey.currentState?.save();
-                      final values = _formKey.currentState!.value;                      
+                      final values = _formKey.currentState!.value;
                       final updatedDatito = widget.datosDEFIPS.copyWith(
                         hasErrors: _formKey.currentState?.fields.values
                                 .any((field) => field.hasError) ??
                             false,
-                        Hora: values['Hora'] ?? widget.datosDEFIPS.Hora,                       
+                        Hora: values['Hora'] ?? widget.datosDEFIPS.Hora,
                         SeccionDefecto: values['SeccionDefecto'] ??
                             widget.datosDEFIPS.SeccionDefecto,
                         DefectosEncontrados:
@@ -546,8 +499,7 @@ class _EditDatosDEFIPSFormState extends State<EditDatosDEFIPSForm> {
                     },
                   ),
                 ))
-          ])
-          );
+          ]));
         },
       ),
     );
@@ -559,7 +511,8 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
     super.key,
     required GlobalKey<FormBuilderState> formKey,
     required this.widget,
-    required this.dropOptions, required this.id,
+    required this.dropOptions,
+    required this.id,
   }) : _formKey = formKey;
 
   final GlobalKey<FormBuilderState> _formKey;
@@ -571,10 +524,11 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
   Widget build(BuildContext context) {
     return FormBuilder(
         key: _formKey,
-        child: Column(children: [          
-          DefectosScreenWidget(id: id,),
-          
-            FormBuilderTextField(
+        child: Column(children: [
+          DefectosScreenWidget(
+            id: id,
+          ),
+          FormBuilderTextField(
             name: 'Hora',
             initialValue: widget.datosDEFIPS.Hora,
             onChanged: (value) {
@@ -742,57 +696,77 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
                 .toList(),
             validator: FormBuilderValidators.required(
                 errorText: 'Seleccione una opción'),
-          ), 
+          ),
           const SizedBox(
             height: 15,
           ),
           SingleChildScrollView(
-  scrollDirection: Axis.horizontal,
-  child: Row(
-    children: [
-      for (var item in [
-        {'label': 'Palet', 'name': 'Palet', 'value': widget.datosDEFIPS.Palet},
-        {'label': 'Empaque', 'name': 'Empaque', 'value': widget.datosDEFIPS.Empaque},
-        {'label': 'Embalado', 'name': 'Embalado', 'value': widget.datosDEFIPS.Embalado},
-        {'label': 'Etiquetado', 'name': 'Etiquetado', 'value': widget.datosDEFIPS.Etiquetado},
-        {'label': 'Inocuidad', 'name': 'Inocuidad', 'value': widget.datosDEFIPS.Inocuidad},
-      ])
-        Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: Container(
-            width: 150,
-            height: 60,
-            padding: const EdgeInsets.all(0),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              border: Border.all(
-                color: const Color.fromARGB(255, 29, 57, 80),
-              ),
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: FormBuilderCheckbox(
-              name: item['name']!,
-              initialValue: item['value']!,
-              onChanged: (value) {
-                final field = _formKey.currentState?.fields[item['name']];
-                field?.validate(); // Valida solo este campo
-                field?.save();
-              },
-              title: Text(
-              item['label']!,              
-              style: const TextStyle(
-                fontSize: 16,
-                color: Color.fromARGB(255, 20, 100, 96),
-                fontWeight: FontWeight.bold,
-              ),
-            ), // Espacio vacío para evitar errores
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                for (var item in [
+                  {
+                    'label': 'Palet',
+                    'name': 'Palet',
+                    'value': widget.datosDEFIPS.Palet
+                  },
+                  {
+                    'label': 'Empaque',
+                    'name': 'Empaque',
+                    'value': widget.datosDEFIPS.Empaque
+                  },
+                  {
+                    'label': 'Embalado',
+                    'name': 'Embalado',
+                    'value': widget.datosDEFIPS.Embalado
+                  },
+                  {
+                    'label': 'Etiquetado',
+                    'name': 'Etiquetado',
+                    'value': widget.datosDEFIPS.Etiquetado
+                  },
+                  {
+                    'label': 'Inocuidad',
+                    'name': 'Inocuidad',
+                    'value': widget.datosDEFIPS.Inocuidad
+                  },
+                ])
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: Container(
+                      width: 150,
+                      height: 60,
+                      padding: const EdgeInsets.all(0),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 29, 57, 80),
+                        ),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: FormBuilderCheckbox(
+                        name: item['name']!,
+                        initialValue: item['value']!,
+                        onChanged: (value) {
+                          final field =
+                              _formKey.currentState?.fields[item['name']];
+                          field?.validate(); // Valida solo este campo
+                          field?.save();
+                        },
+                        title: Text(
+                          item['label']!,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 20, 100, 96),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ), // Espacio vacío para evitar errores
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
-        ),
-    ],
-  ),
-),
-
           const SizedBox(
             height: 20,
           ),
@@ -927,9 +901,9 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 borderSide: const BorderSide(
                     color: Color.fromARGB(255, 29, 57, 80), width: 1.5),
-              ),              
+              ),
             ),
-            keyboardType: TextInputType.text,            
+            keyboardType: TextInputType.text,
           ),
         ]));
   }

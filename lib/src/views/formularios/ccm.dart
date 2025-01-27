@@ -3,6 +3,7 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:proyecto/src/models/settings_model.dart';
 import 'package:proyecto/src/views/formularios/coloracap.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_MP.dart';
 import 'package:proyecto/src/views/formularios/preformas_i5.dart';
 import 'package:proyecto/src/views/formularios/soplado.dart';
 import 'package:proyecto/src/views/formularios/tapas6.dart';
@@ -12,7 +13,7 @@ import 'package:proyecto/src/widgets/settings_page.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_pesos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_datos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_defectos.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/screen_mat_prima.dart';
+
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_procesos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_temperatura.dart';
 
@@ -29,8 +30,8 @@ class _ScreenCCMState extends State<ScreenCCM> {
 
   List<Widget> _buildScreens() {
     return [
-      const ScreenDatos(),
-      ScreenListDatosMPIPS(),
+     const ScreenDatos(),
+      ScreenListDatosMPIPS(),     
       const ScreenListDatosDEFIPS(),
       ScreenListDatosPESOSIPS(),
       ScreenListDatosPROCEIPS(),

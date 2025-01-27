@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:path/path.dart' as p;
 import 'package:proyecto/src/providers/preformas_ips_provider/formulario_principal.dart';
 import 'package:proyecto/src/widgets/boton_agregar.dart';
 import 'package:proyecto/src/widgets/boton_guardarform.dart';
 import 'package:proyecto/src/widgets/checkboxformulario.dart';
 import 'package:proyecto/src/widgets/dropdownformulario.dart';
-import 'package:proyecto/src/widgets/textosimpleformulario.dart';
+
 import 'package:proyecto/src/widgets/gradient_expandable_card.dart';
 import 'package:provider/provider.dart';
+import 'package:proyecto/src/widgets/textosimpleformulario.dart';
 import 'package:proyecto/src/widgets/titulos.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -167,7 +168,7 @@ class DatosPESOSIPSProvider with ChangeNotifier {
     }
   }
 
-  Future<void> removeAllDatitos(BuildContext context) async {
+  Future<void> removeAllDatitos(BuildContext context) async { 
     final confirmation = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -419,12 +420,18 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
               textoError: 'error'),
 
           DropdownSimple(name:'Opciones' , label: 'Opciones',
-           textoError: 'Seleciona', opciones:'Opciones',dropOptions:dropOptions ,onChanged: (value) {
+          
+          
+          
+           textoError: 'Seleciona', opciones:'Opciones',
+           dropOptions:dropOptions ,onChanged: (value) {
               final field = _formKey.currentState?.fields['MateriPrima'];
               field?.validate(); // Valida solo este campo
               field?.save();
             }, ),
-          CheckboxSimple(label: 'ola',name: 'ola',   valorInicial: true  ,),
+          CheckboxSimple(label: 'ola',
+          name: 'ola',   
+          valorInicial: true  ,),
 
           TextoSimple(
               name: 'PesoTara',

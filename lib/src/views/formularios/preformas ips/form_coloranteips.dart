@@ -3,7 +3,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:proyecto/src/services/database_formdatos.dart';
 import 'package:proyecto/src/widgets/custom_dropdown.dart';
 import 'package:proyecto/src/widgets/custom_text_field.dart';
-import 'package:proyecto/src/widgets/titulospeq.dart';
+import 'package:proyecto/src/widgets/titulos.dart';
 
 class FormColorante extends StatefulWidget {
   const FormColorante({super.key});
@@ -63,7 +63,7 @@ class _FormColoranteState extends State<FormColorante> {
           child: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Titulospeq(tipo: 1,titulo: 'COLORANTE',),
+              Titulos(tipo: 0,titulo: 'COLORANTE',),
               SizedBox(
                 height: 10,
               ),

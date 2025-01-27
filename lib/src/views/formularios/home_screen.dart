@@ -4,6 +4,7 @@ import 'package:feature_discovery/feature_discovery.dart';
 import 'package:proyecto/src/models/settings_model.dart';
 import 'package:proyecto/src/views/dashboard.dart';
 import 'package:proyecto/src/views/descripcion_defectos.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/api_service.dart';
 import 'package:proyecto/src/widgets/settings_page.dart';
 import 'package:proyecto/src/views/formularios/preformas_ips.dart';
 import 'package:proyecto/src/widgets/custom_drawer.dart';
@@ -24,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+final ApiService apiService = ApiService();
 
   @override
   void initState() {
@@ -176,15 +178,17 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
                       children: [
                         GestureDetector(
                           onTap: () {
-                            // Acción al presionar el botón
-                          },
+    String message = 'Comida';
+    int number = 34;
+    ApiService().sendMessage(message,number);
+  },
                           child: Container(
                             padding: EdgeInsets.symmetric(
                                 horizontal: 24.0, vertical: 12.0),
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  Color.fromARGB(255, 86, 162, 228),
+                                  Color.fromARGB(255, 116, 218, 33),
                                   Color.fromARGB(255, 134, 173, 177)
                                 ], // Colores del degradado
                                 begin: Alignment.topLeft,
