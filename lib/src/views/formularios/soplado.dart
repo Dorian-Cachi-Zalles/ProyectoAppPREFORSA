@@ -5,6 +5,7 @@ import 'package:proyecto/src/models/settings_model.dart';
 import 'package:proyecto/src/views/formularios/ccm.dart';
 import 'package:proyecto/src/views/formularios/coloracap.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_MP.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/temp.dart';
 import 'package:proyecto/src/views/formularios/preformas_i5.dart';
 import 'package:proyecto/src/views/formularios/tapas6.dart';
 import 'package:proyecto/src/views/formularios/yutzumi.dart';
@@ -12,9 +13,9 @@ import 'package:proyecto/src/views/formularios/home_screen.dart';
 import 'package:proyecto/src/widgets/settings_page.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_pesos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_datos.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/screen_defectos.dart';
+
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_procesos.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/screen_temperatura.dart';
+
 
 class ScreenSoplado extends StatefulWidget {
   const ScreenSoplado({super.key});
@@ -31,7 +32,7 @@ class _ScreenSopladoState extends State<ScreenSoplado> {
     return [
       const ScreenDatos(),
       ScreenListDatosMPIPS(),     
-      const ScreenListDatosDEFIPS(),
+   
       ScreenListDatosPESOSIPS(),
       ScreenListDatosPROCEIPS(),
       ScreenListDatosTEMPIPS(),
@@ -89,7 +90,7 @@ class _ScreenSopladoState extends State<ScreenSoplado> {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => DatosMPIPSProvider()),
-          ChangeNotifierProvider(create: (_) => DatosDEFIPSProvider()),
+      
           ChangeNotifierProvider(create: (_) => DatosPESOSIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosPROCEIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosTEMPIPSProvider()),

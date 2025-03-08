@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 
-
-
-class BotonAgregar<T> extends StatelessWidget {
-  final T provider;
-  final dynamic datos;
+class BotonAgregar extends StatelessWidget {
+  final VoidCallback? onPressed;
 
   const BotonAgregar({
-    super.key,
-    required this.provider,
-    required this.datos,
+    super.key,    
+    this.onPressed,
   });
 
   @override
@@ -40,16 +36,9 @@ class BotonAgregar<T> extends StatelessWidget {
                     topLeft: Radius.circular(8), topRight: Radius.circular(8)),
               ),
             ),
-            onPressed: () {
-              
-              // Verificar si el método existe y no es nulo antes de llamarlo
-              if (provider != null && (provider as dynamic).addDatito != null) {
-                (provider as dynamic).addDatito(datos);
-              } else {
-                debugPrint(
-                    "El provider no es válido o no tiene el método 'addDatito'.");
-              }
-            },
+            onPressed: onPressed,
+
+
             icon: const Icon(Icons.add, color: Colors.black),
             label: const Text(
               'AGREGAR UN REGISTRO',
@@ -58,10 +47,7 @@ class BotonAgregar<T> extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
-            ),
-          ),
-        ),
-      ),
-    );
+            )))));
+      
   }
 }

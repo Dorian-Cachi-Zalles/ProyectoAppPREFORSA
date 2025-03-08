@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/screen_defectos.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/defe.dart';
 
 class DefectosScreenWidget extends StatefulWidget {
   final int id; 

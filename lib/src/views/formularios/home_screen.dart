@@ -246,8 +246,8 @@ final ApiService apiService = ApiService();
                         child: CustomContainer(
                           color1: Color(0xFFFFD700),
                           color2: Color(0xFFFFA500),
-                          icon: Icons.build,
-                          text: "Maquinas",
+                          icon: Icons.content_paste_search_outlined,
+                          text: "Control de Linea",
                           fontSize: settingsModel.fontSize,
                           onTap: () {
                             Navigator.push(
@@ -273,8 +273,8 @@ final ApiService apiService = ApiService();
                         child: CustomContainer(
                           color1: const Color(0xFF1E90FF),
                           color2: const Color.fromARGB(255, 50, 98, 117),
-                          icon: Icons.settings_suggest,
-                          text: "Gestion de\nParametros",
+                          icon: Icons.water_drop,
+                          text: "Control de Aguas",
                           fontSize: settingsModel.fontSize,
                           onTap: () {},
                         ),

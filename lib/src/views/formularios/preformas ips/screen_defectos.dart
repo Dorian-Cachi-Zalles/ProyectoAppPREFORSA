@@ -5,11 +5,10 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:proyecto/src/views/formularios/preformas%20ips/widget_defectosips.dart';
 import 'package:proyecto/src/widgets/boton_agregar.dart';
-import 'package:proyecto/src/widgets/gradient_expandable_card.dart';
+import 'package:proyecto/src/widgets/boxpendiente.dart';
 import 'package:provider/provider.dart';
 import 'package:proyecto/src/widgets/titulos.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:swipeable_tile/swipeable_tile.dart';
 
 class DatosDEFIPS {
   final int? id;
@@ -277,11 +276,7 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
                         onSwipedAction: () async {
                                               await provider.removeDatito(context, dtdatosdefips.id!);
                                             },
-                                            variableCambiarVentana: EditDatosDEFIPSForm(
-                                              id: dtdatosdefips.id!,
-                                              datosDEFIPS: dtdatosdefips,
-                                              
-                                            ),
+                                            
                         subtitulos: {'Hora': dtdatosdefips.Hora,
                         'Defectos': dtdatosdefips.Defectos.join(", ")},
                        
@@ -329,6 +324,7 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
                                   dtdatosdefips.Observaciones.toString()),
                         ],
                         hasErrors: dtdatosdefips.hasErrors,
+                        hasSend: dtdatosdefips.hasErrors,
                         onOpenModal: () {
                           Navigator.push(
                             context,
@@ -349,8 +345,9 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
           ],
         ),
         bottomNavigationBar: BotonAgregar(
-          provider: provider,
-          datos: DatosDEFIPS(
+          onPressed: () {
+          provider.addDatito(
+            DatosDEFIPS(
             hasErrors: true,
             Hora: DateFormat('HH:mm').format(DateTime.now()),
             Defectos: const [],
@@ -366,7 +363,9 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
             CantidadProductoRetenido: 0,
             CanidadProductoCorregido: 0,
             Observaciones: '',
-          ),
+          )
+          );
+        },
         ));
   }
 }

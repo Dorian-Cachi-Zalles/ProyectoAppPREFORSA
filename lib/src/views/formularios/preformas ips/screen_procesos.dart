@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
-import 'package:proyecto/src/widgets/gradient_expandable_card.dart';
+import 'package:proyecto/src/services/bdpreformas.dart';
+import 'package:proyecto/src/widgets/boton_agregar.dart';
+import 'package:proyecto/src/widgets/boton_guardarform.dart';
+import 'package:proyecto/src/widgets/boxpendiente.dart';
 import 'package:provider/provider.dart';
+import 'package:proyecto/src/widgets/textosimpleformulario.dart';
 import 'package:proyecto/src/widgets/titulos.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:swipeable_tile/swipeable_tile.dart';
 
 class DatosPROCEIPS {
   final int? id;
   final bool hasErrors;
   final String Hora;
-  final String PAProd;
+  final String PAprod;
   final List<double> TempTolvaSec;
   final double TempProd;
   final double Tciclo;
@@ -24,7 +26,7 @@ class DatosPROCEIPS {
     this.id,
     required this.hasErrors,
     required this.Hora,
-    required this.PAProd,
+    required this.PAprod,
     required this.TempTolvaSec,
     required this.TempProd,
     required this.Tciclo,
@@ -37,8 +39,8 @@ class DatosPROCEIPS {
       id: map['id'] as int?,
       hasErrors: map['hasErrors'] == 1,
       Hora: map['Hora'] as String,
-      PAProd: map['PAProd'] as String,
-      TempTolvaSec: (map['TempTolvaSec'] as String).split(',').where((item) => item.isNotEmpty).map(double.parse).toList(),  
+      PAprod: map['PAprod'] as String,
+      TempTolvaSec: (map['TempTolvaSec'] as String).split(',').where((item) => item.isNotEmpty).map(double.parse).toList(),
       TempProd: map['TempProd'] as double,
       Tciclo: map['Tciclo'] as double,
       Tenfri: map['Tenfri'] as double
@@ -51,7 +53,7 @@ class DatosPROCEIPS {
       if (id != null) 'id': id,
       'hasErrors': hasErrors ? 1 : 0,
       'Hora': Hora,
-      'PAProd': PAProd,
+      'PAprod': PAprod,
       'TempTolvaSec': TempTolvaSec.join(','),
       'TempProd': TempProd,
       'Tciclo': Tciclo,
@@ -63,13 +65,13 @@ class DatosPROCEIPS {
   DatosPROCEIPS copyWith({
     int? id,
     bool? hasErrors,
-    String? Hora, String? PAProd, List<double>? TempTolvaSec, double? TempProd, double? Tciclo, double? Tenfri
+    String? Hora, String? PAprod, List<double>? TempTolvaSec, double? TempProd, double? Tciclo, double? Tenfri
   }) {
     return DatosPROCEIPS(
       id: id ?? this.id,
       hasErrors: hasErrors ?? this.hasErrors,
       Hora: Hora ?? this.Hora,
-      PAProd: PAProd ?? this.PAProd,
+      PAprod: PAprod ?? this.PAprod,
       TempTolvaSec: TempTolvaSec ?? this.TempTolvaSec,
       TempProd: TempProd ?? this.TempProd,
       Tciclo: Tciclo ?? this.Tciclo,
@@ -81,7 +83,7 @@ class DatosPROCEIPS {
 
 class DatosPROCEIPSProvider with ChangeNotifier {
   late Database _db;
-  final String tableDatosPROCEIPS = 'datosPROCEIPS';
+  final String tableDatosPROCEIPS = 'DatosProceips';
   List<DatosPROCEIPS> _datosproceipsList = [];
 
   List<DatosPROCEIPS> get datosproceipsList => List.unmodifiable(_datosproceipsList);
@@ -92,7 +94,7 @@ class DatosPROCEIPSProvider with ChangeNotifier {
 
   Future<void> _initDatabase() async {
     _db = await openDatabase(
-      p.join(await getDatabasesPath(), 'datosPROCEIPS.db'),
+      p.join(await getDatabasesPath(), 'DatosProceips.db'),
       version: 1,
       onCreate: (db, version) => createTable(db),
     );
@@ -105,7 +107,7 @@ class DatosPROCEIPSProvider with ChangeNotifier {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         hasErrors INTEGER NOT NULL,
         Hora TEXT NOT NULL,
-        PAProd TEXT NOT NULL,
+        PAprod TEXT NOT NULL,
         TempTolvaSec TEXT NOT NULL,
         TempProd REAL NOT NULL,
         Tciclo REAL NOT NULL,
@@ -167,22 +169,57 @@ class DatosPROCEIPSProvider with ChangeNotifier {
       );
     }
   }
+  Future<void> removeAllDatitos(BuildContext context) async {
+    final confirmation = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmación'),
+        content: const Text(
+            '¿Está seguro de que desea eliminar todos los registros? Esta acción no se puede deshacer.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmation == true) {
+      await _db.delete(
+          tableDatosPROCEIPS);
+      _datosproceipsList.clear();
+      notifyListeners();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Todos los registros han sido eliminados.')),
+      );
+    }
+  }
 }
 
 
 class ScreenListDatosPROCEIPS extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<DatosPROCEIPSProvider>(context, listen: false);
+    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
     return Scaffold(
-        body: Column(
-          children: [
-            Titulos(titulo: 'REGISTRO DE PROCESOS',tipo: 1,),
-            Expanded(
-              child: Consumer<DatosPROCEIPSProvider>(
+      body: Column(
+        children: [
+          Titulos(
+            titulo: 'REGISTRO',
+            tipo: 1,
+            eliminar: () => provider.removeAllProcesos(context),
+          ),
+          Expanded(
+            child: Consumer<DatosProviderPrefIPS>(
               builder: (context, provider, _) {
                 final datosproceips = provider.datosproceipsList;
-              
+
                 if (datosproceips.isEmpty) {
                   return const Center(
                     child: Text(
@@ -191,42 +228,37 @@ class ScreenListDatosPROCEIPS extends StatelessWidget {
                     ),
                   );
                 }
-              
+
                 return ListView.separated(
                   itemCount: datosproceips.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final dtdatosproceips = datosproceips[index];
-              
+
                     return GradientExpandableCard(
-                      numeroindex: (index + 1).toString(),
                       idlista: dtdatosproceips.id,
-                      variableCambiarVentana: EditDatosPROCEIPSForm(
-                    id: dtdatosproceips.id!,
-                    datosPROCEIPS: dtdatosproceips,
-                    
-                                          ) ,
-                      onSwipedAction:() async {
-                    await provider.removeDatito(context, dtdatosproceips.id!);
-                                          },
-                                          subtitulos:{'Hora': dtdatosproceips.Hora, 'PAProd': dtdatosproceips.PAProd},                     
-                    
-                      
-                      expandedContent:generateExpandableContent([
-                    ['Temperatura Tolva Seccionada ', 4, dtdatosproceips.TempTolvaSec],
-                    ['Temperatura de Produccion ', 1,dtdatosproceips.TempProd.toString() + ' °C'],
-                    ['T ciclo ', 1, dtdatosproceips.Tciclo.toString()],
-                    ['T enfri ', 1, dtdatosproceips.Tenfri.toString()],
-                  ]),                 
-                   
+                      numeroindex: (index + 1).toString(),
+                      onSwipedAction: () async {
+                        await provider.removeProceso(context, dtdatosproceips.id!);
+                      },
+                                          subtitulos: {},
+                      expandedContent: generateExpandableContent([
+                        ['Hora: ', 1, dtdatosproceips.Hora],
+                        ['PAprod: ', 1, dtdatosproceips.PAprod],
+                        ['TempTolvaSec: ', 4,dtdatosproceips.TempTolvaSec],
+                        ['TempProd: ', 1, dtdatosproceips.TempProd.toString() + ' °C'],
+                        ['Tciclo: ', 1, dtdatosproceips.Tciclo.toString() + ' seg'],	
+                        ['Tenfri: ', 1, dtdatosproceips.Tenfri.toString()],
+                      ]),
                       hasErrors: dtdatosproceips.hasErrors,
+                      hasSend: dtdatosproceips.hasErrors,
                       onOpenModal: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => EditDatosPROCEIPSForm(
                               id: dtdatosproceips.id!,
-                              datosPROCEIPS: dtdatosproceips,
+                              DatosProceips: dtdatosproceips,
                             ),
                           ),
                         );
@@ -235,62 +267,36 @@ class ScreenListDatosPROCEIPS extends StatelessWidget {
                   },
                 );
               },
-                    ),
             ),
-          ],
-        ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: SizedBox(
-          height: 53,
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blueAccent.withOpacity(0.8),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(8),topRight: Radius.circular(8)),
-              ),
-            ),
-            onPressed: ()  {
-          provider.addDatito(
-            DatosPROCEIPS(
-            hasErrors: true,
-              Hora: DateFormat('HH:mm').format(DateTime.now()),
-              PAProd: '',
+          ),
+        ],
+      ),
+      bottomNavigationBar: BotonAgregar(
+          onPressed: () {
+          provider.addProceIPS(
+             DatosPROCEIPS(
+          hasErrors: true,
+              Hora:  DateFormat('HH:mm').format(DateTime.now()),
+              PAprod: '',
               TempTolvaSec: [0,0,0],
               TempProd: 0,
               Tciclo: 0,
               Tenfri: 0,
-            ),
+        )
           );
         },
-        icon: const Icon(Icons.add, color: Colors.black),
-            label: const Text(
-              'AGREGAR UN REGISTRO',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-      ),
-    )));
+        ));
   }
 }
-
-
     class EditProviderDatosPROCEIPS with ChangeNotifier {
   // Implementación del proveedor, puedes agregar lógica específica aquí
 }
 
 class EditDatosPROCEIPSForm extends StatefulWidget {
   final int id;
-  final DatosPROCEIPS datosPROCEIPS;
+  final DatosPROCEIPS DatosProceips;
 
-  const EditDatosPROCEIPSForm({required this.id, required this.datosPROCEIPS, Key? key})
+  const EditDatosPROCEIPSForm({required this.id, required this.DatosProceips, Key? key})
       : super(key: key);
 
   @override
@@ -332,63 +338,30 @@ class _EditDatosPROCEIPSFormState extends State<EditDatosPROCEIPSForm> {
               widget: widget,
               dropOptions: dropOptionsDatosPROCEIPS,
             ),),),),
-          Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom, // Ajuste para teclado
-      ),
-      child:SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.save, color: Colors.black),
-                    label: const Text(
-                      'GUARDAR',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueAccent.withOpacity(0.8),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius:  BorderRadius.only(topLeft: Radius.circular(8),topRight: Radius.circular(8)),
-                      ),
-                    ),
-            onPressed: () {
+          BotonesFormulario(
+            onGuardar: () {
                 _formKey.currentState?.save();
                 final values = _formKey.currentState!.value;
 
-                final updatedDatito = widget.datosPROCEIPS.copyWith(
+                final updatedDatito = widget.DatosProceips.copyWith(
                 hasErrors:_formKey.currentState?.fields.values.any((field) => field.hasError) ?? false,
-                  Hora: values['Hora'] ?? widget.datosPROCEIPS.Hora,
-                  PAProd: values['PAProd'] ?? widget.datosPROCEIPS.PAProd,
-                  TempTolvaSec: List.generate(
-                  widget.datosPROCEIPS.TempTolvaSec.length,
-                  (index) => double.tryParse(values['TempTolvaSec_$index'] ?? '0') ?? 0,
-                ),
+                  Hora: values['Hora'] ?? widget.DatosProceips.Hora,
+                  PAprod: values['PAprod'] ?? widget.DatosProceips.PAprod,
+                  TempTolvaSec: values['TempTolvaSec'] ?? widget.DatosProceips.TempTolvaSec,
                   TempProd:(values['TempProd']?.isEmpty ?? true)? 0 : double.tryParse(values['TempProd']),
                   Tciclo:(values['Tciclo']?.isEmpty ?? true)? 0 : double.tryParse(values['Tciclo']),
                   Tenfri:(values['Tenfri']?.isEmpty ?? true)? 0 : double.tryParse(values['Tenfri']),
 
                 );
-                 
 
                 Provider.of<DatosPROCEIPSProvider>(context, listen: false)
                     .updateDatito(widget.id, updatedDatito);
 
                 Navigator.pop(context);
-               
-            },
-            ),)
-             )]
-            )
-          );
-
-        },
-      ),
-    );
+             },
+            ),
+          ]));
+        }));
   }
 }
 
@@ -401,7 +374,7 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
   }) : _formKey = formKey;
 
   final GlobalKey<FormBuilderState> _formKey;
-  final  widget;
+  final widget;
   final Map<String, List<dynamic>> dropOptions;
 
   @override
@@ -411,250 +384,79 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
       child: Column(
         children: [
 
-          const SizedBox(height: 15,),
-          FormBuilderTextField(
-            name: 'Hora',
-            initialValue: widget.datosPROCEIPS.Hora,
-            onChanged: (value) {
-            final field = _formKey.currentState?.fields['Hora'];
-            field?.validate(); // Valida solo este campo
-            field?.save();
-          },
-            decoration: InputDecoration(labelText: 'Hora',
-            labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold),  
-              filled: true,
-              fillColor: Colors.grey[200], // Color de fondo de los campos
-              errorStyle: TextStyle(
-              fontSize: 13, // Tamaño de fuente del mensaje de error
-              height: 1,  // Altura de línea (mayor para permitir dos líneas)
-              color: Colors.red, // Color del mensaje de error (puedes personalizarlo)
-            ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              focusedBorder:OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: const Color.fromARGB(255, 29, 57, 80), width: 1.5),
-            ),
-              suffixIcon: Builder(
-                builder: (context) {
-                  final isValid = _formKey.currentState?.fields['Hora']?.isValid ?? false;
-                  return Icon(
-                    isValid ? Icons.check_circle : Icons.error,
-                    color: isValid ? Colors.green : Colors.red,
-                  );
-                },
-              ),
-            ),
-            keyboardType: TextInputType.text,
-            validator: FormBuilderValidators.required(errorText: 'El campo no puede 7f estar vacío'),
-          ),
-          const SizedBox(height: 15,),
-          FormBuilderTextField(
-            name: 'PAProd',
-            initialValue: widget.datosPROCEIPS.PAProd,
-            onChanged: (value) {
-            final field = _formKey.currentState?.fields['PAProd'];
-            field?.validate(); // Valida solo este campo
-            field?.save();
-          },
-            decoration: InputDecoration(labelText: 'PA Producido',
-            labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold),  
-              filled: true,
-              fillColor: Colors.grey[200], // Color de fondo de los campos
-              errorStyle: TextStyle(
-              fontSize: 13, // Tamaño de fuente del mensaje de error
-              height: 1,  // Altura de línea (mayor para permitir dos líneas)
-              color: Colors.red, // Color del mensaje de error (puedes personalizarlo)
-            ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              focusedBorder:OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: const Color.fromARGB(255, 29, 57, 80), width: 1.5),
-            ),
-              suffixIcon: Builder(
-                builder: (context) {
-                  final isValid = _formKey.currentState?.fields['PAProd']?.isValid ?? false;
-                  return Icon(
-                    isValid ? Icons.check_circle : Icons.error,
-                    color: isValid ? Colors.green : Colors.red,
-                  );
-                },
-              ),
-            ),
-            keyboardType: TextInputType.text,
-            validator: FormBuilderValidators.required(errorText: 'El campo no puede 7f estar vacío'),
-          ),
-            const SizedBox(height: 15,),
-          ...List.generate(
-            widget.datosPROCEIPS.TempTolvaSec.length,
-            (index) =>Padding(
-              padding: const EdgeInsets.only(bottom: 15.0),
-              child:FormBuilderTextField(
-              name: 'TempTolvaSec_$index',
-              initialValue: widget.datosPROCEIPS.TempTolvaSec[index].toString(),
+          TextoSimple(
+              name: 'Hora',
               onChanged: (value) {
-            final field = _formKey.currentState?.fields['TempTolvaSec_$index'];
-            field?.validate(); // Valida solo este campo
-            field?.save();
-          },
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration: InputDecoration(
-              labelText: 'Temp Tolva Sec ' + (index + 1).toString(),
-              labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold),
-              filled: true,
-              fillColor: Colors.grey[200], // Color de fondo de los campos
-              errorStyle: TextStyle(
-              fontSize: 13, // Tamaño de fuente del mensaje de error
-              height: 1,  // Altura de línea (mayor para permitir dos líneas)
-              color: Colors.red, // Color del mensaje de error (puedes personalizarlo)
-            ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              focusedBorder:OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: const Color.fromARGB(255, 29, 57, 80), width: 1.5),
-            ),
-              suffixIcon: Builder(
-                builder: (context) {
-                  final isValid = _formKey.currentState?.fields['TempTolvaSec_$index']?.isValid ?? false;
-                  return Icon(
-                    isValid ? Icons.check_circle : Icons.error,
-                    color: isValid ? Colors.green : Colors.red,
-                  );
-                },
-              ),
-                  ),
-              keyboardType: TextInputType.text,
-              validator: FormBuilderValidators.compose([
-                FormBuilderValidators.required(errorText: 'El campo no puede 7f estar vacío'),
+                final field = _formKey.currentState?.fields['Hora'];
+                field?.validate(); // Valida solo este campo
+                field?.save();
+              },
+              label: 'Hora',
+              valorInicial: widget.DatosProceips.Hora,
+              textoError: 'error'),
 
-                FormBuilderValidators.integer(errorText: 'Debe ser un número 7f entero'),
-                FormBuilderValidators.min(0, errorText: 'Debe ser mayor o 7f igual a 0'),
-                FormBuilderValidators.max(100, errorText: 'Debe ser menor o 7f igual a 100'),
+          TextoSimple(
+              name: 'PAprod',
+              onChanged: (value) {
+                final field = _formKey.currentState?.fields['PAprod'];
+                field?.validate(); // Valida solo este campo
+                field?.save();
+              },
+              label: 'Paprod',
+              valorInicial: widget.DatosProceips.PAprod,
+              textoError: 'error'),
 
-              ]),
-            ),),
-          ),
-          const SizedBox(height: 15,),
-          FormBuilderTextField(
-            name: 'TempProd',
-            initialValue: widget.datosPROCEIPS.TempProd.toString(),
-            onChanged: (value) {
-            final field = _formKey.currentState?.fields['TempProd'];
-            field?.validate(); // Valida solo este campo
-            field?.save();
-          },
-            decoration: InputDecoration(labelText: 'Temp Prod',
-            labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold),  
-              filled: true,
-              fillColor: Colors.grey[200], // Color de fondo de los campos
-              errorStyle: TextStyle(
-              fontSize: 13, // Tamaño de fuente del mensaje de error
-              height: 1,  // Altura de línea (mayor para permitir dos líneas)
-              color: Colors.red, // Color del mensaje de error (puedes personalizarlo)
-            ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              focusedBorder:OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: const Color.fromARGB(255, 29, 57, 80), width: 1.5),
-            ),
-              suffixIcon: Builder(
-                builder: (context) {
-                  final isValid = _formKey.currentState?.fields['TempProd']?.isValid ?? false;
-                  return Icon(
-                    isValid ? Icons.check_circle : Icons.error,
-                    color: isValid ? Colors.green : Colors.red,
-                  );
-                },
-              ),
-            ),
-            keyboardType: TextInputType.text,
-            validator: FormBuilderValidators.required(errorText: 'El campo no puede 7f estar vacío'),
-          ),
-          const SizedBox(height: 15,),
-          FormBuilderTextField(
-            name: 'Tciclo',
-            initialValue: widget.datosPROCEIPS.Tciclo.toString(),
-            onChanged: (value) {
-            final field = _formKey.currentState?.fields['Tciclo'];
-            field?.validate(); // Valida solo este campo
-            field?.save();
-          },
-            decoration: InputDecoration(labelText: 'T ciclo',
-            labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold),  
-              filled: true,
-              fillColor: Colors.grey[200], // Color de fondo de los campos
-              errorStyle: TextStyle(
-              fontSize: 13, // Tamaño de fuente del mensaje de error
-              height: 1,  // Altura de línea (mayor para permitir dos líneas)
-              color: Colors.red, // Color del mensaje de error (puedes personalizarlo)
-            ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              focusedBorder:OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: const Color.fromARGB(255, 29, 57, 80), width: 1.5),
-            ),
-              suffixIcon: Builder(
-                builder: (context) {
-                  final isValid = _formKey.currentState?.fields['Tciclo']?.isValid ?? false;
-                  return Icon(
-                    isValid ? Icons.check_circle : Icons.error,
-                    color: isValid ? Colors.green : Colors.red,
-                  );
-                },
-              ),
-            ),
-            keyboardType: TextInputType.text,
-            validator: FormBuilderValidators.required(errorText: 'El campo no puede 7f estar vacío'),
-          ),
-          const SizedBox(height: 15,),
-          FormBuilderTextField(
-            name: 'Tenfri',
-            initialValue: widget.datosPROCEIPS.Tenfri.toString(),
-            onChanged: (value) {
-            final field = _formKey.currentState?.fields['Tenfri'];
-            field?.validate(); // Valida solo este campo
-            field?.save();
-          },
-            decoration: InputDecoration(labelText: 'T enfriamiento',
-            labelStyle: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 20, 100, 96),fontWeight: FontWeight.bold),  
-              filled: true,
-              fillColor: Colors.grey[200], // Color de fondo de los campos
-              errorStyle: TextStyle(
-              fontSize: 13, // Tamaño de fuente del mensaje de error
-              height: 1,  // Altura de línea (mayor para permitir dos líneas)
-              color: Colors.red, // Color del mensaje de error (puedes personalizarlo)
-            ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              focusedBorder:OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: const Color.fromARGB(255, 29, 57, 80), width: 1.5),
-            ),
-              suffixIcon: Builder(
-                builder: (context) {
-                  final isValid = _formKey.currentState?.fields['Tenfri']?.isValid ?? false;
-                  return Icon(
-                    isValid ? Icons.check_circle : Icons.error,
-                    color: isValid ? Colors.green : Colors.red,
-                  );
-                },
-              ),
-            ),
-            keyboardType: TextInputType.text,
-            validator: FormBuilderValidators.required(errorText: 'El campo no puede 7f estar vacío'),
-          ),
+            const SizedBox(height: 15,),
+            ...List.generate(
+              widget.DatosProceips.TempTolvaSec.length,
+              (index) => Padding(
+                padding: const EdgeInsets.only(bottom: 15.0),
+                child: TextoSimple(
+              name: 'TempTolvaSec',
+              onChanged: (value) {
+                final field = _formKey.currentState?.fields['TempTolvaSec'];
+                field?.validate(); // Valida solo este campo
+                field?.save();
+              },
+              label: 'Temptolvasec',
+              valorInicial: widget.DatosProceips.TempTolvaSec[index].toString(),  
+              textoError: 'error'),
+            )),
+          TextoSimple(
+              name: 'TempProd',
+              onChanged: (value) {
+                final field = _formKey.currentState?.fields['TempProd'];
+                field?.validate(); // Valida solo este campo
+                field?.save();
+              },
+              label: 'Tempprod',
+              valorInicial: widget.DatosProceips.TempProd.toString(),
+              textoError: 'error'),
+
+          TextoSimple(
+              name: 'Tciclo',
+              onChanged: (value) {
+                final field = _formKey.currentState?.fields['Tciclo'];
+                field?.validate(); // Valida solo este campo
+                field?.save();
+              },
+              label: 'Tciclo',
+              valorInicial: widget.DatosProceips.Tciclo.toString(),
+              textoError: 'error'),
+
+          TextoSimple(
+              name: 'Tenfri',
+              onChanged: (value) {
+                final field = _formKey.currentState?.fields['Tenfri'];
+                field?.validate(); // Valida solo este campo
+                field?.save();
+              },
+              label: 'Tenfri',
+              valorInicial: widget.DatosProceips.Tenfri.toString(),
+              textoError: 'error'),
+
     ]
-          )
-          );
+      ),
+    );
   }
 }

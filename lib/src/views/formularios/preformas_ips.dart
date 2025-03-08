@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:proyecto/src/models/settings_model.dart';
+import 'package:proyecto/src/services/bdpreformas.dart';
 import 'package:proyecto/src/views/formularios/home_screen.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/defe.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/formmensajes.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/pruebadatoslaravel.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_MP.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/screen_defectos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_procesos.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/screen_temperatura.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/temp.dart';
 import 'package:proyecto/src/widgets/settings_page.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_pesos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_datos.dart';
@@ -24,9 +27,9 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
 
   List<Widget> _buildScreens() {
     return [
-      const ScreenDatos(),
+      const MessagesPage2(),
       ScreenListDatosMPIPS(),     
-      const ScreenListDatosDEFIPS(),
+      ScreenListDatosDEFIPS(),
       ScreenListDatosPESOSIPS(),
       ScreenListDatosPROCEIPS(),
       ScreenListDatosTEMPIPS(),
@@ -85,7 +88,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
         providers: [
           ChangeNotifierProvider(create: (_) => DatosMPIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosDEFIPSProvider()),
-          ChangeNotifierProvider(create: (_) => DatosPESOSIPSProvider()),
+          ChangeNotifierProvider(create: (_) => DatosProviderPrefIPS()),
           ChangeNotifierProvider(create: (_) => DatosPROCEIPSProvider()),
          ChangeNotifierProvider(create: (_) => DatosTEMPIPSProvider()),
           ChangeNotifierProvider(create: (_) => EditProviderDatosPESOSIPS()),

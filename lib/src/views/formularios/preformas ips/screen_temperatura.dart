@@ -3,7 +3,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
-import 'package:proyecto/src/widgets/gradient_expandable_card.dart';
+import 'package:proyecto/src/widgets/boxpendiente.dart';
 import 'package:provider/provider.dart';
 import 'package:proyecto/src/widgets/titulos.dart';
 import 'package:proyecto/src/widgets/titulospeq.dart';
@@ -198,12 +198,7 @@ class ScreenListDatosTEMPIPS extends StatelessWidget {
                         'Hora': dtdatostempips.Hora,
                       },
                       numeroindex: (index + 1).toString(),
-                      idlista: dtdatostempips.id,
-                      variableCambiarVentana: EditDatosTEMPIPSForm(
-                    id: dtdatostempips.id!,
-                    datosTEMPIPS: dtdatostempips,
-                    
-                                          ) ,
+                      idlista: dtdatostempips.id,                     
                       onSwipedAction:() async {
                     await provider.removeDatito(context, dtdatostempips.id!);
                                           }, 
@@ -214,6 +209,7 @@ class ScreenListDatosTEMPIPS extends StatelessWidget {
                     ExpandableContent(label: 'Tcuello: ', doubleListValue: dtdatostempips.Tcuello),
                       ],
                       hasErrors: dtdatostempips.hasErrors,
+                       hasSend: dtdatostempips.hasErrors,
                       onOpenModal: () {
                         Navigator.push(
                           context,

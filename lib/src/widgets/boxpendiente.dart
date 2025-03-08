@@ -52,11 +52,10 @@ class GradientExpandableCard extends StatefulWidget {
   final String? titulo;
   final Map<String, String> subtitulos;
   final List<ExpandableContent> expandedContent;
-  final VoidCallback onOpenModal;
+  final VoidCallback ? onOpenModal;
   final bool hasErrors;
-  final VoidCallback onSwipedAction; // Acción cuando se hace swipe
-  final Widget
-      variableCambiarVentana; // Widget que representa la ventana o contenido
+  final bool hasSend;
+  final VoidCallback ? onSwipedAction; // Acción cuando se hace swipe  
   final int? idlista; // ID gestionado por el Provider
 
   const GradientExpandableCard({
@@ -67,9 +66,8 @@ class GradientExpandableCard extends StatefulWidget {
     required this.expandedContent,
     required this.onOpenModal,
     required this.hasErrors,
-    required this.onSwipedAction,
-    required this.variableCambiarVentana,
-    required this.idlista,
+    required this.onSwipedAction,    
+    required this.idlista, required this.hasSend,
   }) : super(key: key);
 
   @override
@@ -93,7 +91,7 @@ class _GradientExpandableCardState extends State<GradientExpandableCard>
         verticalPadding: 10,
         key: ValueKey(
             widget.idlista), // Identificador único del Provider
-        swipeThreshold: 0.5,
+        swipeThreshold:0.5,
         resizeDuration: const Duration(milliseconds: 300),
         color: Colors.white,
         shadow: const BoxShadow(
@@ -101,8 +99,8 @@ class _GradientExpandableCardState extends State<GradientExpandableCard>
           blurRadius: 4,
           offset: Offset(2, 2),
         ),
-        direction: SwipeDirection.endToStart,
-        onSwiped: (_) => widget.onSwipedAction(),
+         direction: widget.hasSend ? SwipeDirection.none : SwipeDirection.endToStart, // Desactiva swipe
+        onSwiped: (_) => widget.onSwipedAction!(),
         backgroundBuilder: (context, direction, progress) {
           return Container(
             color: Colors.red,
@@ -113,12 +111,7 @@ class _GradientExpandableCardState extends State<GradientExpandableCard>
         },
         child: GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => widget.variableCambiarVentana,
-                ),
-              );
+              widget.onOpenModal!();
             },
             child: Card(
                 shape: RoundedRectangleBorder(

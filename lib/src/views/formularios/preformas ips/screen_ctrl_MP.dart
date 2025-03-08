@@ -6,7 +6,7 @@ import 'package:proyecto/src/widgets/boton_agregar.dart';
 import 'package:proyecto/src/widgets/boton_guardarform.dart';
 import 'package:proyecto/src/widgets/checkboxformulario.dart';
 import 'package:proyecto/src/widgets/dropdownformulario.dart';
-import 'package:proyecto/src/widgets/gradient_expandable_card.dart';
+import 'package:proyecto/src/widgets/boxpendiente.dart';
 import 'package:provider/provider.dart';
 import 'package:proyecto/src/widgets/textosimpleformulario.dart';
 import 'package:proyecto/src/widgets/titulos.dart';
@@ -301,11 +301,7 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
                       numeroindex: (index + 1).toString(),
                       onSwipedAction: () async {
                         await provider.removeDatito(context, dtdatosmpips.id!);
-                      },
-                      variableCambiarVentana: EditDatosMPIPSForm(
-                        id: dtdatosmpips.id!,
-                        datosMpIps: dtdatosmpips,
-                      ),
+                      },                      
                       titulo: 'Materia Prima',
                       subtitulos: {
                         'MateriPrima': dtdatosmpips.MateriPrima,                        
@@ -321,6 +317,7 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
                         ['Conformidad: ', 5, dtdatosmpips.Conformidad],
                       ]),
                       hasErrors: dtdatosmpips.hasErrors,
+                      hasSend: dtdatosmpips.hasErrors,
                       onOpenModal: () {
                         Navigator.push(
                           context,
@@ -341,8 +338,9 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
         ],
       ),
       bottomNavigationBar: BotonAgregar(
-        provider: provider,
-        datos: const DatosMPIPS(
+        onPressed: () {
+          provider.addDatito(
+            const DatosMPIPS(
           hasErrors: true,
               MateriPrima: '',
               INTF: '',
@@ -353,8 +351,9 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
               Humedad: 0,
               Conformidad: true,
         ),
-      ),
-    );
+          );
+        },));
+    
   }
 
   void _showBottomSheet() {
@@ -454,8 +453,8 @@ class _EditDatosMPIPSFormState extends State<EditDatosMPIPSForm> {
               widget: widget,
               dropOptions: dropOptionsDatosMPIPS,
             ),),),),
-          BotonGuardarForm(
-            onPressed: () {
+          BotonesFormulario(
+            onGuardar: () {
                 _formKey.currentState?.save();
                 final values = _formKey.currentState!.value;
 
