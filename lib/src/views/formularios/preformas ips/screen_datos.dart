@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
-import 'package:proyecto/src/providers/preformas_ips_provider/formulario_principal.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/formulario_principal.dart';
 import 'package:proyecto/src/services/database_formdatos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_pesos.dart';
 import 'package:proyecto/src/widgets/custom_dropdown.dart';

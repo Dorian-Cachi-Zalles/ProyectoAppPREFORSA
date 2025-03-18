@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:proyecto/src/services/bdpreformas.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/Providerids.dart';
 import 'package:proyecto/src/widgets/nuevobotonguardar.dart';
-import 'package:proyecto/src/providers/preformas_ips_provider/formulario_principal.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/formulario_principal.dart';
 import 'package:proyecto/src/widgets/boton_agregar.dart';
 import 'package:proyecto/src/widgets/boxpendiente.dart';
 import 'package:provider/provider.dart';
@@ -245,7 +246,7 @@ class ScreenListDatosPESOSIPS extends StatelessWidget {
           Titulos(
             titulo: 'REGISTROS DE PESOS',
             tipo: 0,
-            eliminar: () => provider.removeAllPesos(),
+            accion: () => provider.removeAllPesos(),
           ),
           Expanded(
             child: Consumer<DatosProviderPrefIPS>(
@@ -305,16 +306,16 @@ class ScreenListDatosPESOSIPS extends StatelessWidget {
       ),
       bottomNavigationBar: BotonAgregar(
         onPressed: () async {
-  int? idregistro = await providerregistro.getNumeroById(3);
+  int? idregistro = await providerregistro.getNumeroById(1);
 
   if (idregistro == null || idregistro == 0) {
     print("El idregistro no es válido, no se ejecutará addPesosIPS");
     return; // Detiene la ejecución si el idregistro es 0 o null
   } provider.addPesosIPS(DatosPESOSIPS(
     hasErrors: true,
-    hasSend: true,
+    hasSend: false,
     idregistro: idregistro,  // Ya sabemos que no es 0 ni null
-    Hora: 'ola prueba',
+    Hora: DateFormat('HH:mm').format(DateTime.now()),
     PA: '',
     PesoTara: 45,
     PesoNeto: 0,
@@ -386,25 +387,48 @@ class _EditDatosPESOSIPSFormState extends State<EditDatosPESOSIPSForm> {
             ),
           ),
           BotonDeslizable(
-  onPressed: () async {
+  onPressed: () async{
   _formKey.currentState?.save();
   final values = _formKey.currentState!.value;
+  final updatedDatito = widget.datosPESOSIPS.copyWith(
+    hasErrors:_formKey.currentState?.fields.values.any((field) => field.hasError) ?? false,
+    idregistro:widget.datosPESOSIPS.idregistro ,
+    Hora: values['Hora'] ?? widget.datosPESOSIPS.Hora,
+    PA: values['PA'] ?? widget.datosPESOSIPS.PA,
+    PesoTara: (values['PesoTara']?.isEmpty ?? true)? 0: double.tryParse(values['PesoTara']),
+    PesoNeto: (values['PesoNeto']?.isEmpty ?? true)? 0: double.tryParse(values['PesoNeto']),
+    PesoTotal: (values['PesoTotal']?.isEmpty ?? true)? 0: double.tryParse(values['PesoTotal']),  
 
-  final updatedDatitopeso = DatosPESOSIPS.fromMap({
-    "Hora": values['Hora'] ?? widget.datosPESOSIPS.Hora,
-    "PA": values['PA'] ?? widget.datosPESOSIPS.PA,
-    "PesoTara": double.tryParse(values['PesoTara'] ?? '0') ?? 0,
-    "PesoNeto": double.tryParse(values['PesoNeto'] ?? '0') ?? 0,
-    "PesoTotal": double.tryParse(values['PesoTotal'] ?? '0') ?? 0,
-  });
+  ); 
 
   final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
 
-  await provider.updatePESO(widget.id, updatedDatitopeso);
+  await provider.updatePESO(widget.id, updatedDatito);
 
   Navigator.pop(context);
 },
-  onSwipedAction: () {
+  onSwipedAction: () async{
+   final providerregistro = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+
+bool enviado = await providerregistro.enviarDatosAPIPeso(widget.id);
+
+if (!enviado) {
+  print("❌ Error al enviar los datos");
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text("Error al enviar los datos. Verifique su conexión."),
+      backgroundColor: Colors.red,
+    ),
+  );
+} else {
+  final terminar = widget.datosPESOSIPS.copyWith(hasSend: true);
+
+  final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+  await provider.updatePESO(widget.id, terminar);
+
+  Navigator.pop(context);
+}
     
   },
 ),
@@ -473,8 +497,8 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
               valorInicial: widget.datosPESOSIPS.PA,
               textoError: 'error'),
         CustomInputField(
-              name: 'PesoTara',
-              onChanged: (value) {
+              name: 'PesoTara',              
+              onChanged: (value) {                
                 final field = _formKey.currentState?.fields['PesoTara'];
                 field?.validate(); // Valida solo este campo
                 field?.save();

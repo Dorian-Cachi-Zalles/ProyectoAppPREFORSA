@@ -152,6 +152,38 @@ Future<int> createRegistro() async {
   }
 }
 
+Future<int> createRegistroIPS() async {
+  try {
+    final response = await http
+        .post(
+          Uri.parse('http://192.168.0.100:8000/api/IPS'),
+          body: json.encode({
+            'Modalidad':'Normal'           
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        )
+        .timeout(const Duration(seconds: 5)); // Tiempo límite de espera
+
+    if (response.statusCode == 201) {
+      final data = json.decode(response.body);
+      final int messageId = data['id'];
+      print("Mensaje creado correctamente con ID: $messageId");
+      return messageId;  
+    } else {
+      throw Exception('Error en la respuesta del servidor: ${response.statusCode}');
+    }
+  } on TimeoutException {
+    throw Exception('Tiempo de espera agotado al conectar con el servidor');
+  } on SocketException {
+    throw Exception('Error de conexión con el servidor');
+  } catch (e) {
+    throw Exception('Error inesperado: $e');
+  }
+}
+
+
 Future<int?> getNumeroById(int id) async {
   final List<Map<String, dynamic>> result = await _db.query(
     tableRegistros,
@@ -165,8 +197,5 @@ Future<int?> getNumeroById(int id) async {
   }
   return null; // Retorna null si no encuentra el ID
 }
-
-
-
 
 }

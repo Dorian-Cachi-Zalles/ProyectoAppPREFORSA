@@ -213,7 +213,7 @@ class ScreenListDatosPROCEIPS extends StatelessWidget {
           Titulos(
             titulo: 'REGISTRO',
             tipo: 1,
-            eliminar: () => provider.removeAllProcesos(context),
+            accion: () => provider.removeAllProcesos(context),
           ),
           Expanded(
             child: Consumer<DatosProviderPrefIPS>(

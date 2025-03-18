@@ -4,55 +4,62 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
 
-class DatosPrefIPS {
+class DatosInicialesIps {
   final int? id;
-  final int idRegistro;  
-  final bool hasSend;
-  
+  final bool hasErrors;  
+  final double PesoPromedio;
+  final double Saldos;
+  final double CajasControladas;
 
   // Constructor de la clase
-  const DatosPrefIPS(
-      {this.id,
-      required this.idRegistro,     
-      required this.hasSend
-      });
+  const DatosInicialesIps({
+    this.id,
+    required this.hasErrors,    
+    required this.PesoPromedio,
+    required this.Saldos,
+    required this.CajasControladas
+  });
 
   // Factory para crear una instancia desde un Map
-  factory DatosPrefIPS.fromMap(Map<String, dynamic> map) {
-    return DatosPrefIPS(
-        id: map['id'] as int?,
-        idRegistro: map['idRegistro'] as int,
-        hasSend: map['hasSend'] == 1
-        );        
+  factory DatosInicialesIps.fromMap(Map<String, dynamic> map) {
+    return DatosInicialesIps(
+      id: map['id'] as int?,
+      hasErrors: map['hasErrors'] == 1,      
+      PesoPromedio: map['PesoPromedio'] as double,
+      Saldos: map['Saldos'] as double,
+      CajasControladas: map['CajasControladas'] as double
+    );
   }
 
   // Método para convertir la instancia a Map
   Map<String, dynamic> toMap() {
     return {
       if (id != null) 'id': id,
-      'idRegistro': idRegistro,
-      'hasSend': hasSend ? 1 : 0,
-      
+      'hasErrors': hasErrors ? 1 : 0,      
+      'PesoPromedio': PesoPromedio,
+      'Saldos': Saldos,
+      'CajasControladas': CajasControladas
     };
   }
 
   // Método copyWith
-  DatosPrefIPS copyWith(
-      {int? id,
-      int? idRegistro,
-      bool? hasSend,
-      }) {
-    return DatosPrefIPS(
-        id: id ?? this.id,
-        idRegistro: idRegistro ?? this.idRegistro,       
-        hasSend: hasSend ?? this.hasSend
-        );
-        
+  DatosInicialesIps copyWith({
+    int? id,
+    bool? hasErrors,
+    double? PesoPromedio, double? Saldos, double? CajasControladas
+  }) {
+    return DatosInicialesIps(
+      id: id ?? this.id,
+      hasErrors: hasErrors ?? this.hasErrors,      
+      PesoPromedio: PesoPromedio ?? this.PesoPromedio,
+      Saldos: Saldos ?? this.Saldos,
+      CajasControladas: CajasControladas ?? this.CajasControladas
+    );
   }
 }
 
 class MessageProvider extends ChangeNotifier {
-  final String baseUrl = 'http://192.168.0.100:8000/api/prueba';
+  final String baseUrl = 'http://192.168.0.100:8000/api/';
 
   Future<Map<String, dynamic>?> fetchLatestMessage() async {
     try {
@@ -70,7 +77,7 @@ class MessageProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateMessage(String newMessage, bool newNumber, String tipos, bool teGusta) async {
+  Future<void> updateMessage(String newMessage, int newNumber, String tipos, bool teGusta) async {
     try {
       final response = await http.put(
         Uri.parse(baseUrl),
@@ -130,9 +137,9 @@ class _MessageFormScreenState extends State<MessageFormScreen> {
 
           final data = snapshot.data!;
           String _message = data['message'] ?? '';
-          bool _number = data['number'] ?? false;
+          String _number = data['number']?.toString() ?? '0';
           String _tipos = data['tipos'] ?? 'Opción 1';
-          bool _teGusta = data['te_gusta'] ?? false;
+          bool _teGusta = (data['te_gusta'] == 1);
 
           return Padding(
             padding: EdgeInsets.all(16.0),
@@ -147,11 +154,13 @@ class _MessageFormScreenState extends State<MessageFormScreen> {
                     decoration: InputDecoration(labelText: 'Mensaje'),
                   ),
                   SizedBox(height: 10),
-                  FormBuilderCheckbox(
+                  FormBuilderTextField(
                     name: 'number',
                     initialValue: _number,
-                    title: Text('Número habilitado'),
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(labelText: 'Número'),
                   ),
+
                   SizedBox(height: 10),
                   FormBuilderDropdown(
                     name: 'tipos',
@@ -175,7 +184,7 @@ class _MessageFormScreenState extends State<MessageFormScreen> {
                         await Provider.of<MessageProvider>(context, listen: false)
                             .updateMessage(
                           formData['message'],
-                          formData['number'],
+                          int.tryParse(formData['number']) ?? 0,
                           formData['tipos'],
                           formData['te_gusta'],
                         );

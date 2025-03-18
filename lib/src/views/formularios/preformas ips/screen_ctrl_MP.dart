@@ -274,7 +274,7 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
           Titulos(
             titulo: 'REGISTRO',
             tipo: 1,
-            eliminar: () => provider.removeAllDatitos(context),
+            accion: () => provider.removeAllDatitos(context),
           ),
           Expanded(
             child: Consumer<DatosMPIPSProvider>(

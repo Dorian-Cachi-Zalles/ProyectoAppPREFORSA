@@ -6,6 +6,7 @@ import 'package:proyecto/src/services/bdpreformas.dart';
 import 'package:proyecto/src/views/formularios/home_screen.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/defe.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/principio.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/registroips.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_MP.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_procesos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/temp.dart';
@@ -27,7 +28,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
 
   List<Widget> _buildScreens() {
     return [
-      MessageFormScreen(),
+      RegistroIpsFormScreen(),
       ScreenListDatosMPIPS(),     
       ScreenListDatosDEFIPS(),
       ScreenListDatosPESOSIPS(),
@@ -88,6 +89,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
     return MultiProvider(
         providers: [
          ChangeNotifierProvider(create: (_) => MessageProvider()..fetchLatestMessage()),
+         ChangeNotifierProvider(create: (_) => RegistroipsProvider()..fetchLatestRegistroIps()),
           ChangeNotifierProvider(create: (_) => DatosMPIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosDEFIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosProviderPrefIPS()),

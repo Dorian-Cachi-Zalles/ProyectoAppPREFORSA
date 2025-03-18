@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:feature_discovery/feature_discovery.dart'; // Importar FeatureDiscovery
 import 'package:proyecto/src/models/settings_model.dart';
-import 'package:proyecto/src/providers/preformas_ips_provider/formulario_principal.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/formulario_principal.dart';
 import 'package:proyecto/src/services/bdpreformas.dart';
 import 'package:proyecto/src/views/formularios/home_screen.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/Providerids.dart';

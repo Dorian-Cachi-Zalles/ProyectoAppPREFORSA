@@ -1,21 +1,25 @@
+import 'dart:convert';
+import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/principio.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_pesos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_procesos.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:http/http.dart' as http;
 
 class DatosProviderPrefIPS with ChangeNotifier {
-  late Database _db;  
+  late Database _db;
+  final String tableDatosInicialesIps = 'datosinicialesips';  
   final String tableDatosPROCEIPS = 'DatosProceips';
   final String tableDatosPESOSIPS = 'datosPESOSIPS';
 
-  List<DatosPrefIPS> _datosprefipsList = [];
+  List<DatosInicialesIps> _datosinicialesipsList = [];
   List<DatosPROCEIPS> _datosproceipsList = [];
   List<DatosPESOSIPS> _datospesosipsList = [];
 
  
-  List<DatosPrefIPS> get datosprefipsList => List.unmodifiable(_datosprefipsList);
+  List<DatosInicialesIps> get datosprefipsList => List.unmodifiable(_datosinicialesipsList);
   List<DatosPROCEIPS> get datosproceipsList => List.unmodifiable(_datosproceipsList);
   List<DatosPESOSIPS> get datospesosipsList => List.unmodifiable(_datospesosipsList);
 
@@ -23,11 +27,26 @@ class DatosProviderPrefIPS with ChangeNotifier {
     _initDatabase();
   }
 
-  Future<void> _initDatabase() async {
+   Future<void> _initDatabase() async {
     _db = await openDatabase(
-      join(await getDatabasesPath(), 'datosIPS.db'),
-      version: 5,
-      onCreate: (db, version) async {       
+      p.join(await getDatabasesPath(), 'datosIPS.db'),      
+      version: 1,
+      onCreate: (db, version) => createTable(db),
+    );
+    await _loadData();
+  }
+
+   Future<void> createTable(Database db) async {
+     await db.execute('''
+      CREATE TABLE $tableDatosInicialesIps (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        hasErrors INTEGER NOT NULL,
+        Modalidad TEXT NOT NULL,
+        PesoPromedio REAL NOT NULL,
+        Saldos REAL NOT NULL,
+        CajasControladas REAL NOT NULL
+      )
+    ''');      
         await db.execute('''
           CREATE TABLE $tableDatosPROCEIPS (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -54,12 +73,11 @@ class DatosProviderPrefIPS with ChangeNotifier {
           PesoTotal REAL NOT NULL
           )
         ''');
-      },
-    );
-    await _loadData();
-  }
+  } 
 
-  Future<void> _loadData() async {    
+  Future<void> _loadData() async {
+    final maps = await _db.query(tableDatosInicialesIps);
+    _datosinicialesipsList = maps.map((map) => DatosInicialesIps.fromMap(map)).toList();  
 
     final proceMaps = await _db.query(tableDatosPROCEIPS);
     _datosproceipsList = proceMaps.map((map) => DatosPROCEIPS.fromMap(map)).toList();
@@ -67,6 +85,11 @@ class DatosProviderPrefIPS with ChangeNotifier {
     final pesosMaps = await _db.query(tableDatosPESOSIPS);
     _datospesosipsList = pesosMaps.map((map) => DatosPESOSIPS.fromMap(map)).toList();
 
+    notifyListeners();
+  }
+  Future<void> addDatosInicialesIps(DatosInicialesIps nuevoDato) async {
+    final id = await _db.insert(tableDatosInicialesIps, nuevoDato.toMap());
+    _datosinicialesipsList.add(nuevoDato.copyWith(id: id));
     notifyListeners();
   } 
 
@@ -80,6 +103,20 @@ class DatosProviderPrefIPS with ChangeNotifier {
     final id = await _db.insert(tableDatosPESOSIPS, nuevo.toMap());
     _datospesosipsList.add(nuevo.copyWith(id: id));
     notifyListeners();
+  }
+
+  Future<void> updateDatosInicialesIps(int id, DatosInicialesIps updatedDato) async {
+    final index = _datosinicialesipsList.indexWhere((d) => d.id == id);
+    if (index != -1) {
+      await _db.update(
+        tableDatosInicialesIps,
+        updatedDato.copyWith(id: id).toMap(),
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      _datosinicialesipsList[index] = updatedDato.copyWith(id: id);
+      notifyListeners();
+    }
   }
 
   Future<void> updateProcesos(int id, DatosPROCEIPS updatedDato) async {
@@ -210,6 +247,53 @@ Future<void> finishProcess() async {
   _datospesosipsList.clear();
   notifyListeners();
 }
+
+
+Future<bool> enviarDatosAPIPeso(int id) async {
+    final url = Uri.parse("http://192.168.0.100:8000/api/pesosips");
+
+    // Buscar el dato actualizado en SQLite
+    final index = _datospesosipsList.indexWhere((d) => d.id == id);
+    if (index == -1) {
+      print("❌ Error: No se encontró el dato con ID $id en SQLite");
+      return false;
+    }
+
+    final DatosPESOSIPS dato = _datospesosipsList[index];
+
+    // Convertir a JSON sin 'id' y 'hasErrors'
+    final Map<String, dynamic> datosJson = {
+      "Hora": dato.Hora,
+      "PA": dato.PA,
+      "PesoTara": dato.PesoTara,
+      "PesoNeto": dato.PesoNeto,
+      "PesoTotal": dato.PesoTotal,
+      "ID_regis": dato.idregistro
+    };
+
+    print("📤 Enviando datos a la API: $datosJson");
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(datosJson),
+      );
+
+      print(
+          "📥 Respuesta del servidor: ${response.statusCode} - ${response.body}");
+
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        print("❌ Error al enviar datos. Código: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      print("❌ Error de conexión: $e");
+      return false;
+    }
+  }
 
 
 }
