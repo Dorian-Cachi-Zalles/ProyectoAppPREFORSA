@@ -5,14 +5,14 @@ import 'package:proyecto/src/models/settings_model.dart';
 import 'package:proyecto/src/services/bdpreformas.dart';
 import 'package:proyecto/src/views/formularios/home_screen.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/defe.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/formmensajes.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/pruebadatoslaravel.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/principio.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_MP.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_procesos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/temp.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/Providerids.dart';
 import 'package:proyecto/src/widgets/settings_page.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_pesos.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/screen_datos.dart';
+
 
 class ScreenPreformasIPS extends StatefulWidget {
   const ScreenPreformasIPS({super.key});
@@ -27,14 +27,14 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
 
   List<Widget> _buildScreens() {
     return [
-      const MessagesPage2(),
+      MessageFormScreen(),
       ScreenListDatosMPIPS(),     
       ScreenListDatosDEFIPS(),
       ScreenListDatosPESOSIPS(),
       ScreenListDatosPROCEIPS(),
       ScreenListDatosTEMPIPS(),
     ];
-  }
+  }  
 
   List<PersistentBottomNavBarItem> _navBarsItems(SettingsModel settingsModel) {
     return [
@@ -81,24 +81,19 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
     ];
   }
 
-  @override
+  @override  
   Widget build(BuildContext context) {
+    final provider = Provider.of<IdsProvider>(context);
     final settingsModel = Provider.of<SettingsModel>(context);
     return MultiProvider(
         providers: [
+         ChangeNotifierProvider(create: (_) => MessageProvider()..fetchLatestMessage()),
           ChangeNotifierProvider(create: (_) => DatosMPIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosDEFIPSProvider()),
           ChangeNotifierProvider(create: (_) => DatosProviderPrefIPS()),
           ChangeNotifierProvider(create: (_) => DatosPROCEIPSProvider()),
          ChangeNotifierProvider(create: (_) => DatosTEMPIPSProvider()),
-          ChangeNotifierProvider(create: (_) => EditProviderDatosPESOSIPS()),
-          
-
-           
-                   
-
-          
-          
+          ChangeNotifierProvider(create: (_) => EditProviderDatosPESOSIPS()), 
         ],
         child: Scaffold(
          appBar: PreferredSize(
@@ -159,107 +154,106 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
     ],
   ),
 ),
-          drawer: Container(
-            color: Colors.black54,
-            child: SafeArea(
-              child: ListTileTheme(  
-                textColor: Colors.white,
-                iconColor: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-            Container(            
+drawer: Container(
+  color: Colors.black54,
+  child: SafeArea(
+    child: ListTileTheme(
+      textColor: Colors.white,
+      iconColor: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Container(
               width: 200,
               height: 200,
-              margin: const EdgeInsets.only(
-                top: 24.0,
-                bottom: 64.0,
-              ),
+              margin: const EdgeInsets.only(top: 24.0, bottom: 32.0),
               clipBehavior: Clip.antiAlias,
               decoration: const BoxDecoration(
                 color: Colors.black87,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.abc,
-                size: 80,
-              ),
+              child: const Icon(Icons.abc, size: 80),
             ),
+            // Agregamos un SingleChildScrollView para evitar problemas de scroll
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    ListTile(
-            
-                      onTap: () {
-                        Navigator.push(
-            
-                          context,
-                          MaterialPageRoute(builder: (context) => const HomeScreen()),
+              child: Column(
+                children: [
+                  ListTile(
+                            onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const HomeScreen()),
+                                    );
+                                  },                                
+                            leading: const Icon(Icons.sports_handball),
+                            title: Text('INICIO'),
+                          ),
+
+                  Expanded(
+                    child: ListView.builder(                      
+                      itemCount: provider.idsRegistrosList.length,
+                      itemBuilder: (context, index) {
+                        final  registro = provider.idsRegistrosList[index];
+                        final List<Map<String, dynamic>> menu = [
+                          {'title': 'IPS-400', 'screen': const ScreenPreformasIPS(), 'estado': null},
+                          {'title': 'I5', 'screen': null, 'estado': null},
+                          {'title': 'CCM', 'screen': null, 'estado': null},
+                          {'title': 'COLORACAP', 'screen': null, 'estado': null},
+                          {'title': 'YUTZUMI', 'screen': null, 'estado': null},
+                          {'title': 'IT 2 HX-258', 'screen': null, 'estado': null},
+                          {'title': 'SOPLADO', 'screen': null, 'estado': null},
+                        ];  
+                         if (registro.estado) {
+                          menu[index]['estado'] = true; 
+                        } else {
+                          menu[index]['estado'] = false;
+                        }                    
+                        // Filtramos los elementos cuya propiedad 'estado' es true
+                        final visibleMenuItems = menu.where((item) => item['estado'] == true).toList();
+                    
+                        // Si no hay elementos visibles, no generamos la lista para ese registro
+                        if (visibleMenuItems.isEmpty) {
+                          return const SizedBox(); // Retorna un SizedBox vacío si no hay elementos visibles
+                        }
+                    
+                        // Generamos los ListTile solo para los registros visibles
+                        return Column(
+                          children: visibleMenuItems.map((item) {
+                            return ListTile(
+                              onTap: item['screen'] != null
+                                  ? () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => item['screen']),
+                                      );
+                                    }
+                                  : null, // Si no hay pantalla asociada, no hace nada
+                              leading: const Icon(Icons.sports_handball),
+                              title: Text(item['title']),
+                            );
+                          }).toList(),
                         );
                       },
-                      leading: const Icon(Icons.sports_handball),
-                      title: const Text('INICIO'),
                     ),
-                    ListTile(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const ScreenPreformasIPS()),
-                        );
-                      },
-                      leading: const Icon(Icons.sports_handball),
-                      title: const Text('PREFORMAS IPS-400'),
-                      textColor: Colors.blueAccent,
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.sports_handball),
-                      title: const Text('PREFORMAS I5'),
-                    ),
-                    ListTile(                      
-                      leading: const Icon(Icons.sports_handball),
-                      title: const Text('CCM'),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.sports_handball),
-                      title: const Text('COLORACAP'),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.sports_handball),
-                      title: const Text('YUTZUMI'),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.sports_handball),
-                      title: const Text('IT 2 HX-258'),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.sports_handball),
-                      title: const Text('SOPLADO'),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 16.0),
             DefaultTextStyle(
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.white54,
-              ),
+              style: const TextStyle(fontSize: 12, color: Colors.white54),
               child: Container(
-                margin: const EdgeInsets.symmetric(
-                  vertical: 16.0,
-                ),
+                margin: const EdgeInsets.symmetric(vertical: 16.0),
                 child: const Text('Desarrollado por "  "'),
               ),
             ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
+          ],
+        ),
+      ),
+    ),
+  ),
+),
           body: PersistentTabView(
             context,
             controller: _controller,

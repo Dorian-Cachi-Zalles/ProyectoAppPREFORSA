@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:proyecto/src/views/formularios/preformas%20ips/model_mensaje_prueba.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/cosas/model_mensaje_prueba.dart';
 
 class MessageService {
   final String baseUrl = "http://192.168.0.100:8000/api/messages";

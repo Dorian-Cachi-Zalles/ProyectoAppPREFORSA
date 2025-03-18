@@ -4,7 +4,8 @@ import 'package:feature_discovery/feature_discovery.dart';
 import 'package:proyecto/src/models/settings_model.dart';
 import 'package:proyecto/src/views/dashboard.dart';
 import 'package:proyecto/src/views/descripcion_defectos.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/api_service.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/cosas/api_service.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/Providerids.dart';
 import 'package:proyecto/src/widgets/settings_page.dart';
 import 'package:proyecto/src/views/formularios/preformas_ips.dart';
 import 'package:proyecto/src/widgets/custom_drawer.dart';
@@ -18,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  
   final List<String> comunicados = [
     "Comunicado 1: Actualización del sistema",
     "Comunicado 2: Nueva funcionalidad disponible",
@@ -37,8 +39,8 @@ final ApiService apiService = ApiService();
           'feature_settings',
           'feature_drawer',
           'feature_maquinas',
-          'feature_parametros',
-          'feature_defectos',
+          'feature_ControlAguas',
+          'feature_registros',
           'feature_dashboard',
           'feature_comunicados'
         ],
@@ -48,7 +50,7 @@ final ApiService apiService = ApiService();
 
   @override
   Widget build(BuildContext context) {
-    final settingsModel = Provider.of<SettingsModel>(context);
+    final settingsModel = Provider.of<SettingsModel>(context);  
      return Scaffold(
       key: _scaffoldKey,
       drawer: const DescribedFeatureOverlay(
@@ -234,6 +236,33 @@ final ApiService apiService = ApiService();
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       DescribedFeatureOverlay(
+                        featureId: 'feature_registros',
+                        tapTarget: const Icon(Icons.chrome_reader_mode_outlined),
+                        title: const Text('Descripción de defectos'),
+                        description: const Text(
+                          'Consulta información sobre defectos y su impacto en la calidad.',
+                        ),
+                        backgroundColor: Colors.green,
+                        targetColor: Colors.white,
+                        textColor: Colors.white,
+                        child: CustomContainer(
+                          color1:  const Color.fromARGB(255, 29, 163, 58),
+                           color2: const Color.fromARGB(255, 18, 95, 34),
+                          icon: Icons.bug_report,
+                          text: "Registro de\n estado de Lineas",
+                          fontSize: settingsModel.fontSize,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ScreenEstadoRegistros(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      DescribedFeatureOverlay(
                         featureId: 'feature_maquinas',
                         tapTarget: const Icon(Icons.build),
                         title: const Text('Acceso a máquinas'),
@@ -249,36 +278,68 @@ final ApiService apiService = ApiService();
                           icon: Icons.content_paste_search_outlined,
                           text: "Control de Linea",
                           fontSize: settingsModel.fontSize,
+                        onTap: () {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Consumer<IdsProvider>(
+          builder: (context, provider, child) {
+            return Container(
+              padding: const EdgeInsets.all(8),
+              width: 300,
+              height: 400,
+              child: provider.idsRegistrosList.isNotEmpty
+                  ? ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: provider.idsRegistrosList.length,
+                      itemBuilder: (context, index) {
+                        final datos = provider.idsRegistrosList[index];
+
+                        // Verificamos si `estado` es true para mostrar el nombre
+                        if (!datos.estado) return const SizedBox.shrink();
+
+                        // Mapa de IDs con sus respectivas pantallas
+                        final Map<int, Widget Function(BuildContext)> pantallas = {
+                          1: (context) => const ScreenPreformasIPS(),
+                          2: (context) => ScreenPreformasIPS(),
+                          3: (context) => const ScreenPreformasIPS(),
+                        };
+
+                        return ListTile(
+                          title: Text(datos.nombre!),
+                          leading: const Icon(Icons.linear_scale_rounded),
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const ScreenPreformasIPS(),
-                              ),
-                            );
+                            Navigator.pop(context); // Cierra el diálogo antes de navegar
+                            if (pantallas.containsKey(datos.id)) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: pantallas[datos.id]!),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Pantalla no definida para este ID")),
+                              );
+                            }
                           },
+                        );
+                      },
+                    )
+                  : const Center(
+                      child: Text("No hay registros"),
+                    ),
+            );
+          },
+        ),
+      );
+    },
+  );
+},
+
+
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      DescribedFeatureOverlay(
-                        featureId: 'feature_parametros',
-                        tapTarget: const Icon(Icons.settings_suggest),
-                        title: const Text('Gestión de parámetros'),
-                        description: const Text(
-                            'Configura y gestiona los parámetros del sistema.'),
-                        backgroundColor: Colors.blueAccent,
-                        targetColor: Colors.white,
-                        textColor: Colors.white,
-                        child: CustomContainer(
-                          color1: const Color(0xFF1E90FF),
-                          color2: const Color.fromARGB(255, 50, 98, 117),
-                          icon: Icons.water_drop,
-                          text: "Control de Aguas",
-                          fontSize: settingsModel.fontSize,
-                          onTap: () {},
-                        ),
-                      ),
+                      ),                   
                     ],
                   ),
                 ),
@@ -289,30 +350,22 @@ final ApiService apiService = ApiService();
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      DescribedFeatureOverlay(
-                        featureId: 'feature_defectos',
-                        tapTarget: const Icon(Icons.bug_report),
-                        title: const Text('Descripción de defectos'),
+                       DescribedFeatureOverlay(
+                        featureId: 'feature_ControlAguas',
+                        tapTarget: const Icon(Icons.settings_suggest),
+                        title: const Text('Control de Agua'),
                         description: const Text(
-                          'Consulta información sobre defectos y su impacto en la calidad.',
-                        ),
-                        backgroundColor: Colors.green,
+                            'Registro Control de Aguas.'),
+                        backgroundColor: Colors.blueAccent,
                         targetColor: Colors.white,
                         textColor: Colors.white,
                         child: CustomContainer(
-                          color1:  const Color.fromARGB(255, 29, 163, 58),
-                           color2: const Color.fromARGB(255, 18, 95, 34),
-                          icon: Icons.bug_report,
-                          text: "Descripcion de\nDefectos",
+                          color1: const Color(0xFF1E90FF),
+                          color2: const Color.fromARGB(255, 50, 98, 117),
+                          icon: Icons.water_drop,
+                          text: "Control de Aguas",
                           fontSize: settingsModel.fontSize,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ScreenDescDefec(),
-                              ),
-                            );
-                          },
+                          onTap: () {},
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -400,6 +453,6 @@ final ApiService apiService = ApiService();
       ])
       )
       );
-    
   }
-}
+  }
+

@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/principio.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_pesos.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_procesos.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class DatosProviderPrefIPS with ChangeNotifier {
-  late Database _db;
+  late Database _db;  
   final String tableDatosPROCEIPS = 'DatosProceips';
   final String tableDatosPESOSIPS = 'datosPESOSIPS';
 
+  List<DatosPrefIPS> _datosprefipsList = [];
   List<DatosPROCEIPS> _datosproceipsList = [];
   List<DatosPESOSIPS> _datospesosipsList = [];
 
+ 
+  List<DatosPrefIPS> get datosprefipsList => List.unmodifiable(_datosprefipsList);
   List<DatosPROCEIPS> get datosproceipsList => List.unmodifiable(_datosproceipsList);
   List<DatosPESOSIPS> get datospesosipsList => List.unmodifiable(_datospesosipsList);
 
@@ -22,13 +26,8 @@ class DatosProviderPrefIPS with ChangeNotifier {
   Future<void> _initDatabase() async {
     _db = await openDatabase(
       join(await getDatabasesPath(), 'datosIPS.db'),
-      version: 2,
-      onCreate: (db, version) async {
-        await db.execute('''
-          CREATE TABLE RegistroActivo (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          messageId INTEGER NOT NULL
-        )  ''');
+      version: 5,
+      onCreate: (db, version) async {       
         await db.execute('''
           CREATE TABLE $tableDatosPROCEIPS (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,6 +46,7 @@ class DatosProviderPrefIPS with ChangeNotifier {
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           hasErrors INTEGER NOT NULL,
           hasSend INTEGER NOT NULL,
+          idregistro INTEGER NOT NULL,
           Hora TEXT NOT NULL,
           PA TEXT NOT NULL,
           PesoTara REAL NOT NULL,
@@ -59,7 +59,8 @@ class DatosProviderPrefIPS with ChangeNotifier {
     await _loadData();
   }
 
-  Future<void> _loadData() async {
+  Future<void> _loadData() async {    
+
     final proceMaps = await _db.query(tableDatosPROCEIPS);
     _datosproceipsList = proceMaps.map((map) => DatosPROCEIPS.fromMap(map)).toList();
 
@@ -67,7 +68,7 @@ class DatosProviderPrefIPS with ChangeNotifier {
     _datospesosipsList = pesosMaps.map((map) => DatosPESOSIPS.fromMap(map)).toList();
 
     notifyListeners();
-  }
+  } 
 
   Future<void> addProceIPS(DatosPROCEIPS nuevo) async {
     final id = await _db.insert(tableDatosPROCEIPS, nuevo.toMap());
@@ -203,26 +204,12 @@ Future<void> removeAllProcesos(BuildContext context) async {
     }
   }
 
-  Future<void> saveActiveMessage(int messageId) async {
-  await _db.insert(
-    'RegistroActivo',
-    {'messageId': messageId},
-    conflictAlgorithm: ConflictAlgorithm.replace,
-  );
-  notifyListeners();
-}
-
-Future<int?> getActiveMessage() async {
-  final List<Map<String, dynamic>> maps = await _db.query('RegistroActivo');
-  if (maps.isNotEmpty) {
-    return maps.first['messageId'] as int;
-  }
-  return null;
-}
-
 Future<void> finishProcess() async {
-  await _db.delete('RegistroActivo'); // Borra el ID del mensaje
+  await _db.delete(tableDatosPESOSIPS);
+  await _db.execute("DELETE FROM sqlite_sequence WHERE name='$tableDatosPESOSIPS'");
+  _datospesosipsList.clear();
   notifyListeners();
 }
+
 
 }

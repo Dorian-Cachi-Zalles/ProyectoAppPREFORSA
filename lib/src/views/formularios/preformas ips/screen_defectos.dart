@@ -622,27 +622,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
               field?.save();
             },
             decoration: InputDecoration(
-              labelText: 'Defectos Encontrados',
-              labelStyle: const TextStyle(
-                  fontSize: 20,
-                  color: Color.fromARGB(255, 20, 100, 96),
-                  fontWeight: FontWeight.bold),
-              filled: true,
-              fillColor: Colors.grey[200], // Color de fondo de los campos
-              errorStyle: const TextStyle(
-                fontSize: 13, // Tamaño de fuente del mensaje de error
-                height: 1, // Altura de línea (mayor para permitir dos líneas)
-                color: Colors
-                    .red, // Color del mensaje de error (puedes personalizarlo)
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                    color: Color.fromARGB(255, 29, 57, 80), width: 1.5),
-              ),
+              labelText: 'Defectos Encontrados',             
               suffixIcon: Builder(
                 builder: (context) {
                   final isValid = _formKey.currentState
@@ -656,8 +636,15 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
               ),
             ),
             keyboardType: TextInputType.text,
-            validator: FormBuilderValidators.required(
-                errorText: 'El campo no puede estar vacío'),
+            validator: FormBuilderValidators.compose([
+    FormBuilderValidators.required(errorText: 'El campo no puede estar vacío'),
+    FormBuilderValidators.numeric(errorText: 'Debe ser un número'),
+    (value) {
+      final numValue = double.tryParse(value ?? '');
+      if (numValue == null) return 'Debe ser un número válido';
+      return FormBuilderValidators.between(2.5, 6, errorText: 'El número debe estar entre 2.5 y 6')(numValue);
+    },
+  ]),
           ),
           const SizedBox(
             height: 15,

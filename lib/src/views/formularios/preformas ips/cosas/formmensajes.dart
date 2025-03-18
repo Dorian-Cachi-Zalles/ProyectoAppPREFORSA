@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/model_mensaje_prueba.dart';
-import 'package:proyecto/src/views/formularios/preformas%20ips/servicio_api.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/cosas/model_mensaje_prueba.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/cosas/servicio_api.dart';
 
 class MessagesPage extends StatefulWidget {
   const MessagesPage({super.key});

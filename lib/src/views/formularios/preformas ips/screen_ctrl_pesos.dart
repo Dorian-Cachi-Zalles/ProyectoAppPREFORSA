@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:path/path.dart' as p;
 import 'package:proyecto/src/services/bdpreformas.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/Providerids.dart';
 import 'package:proyecto/src/widgets/nuevobotonguardar.dart';
 import 'package:proyecto/src/providers/preformas_ips_provider/formulario_principal.dart';
 import 'package:proyecto/src/widgets/boton_agregar.dart';
@@ -17,6 +18,7 @@ class DatosPESOSIPS {
   final int? id;
   final bool hasErrors;
   final bool hasSend;
+  final int idregistro;
   final String Hora;
   final String PA;
   final double PesoTara;
@@ -28,6 +30,7 @@ class DatosPESOSIPS {
       {this.id,
       required this.hasErrors,
       required this.hasSend,
+      required this.idregistro,
       required this.Hora,
       required this.PA,
       required this.PesoTara,
@@ -40,6 +43,7 @@ class DatosPESOSIPS {
         id: map['id'] as int?,
         hasErrors: map['hasErrors'] == 1,
         hasSend: map['hasSend'] == 1,
+        idregistro: map['idregistro'] as int,        
         Hora: map['Hora'] as String,
         PA: map['PA'] as String,
         PesoTara: map['PesoTara'] as double,
@@ -53,6 +57,7 @@ class DatosPESOSIPS {
       if (id != null) 'id': id,
       'hasErrors': hasErrors ? 1 : 0,
       'hasSend': hasSend ? 1 : 0,
+      'idregistro': idregistro,
       'Hora': Hora,
       'PA': PA,
       'PesoTara': PesoTara,
@@ -66,6 +71,7 @@ class DatosPESOSIPS {
       {int? id,
       bool? hasErrors,
       bool? hasSend,
+      int? idregistro,
       String? Hora,
       String? PA,
       double? PesoTara,
@@ -75,6 +81,7 @@ class DatosPESOSIPS {
         id: id ?? this.id,
         hasErrors: hasErrors ?? this.hasErrors,
         hasSend: hasSend ?? this.hasSend,
+        idregistro: idregistro ?? this.idregistro,
         Hora: Hora ?? this.Hora,
         PA: PA ?? this.PA,
         PesoTara: PesoTara ?? this.PesoTara,
@@ -98,7 +105,7 @@ class DatosPESOSIPSProvider with ChangeNotifier {
   Future<void> _initDatabase() async {
     _db = await openDatabase(
       p.join(await getDatabasesPath(), 'datosPESOSIPS.db'),
-      version: 1,
+      version: 2,
       onCreate: (db, version) => createTable(db),
     );
     await _loadData();
@@ -110,6 +117,7 @@ class DatosPESOSIPSProvider with ChangeNotifier {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         hasErrors INTEGER NOT NULL,
         hasSend INTEGER NOT NULL,
+        idregistro INTEGER NOT NULL,        
         Hora TEXT NOT NULL,
         PA TEXT NOT NULL,
         PesoTara REAL NOT NULL,
@@ -230,6 +238,7 @@ class ScreenListDatosPESOSIPS extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+    final providerregistro = Provider.of<IdsProvider>(context, listen: false);
     return Scaffold(
       body: Column(
         children: [
@@ -295,17 +304,23 @@ class ScreenListDatosPESOSIPS extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: BotonAgregar(
-        onPressed: () {
-          provider.addPesosIPS(DatosPESOSIPS(
-            hasErrors: true,
-            hasSend: false,
-            Hora: 'ola prueba',
-            PA: '',
-            PesoTara: 45,
-            PesoNeto: 0,
-            PesoTotal: 0,
-          ));
-        },
+        onPressed: () async {
+  int? idregistro = await providerregistro.getNumeroById(3);
+
+  if (idregistro == null || idregistro == 0) {
+    print("El idregistro no es válido, no se ejecutará addPesosIPS");
+    return; // Detiene la ejecución si el idregistro es 0 o null
+  } provider.addPesosIPS(DatosPESOSIPS(
+    hasErrors: true,
+    hasSend: true,
+    idregistro: idregistro,  // Ya sabemos que no es 0 ni null
+    Hora: 'ola prueba',
+    PA: '',
+    PesoTara: 45,
+    PesoNeto: 0,
+    PesoTotal: 0,
+  ));  
+},
       ),
     );
   }
@@ -390,11 +405,7 @@ class _EditDatosPESOSIPSFormState extends State<EditDatosPESOSIPSForm> {
   Navigator.pop(context);
 },
   onSwipedAction: () {
-    // Acción cuando se mantiene presionado por 3 segundos
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text("Mensaje largo"),
-      duration: Duration(seconds: 2),
-    ));
+    
   },
 ),
 
@@ -461,7 +472,7 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
               label: 'PA',
               valorInicial: widget.datosPESOSIPS.PA,
               textoError: 'error'),
-          TextoSimple(
+        CustomInputField(
               name: 'PesoTara',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['PesoTara'];
@@ -471,7 +482,11 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
               },
               label: 'PesoTara',
               valorInicial: widget.datosPESOSIPS.PesoTara.toString(),
-              textoError: 'error'),
+              isNumeric: true,
+              isRequired: true,
+              max: 100.6,
+              min: 70,
+              ),
           TextoSimple(
               name: 'PesoNeto',
               onChanged: (value) {
