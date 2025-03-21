@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:feature_discovery/feature_discovery.dart'; // Importar FeatureDiscovery
 import 'package:proyecto/src/models/settings_model.dart';
+import 'package:proyecto/src/providers/datos_provider.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/formulario_principal.dart';
 import 'package:proyecto/src/services/bdpreformas.dart';
 import 'package:proyecto/src/views/formularios/home_screen.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/Providerids.dart';
+import 'package:proyecto/src/views/screen_login.dart';
 import 'package:proyecto/src/widgets/settings_page.dart';
 
 class AppThemes {
@@ -67,7 +69,7 @@ class AppThemes {
     ),
   );
 }
- 
+
 void main() {
   runApp(
     FeatureDiscovery(
@@ -77,10 +79,9 @@ void main() {
           ChangeNotifierProvider(create: (_) => SettingsProvider()),
           ChangeNotifierProvider(create: (_) => ProviderPesoPromedio()),
           ChangeNotifierProvider(create: (_) => IdsProvider()),
-          ChangeNotifierProvider(create: (_) => DatosProviderPrefIPS())
-
-          
-        ],        
+          ChangeNotifierProvider(create: (_) => DatosProviderPrefIPS()),
+          ChangeNotifierProvider(create: (_) => DatosProvider())
+        ],
         child: const MyApp(),
       ),
     ),
@@ -104,7 +105,7 @@ class MyApp extends StatelessWidget {
             theme: settingsProvider.isDarkMode
                 ? AppThemes.darkTheme
                 : AppThemes.lightTheme,
-            home: const HomeScreen(),
+            home: const LoginScreen(),
           );
         },
       ),
