@@ -6,6 +6,7 @@ import 'package:proyecto/src/views/formularios/preformas%20ips/formulario_princi
 import 'package:proyecto/src/services/bdpreformas.dart';
 import 'package:proyecto/src/views/formularios/home_screen.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/Providerids.dart';
+import 'package:proyecto/src/widgets/settings_page.dart';
 
 class AppThemes {
   // Tema claro
@@ -73,9 +74,12 @@ void main() {
       // Asegurarse de que FeatureDiscovery envuelva toda la aplicación
       child: MultiProvider(
         providers: [
+          ChangeNotifierProvider(create: (_) => SettingsProvider()),
           ChangeNotifierProvider(create: (_) => ProviderPesoPromedio()),
           ChangeNotifierProvider(create: (_) => IdsProvider()),
           ChangeNotifierProvider(create: (_) => DatosProviderPrefIPS())
+
+          
         ],        
         child: const MyApp(),
       ),
@@ -93,11 +97,11 @@ class MyApp extends StatelessWidget {
       child: Builder(
         builder: (context) {
           // Obtener la configuración del modelo para aplicar al tema
-          final settingsModel = Provider.of<SettingsModel>(context);
+          final settingsProvider = Provider.of<SettingsProvider>(context);
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Configuraciones App',
-            theme: settingsModel.isDarkMode
+            theme: settingsProvider.isDarkMode
                 ? AppThemes.darkTheme
                 : AppThemes.lightTheme,
             home: const HomeScreen(),

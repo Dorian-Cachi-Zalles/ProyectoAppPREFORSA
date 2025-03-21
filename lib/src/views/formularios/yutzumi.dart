@@ -120,7 +120,7 @@ class _ScreenYutzumiState extends State<ScreenYutzumi> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const SettingsPage()),
+                        builder: (context) => SettingsPage()),
                   );
                 },
               ),

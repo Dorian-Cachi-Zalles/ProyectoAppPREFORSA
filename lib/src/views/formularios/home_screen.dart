@@ -10,6 +10,7 @@ import 'package:proyecto/src/widgets/settings_page.dart';
 import 'package:proyecto/src/views/formularios/preformas_ips.dart';
 import 'package:proyecto/src/widgets/custom_drawer.dart';
 import 'package:proyecto/src/widgets/custom_container_menu.dart';
+import 'package:proyecto/src/widgets/tablita.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,7 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-final ApiService apiService = ApiService();
 
   @override
   void initState() {
@@ -110,7 +110,7 @@ final ApiService apiService = ApiService();
                                 Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const SettingsPage(),
+                                builder: (context) =>  SettingsPage(),
                               ),
                             );
                               },
@@ -179,10 +179,7 @@ final ApiService apiService = ApiService();
                           .start, // Alinear contenido al inicio
                       children: [
                         GestureDetector(
-                          onTap: () {
-    String message = 'Comida';
-    int number = 34;
-    ApiService().sendMessage(message,number);
+                          onTap: () {   
   },
                           child: Container(
                             padding: EdgeInsets.symmetric(
@@ -248,7 +245,7 @@ final ApiService apiService = ApiService();
                         child: CustomContainer(
                           color1:  const Color.fromARGB(255, 29, 163, 58),
                            color2: const Color.fromARGB(255, 18, 95, 34),
-                          icon: Icons.bug_report,
+                          icon: Icons.read_more_outlined,
                           text: "Registro de\n estado de Lineas",
                           fontSize: settingsModel.fontSize,
                           onTap: () {
@@ -389,7 +386,7 @@ final ApiService apiService = ApiService();
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const ScreenDashboard(),
+                                builder: (context) => const UsuariosPaginatedTable(),
                               ),
                             );
                           },

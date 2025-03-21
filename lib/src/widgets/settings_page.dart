@@ -1,52 +1,80 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_settings_ui/flutter_settings_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:proyecto/src/models/settings_model.dart';
 
-class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
 
-  @override
-  createState() => _SettingsPageState();
-}
-
-class _SettingsPageState extends State<SettingsPage> {
+class SettingsProvider extends ChangeNotifier {
   bool _notificationsEnabled = true;
   bool _dataTrackingEnabled = true;
   bool _soundEnabled = true;
   bool _isSpanish = true;
+  bool _isDarkMode = false; // ✅ Nuevo: Estado del Modo Oscuro
 
-  @override
-  void initState() {
-    super.initState();
+  bool get notificationsEnabled => _notificationsEnabled;
+  bool get dataTrackingEnabled => _dataTrackingEnabled;
+  bool get soundEnabled => _soundEnabled;
+  bool get isSpanish => _isSpanish;
+  bool get isDarkMode => _isDarkMode; // ✅ Getter del Modo Oscuro
+
+  SettingsProvider() {
     _loadPreferences();
   }
 
-  // Cargar las preferencias de SharedPreferences
-  void _loadPreferences() async {
+  Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _notificationsEnabled = prefs.getBool('notificationsEnabled') ?? true;
-      _dataTrackingEnabled = prefs.getBool('dataTrackingEnabled') ?? true;
-      _soundEnabled = prefs.getBool('soundEnabled') ?? true;
-      _isSpanish = prefs.getBool('isSpanish') ?? true;
-    });
+    _notificationsEnabled = prefs.getBool('notificationsEnabled') ?? true;
+    _dataTrackingEnabled = prefs.getBool('dataTrackingEnabled') ?? true;
+    _soundEnabled = prefs.getBool('soundEnabled') ?? true;
+    _isSpanish = prefs.getBool('isSpanish') ?? true;
+    _isDarkMode = prefs.getBool('isDarkMode') ?? false; // ✅ Cargar el modo oscuro
+    notifyListeners();
   }
 
-  // Guardar las preferencias
-  void _savePreferences() async {
+  Future<void> _savePreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setBool('notificationsEnabled', _notificationsEnabled);
-    prefs.setBool('dataTrackingEnabled', _dataTrackingEnabled);
-    prefs.setBool('soundEnabled', _soundEnabled);
-    prefs.setBool('isSpanish', _isSpanish);
+    await prefs.setBool('notificationsEnabled', _notificationsEnabled);
+    await prefs.setBool('dataTrackingEnabled', _dataTrackingEnabled);
+    await prefs.setBool('soundEnabled', _soundEnabled);
+    await prefs.setBool('isSpanish', _isSpanish);
+    await prefs.setBool('isDarkMode', _isDarkMode); // ✅ Guardar el estado del modo oscuro
   }
 
+  void setTheme(bool value) {
+    _isDarkMode = value;
+    _savePreferences();
+    notifyListeners();
+  }
+
+  void setNotifications(bool value) {
+    _notificationsEnabled = value;
+    _savePreferences();
+    notifyListeners();
+  }
+
+  void setDataTracking(bool value) {
+    _dataTrackingEnabled = value;
+    _savePreferences();
+    notifyListeners();
+  }
+
+  void setSound(bool value) {
+    _soundEnabled = value;
+    _savePreferences();
+    notifyListeners();
+  }
+
+  void setLanguage(bool value) {
+    _isSpanish = value;
+    _savePreferences();
+    notifyListeners();
+  }
+}
+
+
+class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Acceder al modelo de configuración del tema y el tamaño de texto
-    final settingsModel = Provider.of<SettingsModel>(context);
+    final settingsProvider = Provider.of<SettingsProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -54,98 +82,39 @@ class _SettingsPageState extends State<SettingsPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            // Guardar preferencias al salir de la configuración
-            _savePreferences();
-
-            // Actualizar el tema y el tamaño de la fuente en el modelo
-            settingsModel.setTheme(settingsModel.isDarkMode);
-            settingsModel.setFontSize(settingsModel.fontSize);
-
-            // Volver a la pantalla anterior
             Navigator.pop(context);
           },
         ),
       ),
-      body: SettingsList(
-        sections: [
-          SettingsSection(
-            title: const Text('General'),
-            tiles: [
-              SettingsTile.switchTile(
-                title: const Text('Modo oscuro'),
-                leading: const Icon(Icons.brightness_6),
-                initialValue: settingsModel.isDarkMode,
-                onToggle: (bool value) {
-                  setState(() {
-                    settingsModel.setTheme(value); // Cambiar tema
-                  });
-                },
-              ),
-              SettingsTile.switchTile(
-                title: const Text('Notificaciones'),
-                leading: const Icon(Icons.notifications),
-                initialValue: _notificationsEnabled,
-                onToggle: (bool value) {
-                  setState(() {
-                    _notificationsEnabled = value;
-                  });
-                  _savePreferences();
-                },
-              ),
-              SettingsTile.switchTile(
-                title: const Text('Seguimiento de datos'),
-                leading: const Icon(Icons.track_changes),
-                initialValue: _dataTrackingEnabled,
-                onToggle: (bool value) {
-                  setState(() {
-                    _dataTrackingEnabled = value;
-                  });
-                  _savePreferences();
-                },
-              ),
-              SettingsTile.switchTile(
-                title: const Text('Sonido'),
-                leading: const Icon(Icons.volume_up),
-                initialValue: _soundEnabled,
-                onToggle: (bool value) {
-                  setState(() {
-                    _soundEnabled = value;
-                  });
-                  _savePreferences();
-                },
-              ),
-              SettingsTile.switchTile(
-                title: const Text('Idioma (Español/English)'),
-                leading: const Icon(Icons.language),
-                initialValue: _isSpanish,
-                onToggle: (bool value) {
-                  setState(() {
-                    _isSpanish = value;
-                  });
-                  _savePreferences();
-                },
-              ),
-            ],
+      body: ListView(
+        children: [
+          SwitchListTile(
+            title: const Text("Modo oscuro"),           
+            value: settingsProvider.isDarkMode,
+            onChanged: (value) {
+              settingsProvider.setTheme(value); // ✅ Cambia el tema dinámicamente
+            },
           ),
-          SettingsSection(
-            title: const Text('Ajustes de texto'),
-            tiles: [
-              SettingsTile(
-                title: const Text('Tamaño de texto'),
-                leading: const Icon(Icons.text_fields),
-                trailing: Slider(
-                  min: 10,
-                  max: 30,
-                  divisions: 10,
-                  value: settingsModel.fontSize,
-                  onChanged: (double value) {
-                    settingsModel
-                        .setFontSize(value); // Cambiar tamaño de fuente
-                  },
-                ),
-              ),
-            ],
+          SwitchListTile(
+            title: const Text("Notificaciones"),
+            value: settingsProvider.notificationsEnabled,
+            onChanged: (value) => settingsProvider.setNotifications(value),
           ),
+        /*  SwitchListTile(
+            title: const Text("Seguimiento de datos"),
+            value: settingsProvider.dataTrackingEnabled,
+            onChanged: (value) => settingsProvider.setDataTracking(value),
+          ),
+          SwitchListTile(
+            title: const Text("Sonido"),
+            value: settingsProvider.soundEnabled,
+            onChanged: (value) => settingsProvider.setSound(value),
+          ),
+          SwitchListTile(
+            title: const Text("Idioma (Español/English)"),
+            value: settingsProvider.isSpanish,
+            onChanged: (value) => settingsProvider.setLanguage(value),
+          ), */
         ],
       ),
     );

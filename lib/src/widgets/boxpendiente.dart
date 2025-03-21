@@ -110,7 +110,7 @@ class _GradientExpandableCardState extends State<GradientExpandableCard>
           );
         },
         child: GestureDetector(
-            onTap: () {
+            onTap: widget.hasSend  ? () {} :(){
               widget.onOpenModal!();
             },
             child: Card(

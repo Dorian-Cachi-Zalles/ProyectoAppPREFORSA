@@ -122,7 +122,7 @@ class _ScreenPreformasI5State extends State<ScreenPreformasI5> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const SettingsPage()),
+                        builder: (context) => SettingsPage()),
                   );
                 },
               ),

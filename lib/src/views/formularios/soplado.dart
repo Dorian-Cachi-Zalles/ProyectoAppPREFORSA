@@ -122,7 +122,7 @@ class _ScreenSopladoState extends State<ScreenSoplado> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const SettingsPage()),
+                        builder: (context) => SettingsPage()),
                   );
                 },
               ),

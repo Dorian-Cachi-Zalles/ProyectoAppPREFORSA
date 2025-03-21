@@ -4,11 +4,13 @@ import 'package:provider/provider.dart';
 import 'package:proyecto/src/models/settings_model.dart';
 import 'package:proyecto/src/services/bdpreformas.dart';
 import 'package:proyecto/src/views/formularios/home_screen.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/cosas/para%20hacer%20pruebas.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/defe.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/principio.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/registroips.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_ctrl_MP.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/screen_procesos.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/sharepreference.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/temp.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/Providerids.dart';
 import 'package:proyecto/src/widgets/settings_page.dart';
@@ -90,12 +92,10 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
         providers: [
          ChangeNotifierProvider(create: (_) => MessageProvider()..fetchLatestMessage()),
          ChangeNotifierProvider(create: (_) => RegistroipsProvider()..fetchLatestRegistroIps()),
-          ChangeNotifierProvider(create: (_) => DatosMPIPSProvider()),
-          ChangeNotifierProvider(create: (_) => DatosDEFIPSProvider()),
-          ChangeNotifierProvider(create: (_) => DatosProviderPrefIPS()),
-          ChangeNotifierProvider(create: (_) => DatosPROCEIPSProvider()),
-         ChangeNotifierProvider(create: (_) => DatosTEMPIPSProvider()),
-          ChangeNotifierProvider(create: (_) => EditProviderDatosPESOSIPS()), 
+          ChangeNotifierProvider(create: (_) => Registroips2Provider()..fetchLatestRegistroIps()),           
+          ChangeNotifierProvider(create: (_) => EditProviderDatosPESOSIPS()),
+          ChangeNotifierProvider(create: (_) => DatosPESOSIPSProvider2()), 
+          
         ],
         child: Scaffold(
          appBar: PreferredSize(
@@ -149,7 +149,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const SettingsPage()),
+            MaterialPageRoute(builder: (context) =>SettingsPage()),
           );
         },
       ),

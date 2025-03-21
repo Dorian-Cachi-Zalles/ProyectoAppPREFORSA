@@ -6,63 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:proyecto/src/widgets/dropdownformulario.dart';
 import 'package:proyecto/src/widgets/textosimpleformulario.dart';
 
-
-class DatosInicialesIps {
-  final int? id;
-  final bool hasErrors;  
-  final double PesoPromedio;
-  final double Saldos;
-  final double CajasControladas;
-
-  // Constructor de la clase
-  const DatosInicialesIps({
-    this.id,
-    required this.hasErrors,    
-    required this.PesoPromedio,
-    required this.Saldos,
-    required this.CajasControladas
-  });
-
-  // Factory para crear una instancia desde un Map
-  factory DatosInicialesIps.fromMap(Map<String, dynamic> map) {
-    return DatosInicialesIps(
-      id: map['id'] as int?,
-      hasErrors: map['hasErrors'] == 1,      
-      PesoPromedio: map['PesoPromedio'] as double,
-      Saldos: map['Saldos'] as double,
-      CajasControladas: map['CajasControladas'] as double
-    );
-  }
-
-  // Método para convertir la instancia a Map
-  Map<String, dynamic> toMap() {
-    return {
-      if (id != null) 'id': id,
-      'hasErrors': hasErrors ? 1 : 0,      
-      'PesoPromedio': PesoPromedio,
-      'Saldos': Saldos,
-      'CajasControladas': CajasControladas
-    };
-  }
-
-  // Método copyWith
-  DatosInicialesIps copyWith({
-    int? id,
-    bool? hasErrors,
-    double? PesoPromedio, double? Saldos, double? CajasControladas
-  }) {
-    return DatosInicialesIps(
-      id: id ?? this.id,
-      hasErrors: hasErrors ?? this.hasErrors,      
-      PesoPromedio: PesoPromedio ?? this.PesoPromedio,
-      Saldos: Saldos ?? this.Saldos,
-      CajasControladas: CajasControladas ?? this.CajasControladas
-    );
-  }
-}
-
 class RegistroipsProvider extends ChangeNotifier {
-  final String baseUrl = 'http://192.168.0.100:8000/api/IPS';
+  final String baseUrl = 'http://192.168.137.1:8888/api/IPS';
 
   Future<Map<String, dynamic>?> fetchLatestRegistroIps() async {
     try {
@@ -84,7 +29,7 @@ class RegistroipsProvider extends ChangeNotifier {
     try {
       final response = await http.put(
         Uri.parse(baseUrl),
-        body: json.encode({
+        body: json.encode({      
           'Modalidad': newModalidad,
           'Ciclo': newCiclo,
           'PAinicial': newPAinicial,
@@ -203,6 +148,8 @@ Widget build(BuildContext context) {
                             children: [
                               const SizedBox(height: 10),
                               DropdownSimple(
+
+                                
                                 name: 'Modalidad',
                                 label: 'Modalidad',
                                 opciones: 'Modalidad',

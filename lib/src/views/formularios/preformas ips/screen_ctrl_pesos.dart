@@ -103,14 +103,14 @@ class DatosPESOSIPSProvider with ChangeNotifier {
     _initDatabase();
   }
 
-  Future<void> _initDatabase() async {
-    _db = await openDatabase(
-      p.join(await getDatabasesPath(), 'datosPESOSIPS.db'),
-      version: 2,
-      onCreate: (db, version) => createTable(db),
-    );
-    await _loadData();
-  }
+    Future<void> _initDatabase() async {
+      _db = await openDatabase(
+        p.join(await getDatabasesPath(), 'datosPESOSIPS.db'),
+        version: 2,
+        onCreate: (db, version) => createTable(db),
+      );
+      await _loadData();
+    }
 
   Future<void> createTable(Database db) async {
     await db.execute('''
@@ -189,7 +189,7 @@ class DatosPESOSIPSProvider with ChangeNotifier {
   notifyListeners();
 }
 
-  Future<bool> enviarDatosAPIPost(int id) async {
+Future<bool> enviarDatosAPIPost(int id) async {
     final url = Uri.parse("http://192.168.0.138:8000/api/pesosips");
 
     // Buscar el dato actualizado en SQLite
@@ -245,8 +245,7 @@ class ScreenListDatosPESOSIPS extends StatelessWidget {
         children: [
           Titulos(
             titulo: 'REGISTROS DE PESOS',
-            tipo: 0,
-            accion: () => provider.removeAllPesos(),
+            tipo: 0,            
           ),
           Expanded(
             child: Consumer<DatosProviderPrefIPS>(
@@ -276,16 +275,17 @@ class ScreenListDatosPESOSIPS extends StatelessWidget {
                         await provider.removePeso(
                             context, dtdatospesosips.id!);
                       },
-                      subtitulos: {},
+                      subtitulos: {
+                        'Hora': dtdatospesosips.Hora,
+                        'PA': dtdatospesosips.PA,                       
+                      },
                       expandedContent: generateExpandableContent([
-                        ['Hora: ', 1, dtdatospesosips.Hora],
-                        ['PA: ', 1, dtdatospesosips.PA],
                         ['PesoTara: ', 1, dtdatospesosips.PesoTara.toString()],
                         ['PesoNeto: ', 1, dtdatospesosips.PesoNeto.toString()],
                         ['PesoTotal: ',1,dtdatospesosips.PesoTotal.toString()],
                       ]),
                       hasErrors: dtdatospesosips.hasErrors,
-                      onOpenModal:  dtdatospesosips.hasSend  ? () {} :() {
+                      onOpenModal:() {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -387,56 +387,57 @@ class _EditDatosPESOSIPSFormState extends State<EditDatosPESOSIPSForm> {
             ),
           ),
           BotonDeslizable(
-  onPressed: () async{
-  _formKey.currentState?.save();
-  final values = _formKey.currentState!.value;
-  final updatedDatito = widget.datosPESOSIPS.copyWith(
-    hasErrors:_formKey.currentState?.fields.values.any((field) => field.hasError) ?? false,
-    idregistro:widget.datosPESOSIPS.idregistro ,
-    Hora: values['Hora'] ?? widget.datosPESOSIPS.Hora,
-    PA: values['PA'] ?? widget.datosPESOSIPS.PA,
-    PesoTara: (values['PesoTara']?.isEmpty ?? true)? 0: double.tryParse(values['PesoTara']),
-    PesoNeto: (values['PesoNeto']?.isEmpty ?? true)? 0: double.tryParse(values['PesoNeto']),
-    PesoTotal: (values['PesoTotal']?.isEmpty ?? true)? 0: double.tryParse(values['PesoTotal']),  
-
-  ); 
-
-  final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
-
-  await provider.updatePESO(widget.id, updatedDatito);
-
-  Navigator.pop(context);
-},
-  onSwipedAction: () async{
-   final providerregistro = Provider.of<DatosProviderPrefIPS>(context, listen: false);
-
-bool enviado = await providerregistro.enviarDatosAPIPeso(widget.id);
-
-if (!enviado) {
-  print("❌ Error al enviar los datos");
-
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text("Error al enviar los datos. Verifique su conexión."),
-      backgroundColor: Colors.red,
-    ),
-  );
-} else {
-  final terminar = widget.datosPESOSIPS.copyWith(hasSend: true);
-
-  final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
-  await provider.updatePESO(widget.id, terminar);
-
-  Navigator.pop(context);
-}
+  onPressed: () async {
+    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+    final updatedDatito = obtenerDatosActualizados();
     
+    await provider.updatePESO(widget.id, updatedDatito);
+    Navigator.pop(context);
   },
-),
+  onSwipedAction: () async {
+    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+    final updatedDatito = obtenerDatosActualizados();
+    
+    await provider.updatePESO(widget.id, updatedDatito);
 
+    bool enviado = await provider.enviarDatosAPIPeso(widget.id);
+
+    if (!enviado) {
+      print("❌ Error al enviar los datos");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error al enviar los datos. Verifique su conexión o llene todos los campos."),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      final updatedDatitoEnviado = obtenerDatosActualizados(hasSend: true);
+      await provider.updatePESO(widget.id, updatedDatitoEnviado);
+      Navigator.pop(context);
+    }
+  },
+)
         ]));
       },
     );
   }
+  // Función para obtener los datos actualizados y evitar repeticiones
+  DatosPESOSIPS obtenerDatosActualizados({bool hasSend = false}) {
+  _formKey.currentState?.save();
+  final values = _formKey.currentState!.value;
+
+  return widget.datosPESOSIPS.copyWith(
+    hasErrors: _formKey.currentState?.fields.values.any((field) => field.hasError) ?? false,
+    idregistro: widget.datosPESOSIPS.idregistro,
+    hasSend: hasSend,
+    Hora: values['Hora'] ?? widget.datosPESOSIPS.Hora,
+    PA: values['PA'] ?? widget.datosPESOSIPS.PA,
+    PesoTara: double.tryParse(values['PesoTara'] ?? '') ?? 0,
+    PesoNeto: double.tryParse(values['PesoNeto'] ?? '') ?? 0,
+    PesoTotal: double.tryParse(values['PesoTotal'] ?? '') ?? 0,
+  );
+}
 }
 
 class FormularioGeneralDatosPESOSIPS extends StatelessWidget {

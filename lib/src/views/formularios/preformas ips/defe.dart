@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
+import 'package:proyecto/src/services/bdpreformas.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/Providerids.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/widget_defectosips.dart';
 import 'package:proyecto/src/widgets/boton_agregar.dart';
 import 'package:proyecto/src/widgets/boton_guardarform.dart';
@@ -9,6 +11,7 @@ import 'package:proyecto/src/widgets/checkboxformulario.dart';
 import 'package:proyecto/src/widgets/dropdownformulario.dart';
 import 'package:proyecto/src/widgets/boxpendiente.dart';
 import 'package:provider/provider.dart';
+import 'package:proyecto/src/widgets/nuevobotonguardar.dart';
 import 'package:proyecto/src/widgets/textosimpleformulario.dart';
 import 'package:proyecto/src/widgets/titulos.dart';
 import 'package:sqflite/sqflite.dart';
@@ -16,6 +19,8 @@ import 'package:sqflite/sqflite.dart';
 class DatosDEFIPS {
   final int? id;
   final bool hasErrors;
+  final bool hasSend;
+  final int idregistro;
   final String Hora;
   final List<String> Defectos;
   final List<String> Criticidad;
@@ -29,12 +34,14 @@ class DatosDEFIPS {
   final bool Inocuidad;
   final double CantidadProductoRetenido;
   final double CantidadProductoCorregido;
-  final String Observaciones;
+  final String? Observaciones;
 
   // Constructor de la clase
   const DatosDEFIPS({
     this.id,
     required this.hasErrors,
+    required this.hasSend,
+    required this.idregistro,
     required this.Hora,
     required this.Defectos,
     required this.Criticidad,
@@ -48,7 +55,7 @@ class DatosDEFIPS {
     required this.Inocuidad,
     required this.CantidadProductoRetenido,
     required this.CantidadProductoCorregido,
-    required this.Observaciones
+    this.Observaciones
   });
 
   // Factory para crear una instancia desde un Map
@@ -56,13 +63,15 @@ class DatosDEFIPS {
     return DatosDEFIPS(
       id: map['id'] as int?,
       hasErrors: map['hasErrors'] == 1,
+      hasSend: map['hasSend'] == 1,
+      idregistro: map['idregistro'] as int,
       Hora: map['Hora'] as String,
-      Defectos: (map['Defectos'] as String?)
+       Defectos: (map['Defectos'] as String?)
                 ?.split(',')
                 .where((item) => item.isNotEmpty)
                 .toList() ??
             [],
-      Criticidad: (map['Criticidad'] as String?)
+        Criticidad: (map['Criticidad'] as String?)
                 ?.split(',')
                 .where((item) => item.isNotEmpty)
                 .toList() ??
@@ -77,7 +86,7 @@ class DatosDEFIPS {
       Inocuidad: (map['Inocuidad'] as int) == 1,
       CantidadProductoRetenido: map['CantidadProductoRetenido'] as double,
       CantidadProductoCorregido: map['CantidadProductoCorregido'] as double,
-      Observaciones: map['Observaciones'] as String
+      Observaciones: map['Observaciones'] as String?
     );
   }
 
@@ -86,6 +95,8 @@ class DatosDEFIPS {
     return {
       if (id != null) 'id': id,
       'hasErrors': hasErrors ? 1 : 0,
+      'hasSend': hasSend ? 1 : 0,
+      'idregistro': idregistro,
       'Hora': Hora,
       'Defectos': Defectos.join(','),
       'Criticidad': Criticidad.join(','),
@@ -107,11 +118,15 @@ class DatosDEFIPS {
   DatosDEFIPS copyWith({
     int? id,
     bool? hasErrors,
+    bool? hasSend,
+    int? idregistro,
     String? Hora, List<String>? Defectos, List<String>? Criticidad, String? CSeccionDefecto, int? DefectosEncontrados, String? Fase, bool? Palet, bool? Empaque, bool? Embalado, bool? Etiquetado, bool? Inocuidad, double? CantidadProductoRetenido, double? CantidadProductoCorregido, String? Observaciones
   }) {
     return DatosDEFIPS(
       id: id ?? this.id,
       hasErrors: hasErrors ?? this.hasErrors,
+      hasSend: hasSend ?? this.hasSend,
+      idregistro: idregistro ?? this.idregistro,
       Hora: Hora ?? this.Hora,
       Defectos: Defectos ?? this.Defectos,
       Criticidad: Criticidad ?? this.Criticidad,
@@ -264,17 +279,18 @@ class DatosDEFIPSProvider with ChangeNotifier {
 class ScreenListDatosDEFIPS extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<DatosDEFIPSProvider>(context, listen: false);
+    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+    final providerregistro = Provider.of<IdsProvider>(context, listen: false);
     return Scaffold(
       body: Column(
         children: [
           Titulos(
             titulo: 'REGISTRO',
-            tipo: 1,
-            accion: () => provider.removeAllDatitos(context),
+            tipo: 0,
+            
           ),
           Expanded(
-            child: Consumer<DatosDEFIPSProvider>(
+            child: Consumer<DatosProviderPrefIPS>(
               builder: (context, provider, _) {
                 final datosdefips = provider.datosdefipsList;
 
@@ -294,11 +310,11 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
                     final dtdatosdefips = datosdefips[index];
 
                     return GradientExpandableCard(
-                      hasSend: dtdatosdefips.hasErrors,
+                      hasSend: dtdatosdefips.hasSend,
                       idlista: dtdatosdefips.id,
                       numeroindex: (index + 1).toString(),
                       onSwipedAction: () async {
-                        await provider.removeDatito(context, dtdatosdefips.id!);
+                        await provider.removeDatosDEFIPS(context, dtdatosdefips.id!);
                       },
                       
                       subtitulos: {'Hora': dtdatosdefips.Hora,
@@ -339,34 +355,39 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: BotonAgregar(
-          onPressed: () {
-          provider.addDatito(
-            DatosDEFIPS(
-            hasErrors: true,
-            Hora: DateFormat('HH:mm').format(DateTime.now()),
-            Defectos: const [],
-            Criticidad: const [],
-            CSeccionDefecto: '',
-            DefectosEncontrados: 0,
-            Fase: '',
-            Palet: true,
-            Empaque: true,
-            Embalado: true,
-            Etiquetado: true,
-            Inocuidad: true,
-            CantidadProductoRetenido: 0,
-            CantidadProductoCorregido: 0,
-            Observaciones: '',
-          )
-          );
-        },
-        )
+        onPressed: () async {
+  int? idregistro = await providerregistro.getNumeroById(1);
+
+  if (idregistro == null || idregistro == 0) {
+    print("El idregistro no es válido, no se ejecutará addPesosIPS");
+    return; // Detiene la ejecución si el idregistro es 0 o null
+  } provider.addDatosDEFIPS(DatosDEFIPS(
+    hasErrors: true,
+    hasSend: false,
+    idregistro: idregistro,  // Ya sabemos que no es 0 ni null
+                  Hora: '',
+              Defectos: [],
+              Criticidad: [],
+              CSeccionDefecto: '',
+              DefectosEncontrados: 0,
+              Fase: '',
+              Palet: true,
+              Empaque: true,
+              Embalado: true,
+              Etiquetado: true,
+              Inocuidad: true,
+              CantidadProductoRetenido: 0,
+              CantidadProductoCorregido: 0,
+              Observaciones: '',
+  ));
+},
+      ),
     );
   }
 }
 
 
-    class EditProviderDatosDEFIPS with ChangeNotifier {
+class EditProviderDatosDEFIPS with ChangeNotifier {
   // Implementación del proveedor, puedes agregar lógica específica aquí
 }
 
@@ -418,14 +439,50 @@ class _EditDatosDEFIPSFormState extends State<EditDatosDEFIPSForm> {
               dropOptions: dropOptionsDatosDEFIPS,
               id: widget.id,
             ),),),),
-          BotonesFormulario(
-            onGuardar: () {
-                _formKey.currentState?.save();
-                final values = _formKey.currentState!.value;
+            BotonDeslizable(
+  onPressed: () async {
+    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+    final updatedDatito = obtenerDatosActualizados();
 
-                final updatedDatito = widget.datosDefIps.copyWith(
+    await provider.updateDatosDEFIPS(widget.id, updatedDatito);
+    Navigator.pop(context);
+  },
+  onSwipedAction: () async {
+    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+    final updatedDatito = obtenerDatosActualizados();
+
+    await provider.updateDatosDEFIPS(widget.id, updatedDatito);
+
+    bool enviado = await provider.enviarDatosAPIDatosDEFIPS(widget.id);
+
+    if (!enviado) {
+      print("❌ Error al enviar los datos");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error al enviar los datos. Verifique su conexión o llene todos los campos."),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      final updatedDatitoEnviado = obtenerDatosActualizados(hasSend: true);
+      await provider.updateDatosDEFIPS(widget.id, updatedDatitoEnviado);
+      Navigator.pop(context);
+    }
+  },
+),
+         
+          ]));
+        }));
+  }
+DatosDEFIPS obtenerDatosActualizados({bool hasSend = false}) {
+  _formKey.currentState?.save();
+  final values = _formKey.currentState!.value;
+
+  return
+                widget.datosDefIps.copyWith(
                 hasErrors:_formKey.currentState?.fields.values.any((field) => field.hasError) ?? false,
-                  Hora: values['Hora'] ?? widget.datosDefIps.Hora,                 
+                  Hora: values['Hora'] ?? widget.datosDefIps.Hora,                
                   CSeccionDefecto: values['CSeccionDefecto'] ?? widget.datosDefIps.CSeccionDefecto,
                   DefectosEncontrados:(values['DefectosEncontrados']?.isEmpty ?? true)? 0 : int.tryParse(values['DefectosEncontrados']),
                   Fase: values['Fase'] ?? widget.datosDefIps.Fase,
@@ -440,15 +497,7 @@ class _EditDatosDEFIPSFormState extends State<EditDatosDEFIPSForm> {
 
                 );
 
-                Provider.of<DatosDEFIPSProvider>(context, listen: false)
-                    .updateDatito(widget.id, updatedDatito);
-
-                Navigator.pop(context);
-             },
-            ),
-          ]));
-        }));
-  }
+}
 }
 
 class FormularioGeneralDatosDEFIPS extends StatelessWidget {
@@ -473,7 +522,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
            DefectosScreenWidget(
             id: id,
           ),
-          TextoSimple(
+          CustomInputField(
               name: 'Hora',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['Hora'];
@@ -482,10 +531,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
               },
               label: 'Hora',
               valorInicial: widget.datosDefIps.Hora,
-              textoError: 'error'),
-
-            const SizedBox(height: 15,),
-                       
+              isRequired: true,),                       
           DropdownSimple(
             name: 'CSeccionDefecto',
             label: 'CSeccionDefecto',
@@ -499,6 +545,17 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
               field?.save();
             },
           ),
+
+        CustomInputField(
+              name: 'DefectosEncontrados',
+              onChanged: (value) {
+                final field = _formKey.currentState?.fields['Hora'];
+                field?.validate(); // Valida solo este campo
+                field?.save();
+              },
+              label: 'DefectosEncontrados',
+              valorInicial: widget.datosDefIps.DefectosEncontrados.toString(),
+              isRequired: true,),
 
           DropdownSimple(
             name: 'Fase',
@@ -551,7 +608,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
     ],
   ),
 ),
-          TextoSimple(
+          CustomInputField(
               name: 'CantidadProductoRetenido',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['CantidadProductoRetenido'];
@@ -560,9 +617,10 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
               },
               label: 'Cantidadproductoretenido',
               valorInicial: widget.datosDefIps.CantidadProductoRetenido.toString(),
-              textoError: 'error'),
+              isRequired: true,
+              isNumeric: true,),
 
-          TextoSimple(
+         CustomInputField(
               name: 'CantidadProductoCorregido',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['CantidadProductoCorregido'];
@@ -571,9 +629,10 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
               },
               label: 'Cantidadproductocorregido',
               valorInicial: widget.datosDefIps.CantidadProductoCorregido.toString(),
-              textoError: 'error'),
+              isRequired: true,
+              isNumeric: true,),
 
-          TextoSimple(
+          CustomInputField(
               name: 'Observaciones',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['Observaciones'];
@@ -582,7 +641,8 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
               },
               label: 'Observaciones',
               valorInicial: widget.datosDefIps.Observaciones,
-              textoError: 'error'),
+              
+              ),
 
     ]
       ),

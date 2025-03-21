@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:proyecto/src/services/bdpreformas.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/defe.dart';
 
 class DefectosScreenWidget extends StatefulWidget {
@@ -34,7 +35,7 @@ class _DefectosScreenState extends State<DefectosScreenWidget> {
 
   @override
   Widget build(BuildContext context) {
-  final datosProvider = Provider.of<DatosDEFIPSProvider>(context);
+  final datosProvider = Provider.of<DatosProviderPrefIPS>(context);
   final dato = datosProvider.datosdefipsList.firstWhere(
     (dato) => dato.id == widget.id,
   );
@@ -123,7 +124,7 @@ class _DefectosScreenState extends State<DefectosScreenWidget> {
                                 }
 
                                 // Actualizar datos en el proveedor y cerrar el diálogo
-                                datosProvider.updateDatito(
+                                datosProvider.updateDatosDEFIPS(
                                   dato.id!,
                                   dato.copyWith(
                                     Defectos: dato.Defectos,
@@ -214,7 +215,7 @@ class _DefectosScreenState extends State<DefectosScreenWidget> {
                   dato.Defectos.removeAt(index);
                   dato.Criticidad.removeAt(index);
                 });
-                datosProvider.updateDatito(
+                datosProvider.updateDatosDEFIPS(
                   dato.id!,
                   dato.copyWith(
                     Defectos: dato.Defectos,

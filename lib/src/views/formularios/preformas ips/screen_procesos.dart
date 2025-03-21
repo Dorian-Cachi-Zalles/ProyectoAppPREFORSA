@@ -3,10 +3,12 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:proyecto/src/services/bdpreformas.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/Providerids.dart';
 import 'package:proyecto/src/widgets/boton_agregar.dart';
 import 'package:proyecto/src/widgets/boton_guardarform.dart';
 import 'package:proyecto/src/widgets/boxpendiente.dart';
 import 'package:provider/provider.dart';
+import 'package:proyecto/src/widgets/nuevobotonguardar.dart';
 import 'package:proyecto/src/widgets/textosimpleformulario.dart';
 import 'package:proyecto/src/widgets/titulos.dart';
 import 'package:sqflite/sqflite.dart';
@@ -14,6 +16,8 @@ import 'package:sqflite/sqflite.dart';
 class DatosPROCEIPS {
   final int? id;
   final bool hasErrors;
+  final bool hasSend;
+  final int idregistro;
   final String Hora;
   final String PAprod;
   final List<double> TempTolvaSec;
@@ -25,6 +29,8 @@ class DatosPROCEIPS {
   const DatosPROCEIPS({
     this.id,
     required this.hasErrors,
+    required this.hasSend,
+    required this.idregistro,
     required this.Hora,
     required this.PAprod,
     required this.TempTolvaSec,
@@ -38,6 +44,8 @@ class DatosPROCEIPS {
     return DatosPROCEIPS(
       id: map['id'] as int?,
       hasErrors: map['hasErrors'] == 1,
+      hasSend: map['hasSend'] == 1,
+      idregistro: map['idregistro'] as int,
       Hora: map['Hora'] as String,
       PAprod: map['PAprod'] as String,
       TempTolvaSec: (map['TempTolvaSec'] as String).split(',').where((item) => item.isNotEmpty).map(double.parse).toList(),
@@ -52,6 +60,8 @@ class DatosPROCEIPS {
     return {
       if (id != null) 'id': id,
       'hasErrors': hasErrors ? 1 : 0,
+      'hasSend': hasSend ? 1 : 0,
+      'idregistro': idregistro,
       'Hora': Hora,
       'PAprod': PAprod,
       'TempTolvaSec': TempTolvaSec.join(','),
@@ -65,11 +75,15 @@ class DatosPROCEIPS {
   DatosPROCEIPS copyWith({
     int? id,
     bool? hasErrors,
+    bool? hasSend,
+    int? idregistro,
     String? Hora, String? PAprod, List<double>? TempTolvaSec, double? TempProd, double? Tciclo, double? Tenfri
   }) {
     return DatosPROCEIPS(
       id: id ?? this.id,
       hasErrors: hasErrors ?? this.hasErrors,
+      hasSend: hasSend ?? this.hasSend,
+      idregistro: idregistro ?? this.idregistro,
       Hora: Hora ?? this.Hora,
       PAprod: PAprod ?? this.PAprod,
       TempTolvaSec: TempTolvaSec ?? this.TempTolvaSec,
@@ -79,7 +93,6 @@ class DatosPROCEIPS {
     );
   }
 }
-
 
 class DatosPROCEIPSProvider with ChangeNotifier {
   late Database _db;
@@ -207,13 +220,13 @@ class ScreenListDatosPROCEIPS extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+    final providerregistro = Provider.of<IdsProvider>(context, listen: false);
     return Scaffold(
       body: Column(
         children: [
           Titulos(
             titulo: 'REGISTRO',
-            tipo: 1,
-            accion: () => provider.removeAllProcesos(context),
+            tipo: 0,          
           ),
           Expanded(
             child: Consumer<DatosProviderPrefIPS>(
@@ -241,17 +254,19 @@ class ScreenListDatosPROCEIPS extends StatelessWidget {
                       onSwipedAction: () async {
                         await provider.removeProceso(context, dtdatosproceips.id!);
                       },
-                                          subtitulos: {},
+                                          subtitulos: {
+                        'Hora': dtdatosproceips.Hora,
+                        'PAprod': dtdatosproceips.PAprod,
+                                          },
                       expandedContent: generateExpandableContent([
-                        ['Hora: ', 1, dtdatosproceips.Hora],
-                        ['PAprod: ', 1, dtdatosproceips.PAprod],
-                        ['TempTolvaSec: ', 4,dtdatosproceips.TempTolvaSec],
+                       
+                        ['TempTolvaSec ', 4,dtdatosproceips.TempTolvaSec],
                         ['TempProd: ', 1, dtdatosproceips.TempProd.toString() + ' °C'],
                         ['Tciclo: ', 1, dtdatosproceips.Tciclo.toString() + ' seg'],	
                         ['Tenfri: ', 1, dtdatosproceips.Tenfri.toString()],
                       ]),
                       hasErrors: dtdatosproceips.hasErrors,
-                      hasSend: dtdatosproceips.hasErrors,
+                      hasSend: dtdatosproceips.hasSend,
                       onOpenModal: () {
                         Navigator.push(
                           context,
@@ -272,20 +287,26 @@ class ScreenListDatosPROCEIPS extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: BotonAgregar(
-          onPressed: () {
-          provider.addProceIPS(
-             DatosPROCEIPS(
-          hasErrors: true,
-              Hora:  DateFormat('HH:mm').format(DateTime.now()),
+        onPressed: () async {
+  int? idregistro = await providerregistro.getNumeroById(1);
+
+  if (idregistro == null || idregistro == 0) {
+    print("El idregistro no es válido, no se ejecutará addPesosIPS");
+    return; // Detiene la ejecución si el idregistro es 0 o null
+  } provider.addProceIPS(DatosPROCEIPS(
+    hasErrors: true,
+    hasSend: false,
+    idregistro: idregistro,  // Ya sabemos que no es 0 ni null
+                  Hora: '',
               PAprod: '',
               TempTolvaSec: [0,0,0],
               TempProd: 0,
               Tciclo: 0,
               Tenfri: 0,
-        )
-          );
-        },
-        ));
+  ));
+},
+      ),
+    );
   }
 }
     class EditProviderDatosPROCEIPS with ChangeNotifier {
@@ -338,31 +359,66 @@ class _EditDatosPROCEIPSFormState extends State<EditDatosPROCEIPSForm> {
               widget: widget,
               dropOptions: dropOptionsDatosPROCEIPS,
             ),),),),
-          BotonesFormulario(
-            onGuardar: () {
-                _formKey.currentState?.save();
-                final values = _formKey.currentState!.value;
 
-                final updatedDatito = widget.DatosProceips.copyWith(
+            BotonDeslizable(
+  onPressed: () async {
+    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+    final updatedDatito = obtenerDatosActualizados();
+
+    await provider.updateProcesos(widget.id, updatedDatito);
+    Navigator.pop(context);
+  },
+  onSwipedAction: () async {
+    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+    final updatedDatito = obtenerDatosActualizados();
+
+    await provider.updateProcesos(widget.id, updatedDatito);
+
+    bool enviado = await provider.enviarDatosAPIDatosPROCEIPS(widget.id);
+
+    if (!enviado) {
+      print("❌ Error al enviar los datos");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error al enviar los datos. Verifique su conexión o llene todos los campos."),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      final updatedDatitoEnviado = obtenerDatosActualizados(hasSend: true);
+      await provider.updateProcesos(widget.id, updatedDatitoEnviado);
+      Navigator.pop(context);
+    }
+  },
+),          
+          ]));
+        }));
+  }
+DatosPROCEIPS obtenerDatosActualizados({bool hasSend = false}) {
+  _formKey.currentState?.save();
+  final values = _formKey.currentState!.value;
+  
+  final temptolva =List.generate(
+                  widget.DatosProceips.TempTolvaSec.length,
+                  (index) => double.tryParse(values['TempTolvaSec_$index'] ?? '0') ?? 0,);
+
+  return
+                widget.DatosProceips.copyWith(
                 hasErrors:_formKey.currentState?.fields.values.any((field) => field.hasError) ?? false,
                   Hora: values['Hora'] ?? widget.DatosProceips.Hora,
                   PAprod: values['PAprod'] ?? widget.DatosProceips.PAprod,
-                  TempTolvaSec: values['TempTolvaSec'] ?? widget.DatosProceips.TempTolvaSec,
+                  TempTolvaSec: List.generate(
+                  widget.DatosProceips.TempTolvaSec.length,
+                  (index) => double.tryParse(values['TempTolvaSec_$index'] ?? '0') ?? 0,
+                ),
                   TempProd:(values['TempProd']?.isEmpty ?? true)? 0 : double.tryParse(values['TempProd']),
                   Tciclo:(values['Tciclo']?.isEmpty ?? true)? 0 : double.tryParse(values['Tciclo']),
                   Tenfri:(values['Tenfri']?.isEmpty ?? true)? 0 : double.tryParse(values['Tenfri']),
 
                 );
 
-                Provider.of<DatosPROCEIPSProvider>(context, listen: false)
-                    .updateDatito(widget.id, updatedDatito);
-
-                Navigator.pop(context);
-             },
-            ),
-          ]));
-        }));
-  }
+}
 }
 
 class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
@@ -384,7 +440,7 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
       child: Column(
         children: [
 
-          TextoSimple(
+          CustomInputField(
               name: 'Hora',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['Hora'];
@@ -393,9 +449,9 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
               },
               label: 'Hora',
               valorInicial: widget.DatosProceips.Hora,
-              textoError: 'error'),
+              isRequired: true,),
 
-          TextoSimple(
+          CustomInputField(
               name: 'PAprod',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['PAprod'];
@@ -404,25 +460,26 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
               },
               label: 'Paprod',
               valorInicial: widget.DatosProceips.PAprod,
-              textoError: 'error'),
+              isRequired: true,),
 
             const SizedBox(height: 15,),
             ...List.generate(
               widget.DatosProceips.TempTolvaSec.length,
               (index) => Padding(
                 padding: const EdgeInsets.only(bottom: 15.0),
-                child: TextoSimple(
-              name: 'TempTolvaSec',
+                child: CustomInputField(
+              name: 'TempTolvaSec_$index',
               onChanged: (value) {
-                final field = _formKey.currentState?.fields['TempTolvaSec'];
+                final field = _formKey.currentState?.fields['TempTolvaSec_$index'];
                 field?.validate(); // Valida solo este campo
                 field?.save();
               },
-              label: 'Temptolvasec',
+              label: 'TempTolvaSec_${index+1}',
               valorInicial: widget.DatosProceips.TempTolvaSec[index].toString(),  
-              textoError: 'error'),
+              isNumeric: true,
+              isRequired: true,),
             )),
-          TextoSimple(
+          CustomInputField(
               name: 'TempProd',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['TempProd'];
@@ -431,9 +488,10 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
               },
               label: 'Tempprod',
               valorInicial: widget.DatosProceips.TempProd.toString(),
-              textoError: 'error'),
+              isNumeric: true,
+              isRequired: true,),
 
-          TextoSimple(
+          CustomInputField(
               name: 'Tciclo',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['Tciclo'];
@@ -442,9 +500,10 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
               },
               label: 'Tciclo',
               valorInicial: widget.DatosProceips.Tciclo.toString(),
-              textoError: 'error'),
+             isNumeric: true,
+              isRequired: true,),
 
-          TextoSimple(
+          CustomInputField(
               name: 'Tenfri',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['Tenfri'];
@@ -453,7 +512,8 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
               },
               label: 'Tenfri',
               valorInicial: widget.DatosProceips.Tenfri.toString(),
-              textoError: 'error'),
+              isNumeric: true,
+              isRequired: true,),
 
     ]
       ),

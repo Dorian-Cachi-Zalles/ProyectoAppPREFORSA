@@ -122,7 +122,7 @@ class _ScreenCCMState extends State<ScreenCCM> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const SettingsPage()),
+                        builder: (context) => SettingsPage()),
                   );
                 },
               ),

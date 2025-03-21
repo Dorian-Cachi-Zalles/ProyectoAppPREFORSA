@@ -121,7 +121,7 @@ class _ScreenTapas6State extends State<ScreenTapas6> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const SettingsPage()),
+                        builder: (context) => SettingsPage()),
                   );
                 },
               ),

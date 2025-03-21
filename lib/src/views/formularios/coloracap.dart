@@ -121,7 +121,7 @@ class _ScreenColoracapState extends State<ScreenColoracap> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const SettingsPage()),
+                        builder: (context) => SettingsPage()),
                   );
                 },
               ),

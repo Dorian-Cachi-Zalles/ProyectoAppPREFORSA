@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
+import 'package:proyecto/src/services/bdpreformas.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/Providerids.dart';
 import 'package:proyecto/src/widgets/boton_agregar.dart';
 import 'package:proyecto/src/widgets/boton_guardarform.dart';
 import 'package:proyecto/src/widgets/dropdownformulario.dart';
 import 'package:proyecto/src/widgets/boxpendiente.dart';
 import 'package:provider/provider.dart';
+import 'package:proyecto/src/widgets/nuevobotonguardar.dart';
 import 'package:proyecto/src/widgets/textosimpleformulario.dart';
 import 'package:proyecto/src/widgets/titulos.dart';
 import 'package:sqflite/sqflite.dart';
@@ -14,6 +17,8 @@ import 'package:sqflite/sqflite.dart';
 class DatosTEMPIPS {
   final int? id;
   final bool hasErrors;
+  final bool hasSend;
+  final int idregistro;
   final String Hora;
   final String Fase;
   final List<int> Cavidades;
@@ -24,6 +29,8 @@ class DatosTEMPIPS {
   const DatosTEMPIPS({
     this.id,
     required this.hasErrors,
+    required this.hasSend,
+    required this.idregistro,
     required this.Hora,
     required this.Fase,
     required this.Cavidades,
@@ -36,6 +43,8 @@ class DatosTEMPIPS {
     return DatosTEMPIPS(
       id: map['id'] as int?,
       hasErrors: map['hasErrors'] == 1,
+      hasSend: map['hasSend'] == 1,
+      idregistro: map['idregistro'] as int,
       Hora: map['Hora'] as String,
       Fase: map['Fase'] as String,
       Cavidades: (map['Cavidades'] as String).split(',').where((item) => item.isNotEmpty).map(int.parse).toList(),
@@ -49,6 +58,8 @@ class DatosTEMPIPS {
     return {
       if (id != null) 'id': id,
       'hasErrors': hasErrors ? 1 : 0,
+      'hasSend': hasSend ? 1 : 0,
+      'idregistro': idregistro,
       'Hora': Hora,
       'Fase': Fase,
       'Cavidades': Cavidades.join(','),
@@ -61,11 +72,15 @@ class DatosTEMPIPS {
   DatosTEMPIPS copyWith({
     int? id,
     bool? hasErrors,
+    bool? hasSend,
+    int? idregistro,
     String? Hora, String? Fase, List<int>? Cavidades, List<double>? Tcuerpo, List<double>? Tcuello
   }) {
     return DatosTEMPIPS(
       id: id ?? this.id,
       hasErrors: hasErrors ?? this.hasErrors,
+      hasSend: hasSend ?? this.hasSend,
+      idregistro: idregistro ?? this.idregistro,
       Hora: Hora ?? this.Hora,
       Fase: Fase ?? this.Fase,
       Cavidades: Cavidades ?? this.Cavidades,
@@ -74,7 +89,6 @@ class DatosTEMPIPS {
     );
   }
 }
-
 
 class DatosTEMPIPSProvider with ChangeNotifier {
   late Database _db;
@@ -200,17 +214,17 @@ class DatosTEMPIPSProvider with ChangeNotifier {
 class ScreenListDatosTEMPIPS extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<DatosTEMPIPSProvider>(context, listen: false);
+    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+    final providerregistro = Provider.of<IdsProvider>(context, listen: false);
     return Scaffold(
       body: Column(
         children: [
           Titulos(
             titulo: 'REGISTRO',
-            tipo: 1,
-            accion: () => provider.removeAllDatitos(context),
+            tipo: 0,
           ),
           Expanded(
-            child: Consumer<DatosTEMPIPSProvider>(
+            child: Consumer<DatosProviderPrefIPS>(
               builder: (context, provider, _) {
                 final datostempips = provider.datostempipsList;
 
@@ -233,7 +247,7 @@ class ScreenListDatosTEMPIPS extends StatelessWidget {
                       idlista: dtdatostempips.id,
                       numeroindex: (index + 1).toString(),
                       onSwipedAction: () async {
-                        await provider.removeDatito(context, dtdatostempips.id!);
+                        await provider.removeDatosTEMPIPS(context, dtdatostempips.id!);
                       },
                      
                       subtitulos: {
@@ -247,7 +261,7 @@ class ScreenListDatosTEMPIPS extends StatelessWidget {
                         ['Tcuello: ', 4, dtdatostempips.Tcuello],
                       ]),
                       hasErrors: dtdatostempips.hasErrors,
-                      hasSend: dtdatostempips.hasErrors,
+                      hasSend: dtdatostempips.hasSend,
                       onOpenModal: () {
                         Navigator.push(
                           context,
@@ -267,23 +281,26 @@ class ScreenListDatosTEMPIPS extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar:  BotonAgregar(
-          onPressed: () {
-          provider.addDatito(
-             DatosTEMPIPS(
-          hasErrors: true,
-              Hora: DateFormat('HH:mm').format(DateTime.now()),
+      bottomNavigationBar: BotonAgregar(
+        onPressed: () async {
+  int? idregistro = await providerregistro.getNumeroById(1);
+
+  if (idregistro == null || idregistro == 0) {
+    print("El idregistro no es válido, no se ejecutará addPesosIPS");
+    return; // Detiene la ejecución si el idregistro es 0 o null
+  } provider.addDatosTEMPIPS(DatosTEMPIPS(
+    hasErrors: true,
+    hasSend: false,
+    idregistro: idregistro,  // Ya sabemos que no es 0 ni null
+                  Hora: '',
               Fase: '',
               Cavidades: [0,0,0,0],
               Tcuerpo: [0,0,0,0],
               Tcuello: [0,0,0,0],
-        ),
-          );
-        },
-        ) 
-      
-      
-      
+            
+  ));
+},
+      ),  
     );
   }
 }
@@ -339,12 +356,46 @@ class _EditDatosTEMPIPSFormState extends State<EditDatosTEMPIPSForm> {
               widget: widget,
               dropOptions: dropOptionsDatosTEMPIPS,
             ),),),),
-          BotonesFormulario(
-            onGuardar: () {
-                _formKey.currentState?.save();
-                final values = _formKey.currentState!.value;
+             BotonDeslizable(
+  onPressed: () async {
+    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+    final updatedDatito = obtenerDatosActualizados();
 
-                final Cavidades = List.generate(
+    await provider.updateDatosTEMPIPS(widget.id, updatedDatito);
+    Navigator.pop(context);
+  },
+  onSwipedAction: () async {
+    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+    final updatedDatito = obtenerDatosActualizados();
+
+    await provider.updateDatosTEMPIPS(widget.id, updatedDatito);
+
+    bool enviado = await provider.enviarDatosAPIDatosTEMPIPS(widget.id);
+
+    if (!enviado) {
+      print("❌ Error al enviar los datos");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error al enviar los datos. Verifique su conexión o llene todos los campos."),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      final updatedDatitoEnviado = obtenerDatosActualizados(hasSend: true);
+      await provider.updateDatosTEMPIPS(widget.id, updatedDatitoEnviado);
+      Navigator.pop(context);
+    }
+  },
+),
+              
+          ]));
+        }));
+  }
+  DatosTEMPIPS obtenerDatosActualizados({bool hasSend = false}) {
+  _formKey.currentState?.save();
+  final values = _formKey.currentState!.value;
+  final Cavidades = List.generate(
                   widget.datosTempips.Cavidades.length,
                   (index) => int.tryParse(values['Cavidades_$index'] ?? '0') ?? 0,
                 );
@@ -357,8 +408,8 @@ class _EditDatosTEMPIPSFormState extends State<EditDatosTEMPIPSForm> {
                   (index) => double.tryParse(values['Tcuello_$index'] ?? '0') ?? 0,
                 );
 
-
-                final updatedDatito = widget.datosTempips.copyWith(
+  return
+                widget.datosTempips.copyWith(
                 hasErrors:_formKey.currentState?.fields.values.any((field) => field.hasError) ?? false,
                   Hora: values['Hora'] ?? widget.datosTempips.Hora,
                   Fase: values['Fase'] ?? widget.datosTempips.Fase,
@@ -368,15 +419,8 @@ class _EditDatosTEMPIPSFormState extends State<EditDatosTEMPIPSForm> {
 
                 );
 
-                Provider.of<DatosTEMPIPSProvider>(context, listen: false)
-                    .updateDatito(widget.id, updatedDatito);
+}
 
-                Navigator.pop(context);
-             },
-            ),
-          ]));
-        }));
-  }
 }
 
 class FormularioGeneralDatosTEMPIPS extends StatelessWidget {

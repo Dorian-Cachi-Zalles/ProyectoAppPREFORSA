@@ -125,7 +125,7 @@ Future<int> createRegistro() async {
   try {
     final response = await http
         .post(
-          Uri.parse('http://192.168.0.100:8000/api/prueba/'),
+          Uri.parse('http://192.168.137.1:8888/api/prueba/'),
           body: json.encode({
                
           }),
@@ -156,7 +156,7 @@ Future<int> createRegistroIPS() async {
   try {
     final response = await http
         .post(
-          Uri.parse('http://192.168.0.100:8000/api/IPS'),
+          Uri.parse('http://192.168.137.1:8888/api/IPS'),
           body: json.encode({
             'Modalidad':'Normal'           
           }),

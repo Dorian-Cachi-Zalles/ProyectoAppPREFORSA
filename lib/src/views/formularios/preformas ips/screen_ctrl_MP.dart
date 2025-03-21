@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:path/path.dart' as p;
+import 'package:proyecto/src/services/bdpreformas.dart';
+import 'package:proyecto/src/views/formularios/preformas%20ips/Providerids.dart';
 import 'package:proyecto/src/views/formularios/preformas%20ips/form_coloranteips.dart';
 import 'package:proyecto/src/widgets/boton_agregar.dart';
 import 'package:proyecto/src/widgets/boton_guardarform.dart';
@@ -8,6 +10,7 @@ import 'package:proyecto/src/widgets/checkboxformulario.dart';
 import 'package:proyecto/src/widgets/dropdownformulario.dart';
 import 'package:proyecto/src/widgets/boxpendiente.dart';
 import 'package:provider/provider.dart';
+import 'package:proyecto/src/widgets/nuevobotonguardar.dart';
 import 'package:proyecto/src/widgets/textosimpleformulario.dart';
 import 'package:proyecto/src/widgets/titulos.dart';
 import 'package:sqflite/sqflite.dart';
@@ -16,6 +19,8 @@ import 'package:toggle_switch/toggle_switch.dart';
 class DatosMPIPS {
   final int? id;
   final bool hasErrors;
+  final bool hasSend;
+  final int idregistro;
   final String MateriPrima;
   final String INTF;
   final String CantidadEmpaque;
@@ -29,6 +34,8 @@ class DatosMPIPS {
   const DatosMPIPS({
     this.id,
     required this.hasErrors,
+    required this.hasSend,
+    required this.idregistro,
     required this.MateriPrima,
     required this.INTF,
     required this.CantidadEmpaque,
@@ -44,6 +51,8 @@ class DatosMPIPS {
     return DatosMPIPS(
       id: map['id'] as int?,
       hasErrors: map['hasErrors'] == 1,
+      hasSend: map['hasSend'] == 1,
+      idregistro: map['idregistro'] as int,
       MateriPrima: map['MateriPrima'] as String,
       INTF: map['INTF'] as String,
       CantidadEmpaque: map['CantidadEmpaque'] as String,
@@ -60,6 +69,8 @@ class DatosMPIPS {
     return {
       if (id != null) 'id': id,
       'hasErrors': hasErrors ? 1 : 0,
+      'hasSend': hasSend ? 1 : 0,
+      'idregistro': idregistro,
       'MateriPrima': MateriPrima,
       'INTF': INTF,
       'CantidadEmpaque': CantidadEmpaque,
@@ -75,11 +86,15 @@ class DatosMPIPS {
   DatosMPIPS copyWith({
     int? id,
     bool? hasErrors,
+    bool? hasSend,
+    int? idregistro,
     String? MateriPrima, String? INTF, String? CantidadEmpaque, String? Identif, int? CantidadBolsones, double? Dosificacion, double? Humedad, bool? Conformidad
   }) {
     return DatosMPIPS(
       id: id ?? this.id,
       hasErrors: hasErrors ?? this.hasErrors,
+      hasSend: hasSend ?? this.hasSend,
+      idregistro: idregistro ?? this.idregistro,
       MateriPrima: MateriPrima ?? this.MateriPrima,
       INTF: INTF ?? this.INTF,
       CantidadEmpaque: CantidadEmpaque ?? this.CantidadEmpaque,
@@ -91,7 +106,6 @@ class DatosMPIPS {
     );
   }
 }
-
 
 class DatosMPIPSProvider with ChangeNotifier {
   late Database _db;
@@ -225,7 +239,8 @@ class ScreenListDatosMPIPS extends StatefulWidget {
 class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<DatosMPIPSProvider>(context, listen: false);
+    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+    final providerregistro = Provider.of<IdsProvider>(context, listen: false);
     return Scaffold(
       body: Column(
         children: [
@@ -273,11 +288,10 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
             ),
           Titulos(
             titulo: 'REGISTRO',
-            tipo: 1,
-            accion: () => provider.removeAllDatitos(context),
+            tipo: 0,            
           ),
           Expanded(
-            child: Consumer<DatosMPIPSProvider>(
+            child: Consumer<DatosProviderPrefIPS>(
               builder: (context, provider, _) {
                 final datosmpips = provider.datosmpipsList;
 
@@ -300,11 +314,11 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
                       idlista: dtdatosmpips.id,
                       numeroindex: (index + 1).toString(),
                       onSwipedAction: () async {
-                        await provider.removeDatito(context, dtdatosmpips.id!);
+                        await provider.removeDatosMPIPS(context, dtdatosmpips.id!);
                       },                      
                       titulo: 'Materia Prima',
                       subtitulos: {
-                        'MateriPrima': dtdatosmpips.MateriPrima,                        
+                        '': dtdatosmpips.MateriPrima,                        
                         'Conformidad': dtdatosmpips.Conformidad ? 'SI' : 'NO',
                       },
                       expandedContent: generateExpandableContent([
@@ -317,7 +331,7 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
                         ['Conformidad: ', 5, dtdatosmpips.Conformidad],
                       ]),
                       hasErrors: dtdatosmpips.hasErrors,
-                      hasSend: dtdatosmpips.hasErrors,
+                      hasSend: dtdatosmpips.hasSend,
                       onOpenModal: () {
                         Navigator.push(
                           context,
@@ -338,11 +352,17 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
         ],
       ),
       bottomNavigationBar: BotonAgregar(
-        onPressed: () {
-          provider.addDatito(
-            const DatosMPIPS(
-          hasErrors: true,
-              MateriPrima: '',
+        onPressed: () async {
+  int? idregistro = await providerregistro.getNumeroById(1);
+
+  if (idregistro == null || idregistro == 0) {
+    print("El idregistro no es válido, no se ejecutará addPesosIPS");
+    return; // Detiene la ejecución si el idregistro es 0 o null
+  } provider.addDatosMPIPS(DatosMPIPS(
+    hasErrors: true,
+    hasSend: false,
+    idregistro: idregistro,  // Ya sabemos que no es 0 ni null
+              MateriPrima: 'JADE CZ 328A',
               INTF: '',
               CantidadEmpaque: '',
               Identif: '',
@@ -350,9 +370,9 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
               Dosificacion: 0,
               Humedad: 0,
               Conformidad: true,
-        ),
-          );
-        },));
+  ));
+},
+      ),);
     
   }
 
@@ -453,33 +473,64 @@ class _EditDatosMPIPSFormState extends State<EditDatosMPIPSForm> {
               widget: widget,
               dropOptions: dropOptionsDatosMPIPS,
             ),),),),
-          BotonesFormulario(
-            onGuardar: () {
-                _formKey.currentState?.save();
-                final values = _formKey.currentState!.value;
 
-                final updatedDatito = widget.datosMpIps.copyWith(
-                hasErrors:_formKey.currentState?.fields.values.any((field) => field.hasError) ?? false,
+           BotonDeslizable(
+  onPressed: () async {
+    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+    final updatedDatito = obtenerDatosActualizados();
+
+    await provider.updateDatosMPIPS(widget.id, updatedDatito);
+    Navigator.pop(context);
+  },
+  onSwipedAction: () async {
+    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+    final updatedDatito = obtenerDatosActualizados();
+
+    await provider.updateDatosMPIPS(widget.id, updatedDatito);
+
+    bool enviado = await provider.enviarDatosAPIDatosMPIPS(widget.id);
+
+    if (!enviado) {
+      print("❌ Error al enviar los datos");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error al enviar los datos. Verifique su conexión o llene todos los campos."),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      final updatedDatitoEnviado = obtenerDatosActualizados(hasSend: true);
+      await provider.updateDatosMPIPS(widget.id, updatedDatitoEnviado);
+      Navigator.pop(context);
+    }
+  },
+)        
+          ]));
+        }
+        )
+        );
+        
+  }
+  DatosMPIPS obtenerDatosActualizados({bool hasSend = false}) {
+  _formKey.currentState?.save();
+  final values = _formKey.currentState!.value;
+  return widget.datosMpIps.copyWith(
+                  hasErrors:_formKey.currentState?.fields.values.any((field) => field.hasError) ?? false,
                   MateriPrima: values['MateriPrima'] ?? widget.datosMpIps.MateriPrima,
                   INTF: values['INTF'] ?? widget.datosMpIps.INTF,
                   CantidadEmpaque: values['CantidadEmpaque'] ?? widget.datosMpIps.CantidadEmpaque,
                   Identif: values['Identif'] ?? widget.datosMpIps.Identif,
-                  CantidadBolsones:(values['CantidadBolsones']?.isEmpty ?? true)? 0 : int.tryParse(values['CantidadBolsones']),
-                  Dosificacion:(values['Dosificacion']?.isEmpty ?? true)? 0 : double.tryParse(values['Dosificacion']),       
+                  CantidadBolsones: (values['CantidadBolsones'] == null || values['CantidadBolsones'].toString().isEmpty)     ? 0 
+    : int.tryParse(values['CantidadBolsones'].toString()) ?? 0,       
+                  Dosificacion:(values['Dosificacion']?.isEmpty ?? true)? 0 : double.tryParse(values['Dosificacion']),
                   Humedad:(values['Humedad']?.isEmpty ?? true)? 0 : double.tryParse(values['Humedad']),
                   Conformidad: values['Conformidad'] ?? widget.datosMpIps.Conformidad,
 
                 );
 
-                Provider.of<DatosMPIPSProvider>(context, listen: false)
-                    .updateDatito(widget.id, updatedDatito);
-
-                Navigator.pop(context);
-             },
-            ),
-          ]));
-        }));
-  }
+}
+  
 }
 
 class FormularioGeneralDatosMPIPS extends StatelessWidget {
@@ -515,7 +566,7 @@ class FormularioGeneralDatosMPIPS extends StatelessWidget {
             },
           ),
 
-          TextoSimple(
+          CustomInputField(
               name: 'INTF',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['INTF'];
@@ -524,7 +575,7 @@ class FormularioGeneralDatosMPIPS extends StatelessWidget {
               },
               label: 'Intf',
               valorInicial: widget.datosMpIps.INTF.toString(),
-              textoError: 'error'),
+              isRequired: true,),
 
           DropdownSimple(
             name: 'CantidadEmpaque',
@@ -540,7 +591,7 @@ class FormularioGeneralDatosMPIPS extends StatelessWidget {
             },
           ),
 
-          TextoSimple(
+          CustomInputField(
               name: 'Identif',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['Identif'];
@@ -549,7 +600,7 @@ class FormularioGeneralDatosMPIPS extends StatelessWidget {
               },
               label: 'Identif',
               valorInicial: widget.datosMpIps.Identif.toString(),
-              textoError: 'error'),
+              isRequired: true,),
 
           DropdownSimple<dynamic>(
             name: 'CantidadBolsones',
@@ -565,7 +616,7 @@ class FormularioGeneralDatosMPIPS extends StatelessWidget {
             },
           ),
 
-          TextoSimple(
+          CustomInputField(
               name: 'Dosificacion',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['Dosificacion'];
@@ -574,9 +625,12 @@ class FormularioGeneralDatosMPIPS extends StatelessWidget {
               },
               label: 'Dosificacion',
               valorInicial: widget.datosMpIps.Dosificacion.toString(),
-              textoError: 'error'),
+              isNumeric: true,
+              isRequired: true,
+              max: 100,
+              min: 0,),
 
-          TextoSimple(
+          CustomInputField(
               name: 'Humedad',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['Humedad'];
@@ -585,9 +639,8 @@ class FormularioGeneralDatosMPIPS extends StatelessWidget {
               },
               label: 'Humedad',
               valorInicial: widget.datosMpIps.Humedad.toString(),
-              textoError: 'error'),
-
-          const SizedBox(height: 15,),
+              isNumeric: true,
+              isRequired: true,),         
           CheckboxSimple(
             label: 'Conformidad',
             name: 'Conformidad',
